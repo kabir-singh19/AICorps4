@@ -1,6 +1,6 @@
 # AI Corps: Group 4
 
-Notes from the 9/11 kickoff meeting.
+Notes from the 9/11 kickoff meeting. Hardware project ideas are in [IDEAS.md](IDEAS.md).
 
 ## Project: AI Consulting Tool (Teams 1 & 4)
 
