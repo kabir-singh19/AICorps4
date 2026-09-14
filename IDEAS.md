@@ -1,120 +1,166 @@
-# Hardware Project Ideas
+# Project Ideas
 
-Every idea uses the same core kit: **Raspberry Pi 5 + AI HAT+ (Hailo accelerator)**.
+Each idea is an autonomous system: custom hardware, deep learning, and autonomy. Each one does work the city currently pays inspectors or consultants for, then generates the report.
 
-Why this fits our track: many consultant contracts are "collect field data, then write a report." The Pi collects the data, the accelerator runs the ML model on the device, and the A&M chatbot API writes the report.
+## Common Setup
 
-## How It Works
+- **Compute:** Raspberry Pi 5 (8GB) + AI HAT+ (Hailo) runs perception, deep learning, and autonomy.
+- **Real-time control:** a flight controller or a microcontroller on our motor board drives the motors.
+- **Reports:** the A&M chatbot API turns the robot's results into the report a consultant would deliver.
+- **Custom models:** compiling our own models for the AI HAT+ needs the Hailo Dataflow Compiler on an x86 Linux PC.
 
-```
-camera / sensors -> Pi 5 + AI HAT+ (ML on device) -> scores, counts, GPS -> database + map -> A&M LLM API -> report
-```
+## Summary
 
-Only results leave the device. No raw video is stored, so no faces or license plates.
-
-## Hardware List
-
-**Core kit (every idea):**
-- Raspberry Pi 5 (8GB)
-- Raspberry Pi AI HAT+ (Hailo accelerator)
-- Raspberry Pi Active Cooler
-- Raspberry Pi Camera Module 3 (Wide version for intersections)
-- microSD card (64GB+)
-- Official 27W USB-C power supply
-- Case that fits the AI HAT+
-
-**Add-ons by idea:**
-
-| Idea | Extra hardware |
-|---|---|
-| Road scanner | USB GPS receiver, IMU (e.g. BNO085), windshield/dash mount, USB-C car power adapter |
-| Traffic counter | Weatherproof enclosure, pole mount, outdoor power or large battery pack |
-| Thermal audit | Thermal camera (MLX90640 or FLIR Lepton), CO2/temperature/humidity sensor (e.g. SCD41) |
-| Noise monitor | USB microphone, weatherproof enclosure |
+| # | Idea | Where it works | Hardest part | Main risk |
+|---|---|---|---|---|
+| 1 | Power line inspection drone | Air | Wire following, magnetic distance sensing | Flight approval |
+| 2 | Sewer and storm drain robot | Inside pipes | Navigation without GPS, tether design | Waterproofing |
+| 3 | Sidewalk inspection rover | Sidewalks | Navigation around people, 3D hazard measurement | Public safety |
+| 4 | Autonomous survey boat | Ponds, lakes | Custom sonar | Waterproofing |
+| 5 | Robotic waste audit station | Lab / facility | Grasping moving items, custom NIR sensor | Messy objects |
 
 ---
 
-## 1. Road Condition Scanner (top pick)
+## 1. Power Line Inspection Drone
 
-**What it does:** Mounts on a car and scores every street it drives.
+**What it does:** Flies along city power lines on its own and inspects every pole.
 
-**Hardware:** Core kit + GPS, IMU, car mount, car power adapter.
+**Autonomy:** Flies GPS waypoints to the line, then follows the wires using a wire-segmentation network. Keeps a safe distance using stereo depth and magnetic field sensing.
 
-**ML:**
-- YOLO detects cracks and potholes. Train on the public RDD2022 dataset, then fine-tune on local photos.
-- Accelerometer vibration estimates road roughness.
-- Both combine into a 0-100 condition score per street segment.
+**Deep learning / CV:**
+- Detects insulators, crossarms, and transformers
+- Classifies damage: cracked insulators, corrosion, leaning poles, bird nests
+- Measures tree distance to the lines from depth
+- Finds hot spots with a thermal camera
 
-**LLM:** Writes a road condition report with a ranked repair list.
+**EE build:**
+- Magnetic sensor board that estimates distance to live wires from their field. The ratio between two sensors a known distance apart gives distance regardless of current.
+- Custom power distribution board
+- Time-synced cameras, thermal camera, and IMU
+- Flight controller integration
 
-**Replaces:** Pavement condition surveys.
+**Hardware:** drone frame, motors, ESCs, LiPo battery, flight controller (PX4 or ArduPilot), GPS, 2x Pi Global Shutter Camera (stereo), thermal camera, custom magnetic sensor board, telemetry radio, RC transmitter for manual override, Remote ID module (FAA requirement).
 
-**How we prove it:** Compare our scores to the city's last consultant report, street by street.
+**Output:** Report for each pole with photos, GPS location, and severity.
 
-**Extras:** Night drives can flag broken streetlights (the city runs its own electric utility). Long term, mount one on garbage trucks for weekly citywide scans.
+**Replaces:** Line inspection and vegetation management surveys.
 
-## 2. Traffic and Pedestrian Counter
+**How we prove it:** Compare our findings to a utility crew's manual inspection of the same poles.
 
-**What it does:** Mounts at an intersection and counts cars, bikes, and pedestrians, including which way they turn.
+**Risk:** Needs an FAA Part 107 license and utility approval. Develop on a mock pole and wire setup first.
 
-**Hardware:** Core kit + weatherproof enclosure, pole mount, outdoor power.
+## 2. Sewer and Storm Drain Inspection Robot
 
-**ML:** YOLO detection plus tracking (ByteTrack) gives counts and turning movements by time of day.
+**What it does:** A waterproof robot that drives inside pipes and grades their condition.
 
-**LLM:** Writes a traffic study for an intersection or corridor.
+**Autonomy:** No GPS in a pipe. Tracks position with wheel encoders, IMU, and visual odometry, so every defect is tagged by distance. Stops at defects automatically and handles debris.
 
-**Replaces:** Traffic counts and traffic studies.
+**Deep learning / CV:**
+- Detects cracks, roots, offset joints, and water leaking in. Train on Sewer-ML (1.3M public sewer images).
+- Codes defects to NASSCO PACP, the industry standard
+- Laser ring + camera measures pipe deformation in 3D
 
-**How we prove it:** Hand-count one hour of footage and compare. Also compare to any existing city counts.
+**EE build:**
+- Sealed motor drives and LED lighting driver
+- Laser ring projector
+- Pan/tilt camera head
+- Power and data over one long tether (voltage drop, long-cable data link)
 
-## 3. Building Thermal and Energy Audit
+**Hardware:** waterproof tracked or 4WD chassis, DC motors with encoders, custom motor driver board, sealed camera housing with Pi Camera Module 3 (Wide), pan/tilt servos, LED ring, laser diode with ring optic, IMU, leak sensor, tether cable and reel with length encoder, surface power station.
 
-**What it does:** Scans city buildings for heat loss and energy waste.
+**Output:** Condition report ranking pipe segments for repair.
 
-**Hardware:** Core kit + thermal camera, temperature/humidity/CO2 sensor.
+**Replaces:** Pipe camera inspection contractors and condition assessment consultants.
 
-**ML:**
-- Finds hot and cold spots in thermal images: leaky windows, missing insulation, overheating electrical panels.
-- Flags HVAC running in empty rooms (camera stores only people counts).
+**How we prove it:** Compare our defect codes to a certified inspector's report on the same pipe.
 
-**LLM:** Writes an energy audit with fixes and estimated savings.
+**Risk:** Waterproofing. Test in a pipe section in the lab first. City crews are needed for manhole access.
 
-**Replaces:** Energy audit consultants.
+## 3. Sidewalk Inspection Rover
 
-**How we prove it:** Compare to a past audit or the building's utility bills.
+**What it does:** A ground robot that drives city sidewalks and maps ADA problems.
 
-## 4. Noise Monitor
+**Autonomy:** RTK GPS plus visual-inertial odometry, path planning along sidewalks, and avoidance of pedestrians and obstacles.
 
-**What it does:** Sits downtown or near complaint hotspots. Logs noise levels and identifies the source.
+**Deep learning / CV:**
+- Segments the sidewalk and finds cracks, obstructions, and missing curb ramps
+- Measures trip hazards (height jumps between slabs) in 3D from stereo depth
+- Measures slope with the IMU against ADA limits
 
-**Hardware:** Core kit + USB microphone, weatherproof enclosure.
+**EE build:**
+- Custom motor driver PCB with encoders and current sensing
+- Battery management and power board
+- Hardware-synced stereo cameras on the Pi 5's two camera ports
+- E-stop safety circuit
 
-**ML:** A sound classifier (CNN on spectrograms, trained on UrbanSound8K) labels traffic, construction, music, and sirens, and logs decibel levels over time.
+**Hardware:** rover chassis, DC motors with encoders, custom motor driver PCB, battery pack with BMS, RTK GPS module and antenna, IMU, 2x Pi Global Shutter Camera (stereo), microcontroller for motor control, physical and wireless e-stop.
 
-**LLM:** Writes a noise study, cross-checked with citizen complaints and survey data.
+**Output:** Map and report of every ADA violation.
 
-**Replaces:** Noise studies.
+**Replaces:** Sidewalk and curb ramp surveys for the city's ADA transition plan.
 
-**How we prove it:** Check readings against a sound level meter.
+**How we prove it:** Compare to manual measurements (digital level and ruler) on sample blocks.
+
+**Risk:** Operates around the public, so a team member follows it.
+
+## 4. Autonomous Survey Boat
+
+**What it does:** Maps the city's stormwater ponds and lakes on its own.
+
+**Autonomy:** GPS + IMU navigation, full-coverage route planning around the shoreline, obstacle avoidance, holding position in wind, and return home on low battery or lost signal.
+
+**Deep learning / CV:**
+- Segments shoreline and obstacles for navigation
+- Detects algae blooms, floating trash, invasive plants, and bank erosion
+
+**EE build:**
+- Custom sonar: high-voltage transducer driver, receiver with preamp, bandpass filter, and time-varying gain, plus echo processing for depth
+- Isolated water quality sensor board (probes in the same water interfere without isolation)
+- Twin-thruster motor control, sealed electronics, telemetry radio
+
+**Hardware:** catamaran hull, 2x brushless thrusters with ESCs, battery, GPS, IMU, sonar transducer, custom sonar board, pH / dissolved oxygen / turbidity / conductivity / temperature probes, custom isolated sensor board, Pi Camera Module 3, controller running ArduPilot Rover (boat mode), telemetry radio.
+
+**Output:** Depth map showing sediment buildup, plus a water quality report.
+
+**Replaces:** Sediment surveys for dredging planning and manual water sampling.
+
+**How we prove it:** Compare sonar depths to manual depth-pole readings, and sensor readings to a calibrated handheld meter.
+
+**Risk:** Waterproofing. Test in a pool first.
+
+## 5. Robotic Waste Audit Station
+
+**What it does:** A conveyor belt with a robot arm that sorts a sample of city trash and recycling and reports what's in it.
+
+**Robotics:**
+- Vision-guided picking: detect item, find grasp point from depth, time the arm to grab it off the moving belt
+- Suction gripper with a pressure sensor to confirm each grab
+
+**Deep learning / CV:**
+- Segments and labels items: plastic, paper, glass, metal, food, contamination. Train on the ZeroWaste and TACO datasets.
+- Combines camera and NIR readings to tell plastic types apart (PET, HDPE, PP)
+
+**EE build:**
+- Custom NIR spectrometer: NIR LEDs, InGaAs photodiodes, transimpedance amplifiers, lock-in detection to reject room light
+- Load cell to weigh each item (waste audits report by weight)
+- Conveyor speed control with encoder for pick timing
+- Arm motor drivers
+
+**Hardware:** conveyor belt with motor and encoder, 4-6 axis robot arm, vacuum pump, suction cup, pressure sensor, 2x Pi Global Shutter Camera (stereo depth), Pi Camera Module 3, NIR LEDs, InGaAs photodiodes, custom amplifier board, load cell with ADC board, microcontroller for arm and conveyor, enclosed lighting box.
+
+**Output:** Report of each material's share by weight, contamination rate, and trends.
+
+**Replaces:** Waste characterization consultants who sort sample bins by hand.
+
+**How we prove it:** Hand-sort the same sample and compare results by weight.
+
+**Risk:** Grabbing dirty, soft items is hard. Start with dry recyclables.
 
 ---
-
-## Comparison
-
-| Idea | Difficulty | What we need from the city | Proof |
-|---|---|---|---|
-| Road scanner | Medium | Past road report; later, city vehicles | Consultant scores |
-| Traffic counter | Medium | Permission to mount at an intersection | Hand counts |
-| Thermal audit | Medium | Access to a city building | Past audit or utility bills |
-| Noise monitor | Easy | Permission to place outdoors | Sound level meter |
-
-## Notes
-
-- **Custom models:** compiling our own model for the AI HAT+ needs the Hailo Dataflow Compiler, which runs on an x86 Linux PC, not the Pi.
 
 ## Next Steps
 
-1. Search the Open Checkbook for which of these studies the city pays for, and how much.
-2. Ask Sam Rivera for past reports and permission for mounting or building access.
-3. Ask the TAs about a hardware budget.
-4. Pick one idea, order one kit, and get the model running on the bench before building the enclosure.
+1. Ask Sam Rivera whether drone flights near city power lines could be approved. If yes, the drone is the top pick. If not, the pipe robot.
+2. Ask what the city owns and inspects (sewers, storm drains, ponds, recycling program) and for past reports we can compare against.
+3. Search the Open Checkbook for which of these services the city pays for.
+4. Pick one, get the Pi 5 + AI HAT+ running the perception model on the bench while the hardware is designed.
