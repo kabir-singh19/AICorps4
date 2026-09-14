@@ -12,13 +12,33 @@ camera / sensors -> Pi 5 + AI HAT+ (ML on device) -> scores, counts, GPS -> data
 
 Only results leave the device. No raw video is stored, so no faces or license plates.
 
+## Hardware List
+
+**Core kit (every idea):**
+- Raspberry Pi 5 (8GB)
+- Raspberry Pi AI HAT+ (Hailo accelerator)
+- Raspberry Pi Active Cooler
+- Raspberry Pi Camera Module 3 (Wide version for intersections)
+- microSD card (64GB+)
+- Official 27W USB-C power supply
+- Case that fits the AI HAT+
+
+**Add-ons by idea:**
+
+| Idea | Extra hardware |
+|---|---|
+| Road scanner | USB GPS receiver, IMU (e.g. BNO085), windshield/dash mount, USB-C car power adapter |
+| Traffic counter | Weatherproof enclosure, pole mount, outdoor power or large battery pack |
+| Thermal audit | Thermal camera (MLX90640 or FLIR Lepton), CO2/temperature/humidity sensor (e.g. SCD41) |
+| Noise monitor | USB microphone, weatherproof enclosure |
+
 ---
 
 ## 1. Road Condition Scanner (top pick)
 
 **What it does:** Mounts on a car and scores every street it drives.
 
-**Hardware:** Pi 5, AI HAT+, Camera Module 3, USB GPS, accelerometer (IMU), car mount and power.
+**Hardware:** Core kit + GPS, IMU, car mount, car power adapter.
 
 **ML:**
 - YOLO detects cracks and potholes. Train on the public RDD2022 dataset, then fine-tune on local photos.
@@ -37,7 +57,7 @@ Only results leave the device. No raw video is stored, so no faces or license pl
 
 **What it does:** Mounts at an intersection and counts cars, bikes, and pedestrians, including which way they turn.
 
-**Hardware:** Pi 5, AI HAT+, camera, weatherproof case, power.
+**Hardware:** Core kit + weatherproof enclosure, pole mount, outdoor power.
 
 **ML:** YOLO detection plus tracking (ByteTrack) gives counts and turning movements by time of day.
 
@@ -51,7 +71,7 @@ Only results leave the device. No raw video is stored, so no faces or license pl
 
 **What it does:** Scans city buildings for heat loss and energy waste.
 
-**Hardware:** Pi 5, AI HAT+, thermal camera (MLX90640 is cheap, FLIR Lepton has more detail), regular camera, temperature/humidity/CO2 sensor.
+**Hardware:** Core kit + thermal camera, temperature/humidity/CO2 sensor.
 
 **ML:**
 - Finds hot and cold spots in thermal images: leaky windows, missing insulation, overheating electrical panels.
@@ -67,7 +87,7 @@ Only results leave the device. No raw video is stored, so no faces or license pl
 
 **What it does:** Sits downtown or near complaint hotspots. Logs noise levels and identifies the source.
 
-**Hardware:** Pi 5, AI HAT+, USB microphone, weatherproof case.
+**Hardware:** Core kit + USB microphone, weatherproof enclosure.
 
 **ML:** A sound classifier (CNN on spectrograms, trained on UrbanSound8K) labels traffic, construction, music, and sirens, and logs decibel levels over time.
 
@@ -90,7 +110,6 @@ Only results leave the device. No raw video is stored, so no faces or license pl
 
 ## Notes
 
-- **Budget:** base kit (Pi 5, AI HAT+, camera, SD card, power supply) is roughly $200-250. Check current prices.
 - **Custom models:** compiling our own model for the AI HAT+ needs the Hailo Dataflow Compiler, which runs on an x86 Linux PC, not the Pi.
 
 ## Next Steps
