@@ -5,6 +5,8 @@ Notes from the 9/11 kickoff meeting. Project ideas are in [IDEAS.md](IDEAS.md).
 ## Project: AI Consulting Tool (Teams 1 & 4)
 
 Goal: reduce the city's reliance on paid outside consultants (currently about 40) with an LLM-based consulting tool.
+Core question: Can an LLM-based consulting tool reduce the City's reliance on outside consulting by reproducing selected 
+consulting deliverables at comparable quality and substantially lower cost?
 
 - Most of the city's expertise comes from outside. Figure out the consultant budget.
 - Build an expertise network: which consultants the city uses, and for what.
