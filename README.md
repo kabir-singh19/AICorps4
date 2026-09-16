@@ -38,7 +38,7 @@ Goal: reduce the city's reliance on paid outside consultants (currently about 40
 
 ## Timeline
 
-- Sept 17: "...ops" (cut off in notes)
+- Sept 17: CONOPS due 
 - In a few weeks: go to City Hall and explain what we'll do and what the city needs to do
 - End of spring: present to City Council (per Sam Rivera)
 
@@ -46,4 +46,5 @@ Goal: reduce the city's reliance on paid outside consultants (currently about 40
 
 - About 10 days behind
 - Competing with Team 1
-- Meet at least once a week; keep TAs involved
+- Compare our AIs answers with the actual consulting experts solutions.
+- Meet at least once every other week; keep TAs involved
