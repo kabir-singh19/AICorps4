@@ -48,3 +48,4 @@ Goal: reduce the city's reliance on paid outside consultants (currently about 40
 - Competing with Team 1
 - Compare our AIs answers with the actual consulting experts solutions.
 - Meet at least once every other week; keep TAs involved
+- TA with the most experience in AI Sabyasachi Gupta — sabyasachi.gupta@tamu.edu
