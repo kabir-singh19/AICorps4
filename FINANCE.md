@@ -10,4 +10,5 @@ FY2026 consulting-related expenditures from Open Checkbook.
 
 Note: the two $49,345 lines are the same expenses viewed under different groupings, not separate spend.
 
-https://www.cstx.gov/your-government/budget-and-finance/financial-transparency/contracts-and-procurement/
+https://www.cstx.gov/your-government/budget-and-finance/ 
+
