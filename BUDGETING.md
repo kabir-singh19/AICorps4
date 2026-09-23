@@ -161,3 +161,101 @@ The city's data truncates vendor names to 5 characters and leaves the payment de
 - Confirm unidentified vendors using Vendor # on the Open Checkbook or City Council agendas.
 - Match top vendors to their original RFPs/RFQs to document project scope.
 - Identify which consulting tasks (studies, audits, reports, planning analysis) an AI consultant could realistically support.
+
+# Update: Additional Vendor Research and Contract Findings
+
+This section adds findings from research completed after the initial analysis. Where it updates an entry in the Top 30 Consulting Vendors table above, the update is noted here rather than changing the original table.
+
+## Vendor Identification Updates
+
+| Name in Data | Vendor # | Updated Identification | Status | Notes |
+|---|---:|---|:---:|---|
+| The A... | 1114 | The Arkitex Studio | ✅ | Bryan-based architecture firm. Listed as design firm for Lick Creek Park bird viewing blinds (2023) and a new Central Park operations building (2024) in state filings ([TDLR 2023](https://www.tdlr.texas.gov/TABS/Search/Print/TABS2023008882), [TDLR 2024](https://www.tdlr.texas.gov/TABS/Search/Print/TABS2024013642)) |
+| Marti... | 6400 | Martinez Architects | 🟡 | Likely design of Fire Station No. 7 (see below). If confirmed, this is emergency-services spending and falls outside our scope |
+| Brink... | 6231 | Brinkley Sargent Wiginton Architects | 🟡 | $83,424 in FY2024 from a Special Studies account, matching the recreation center study approved in October 2023 |
+| Studi... | 6230 | Studio 16:19 | 🟡 | $79,908 in FY2024 from the Parks capital engineering account; the firm was later hired for city park design |
+| Galls... | 4659 | Not identified | ⬜ | Galls is a known police/public-safety uniform supplier, but this vendor was paid from street and drainage engineering accounts, not Police. Most likely a different firm whose name starts with "Galls." Not found in Form 1295 searches |
+| Oneti... | 111 | "One-time vendor" placeholder | ❌ | Not a real company; a catch-all for small one-off P-card purchases. Exclude from vendor rankings |
+| Usic ... | 6122 | Not identified | ⬜ | Name resembles a utility-locating company, which does not fit a Tourism payment. Needs verification |
+
+### Effect on Totals
+
+- **Martinez Architects (#6400):** In January 2024 the council approved a $925,000 contract with Martinez Architects to design Fire Station No. 7 ([City blog](https://blog.cstx.gov/2024/01/25/live-blog-thursdays-city-council-meeting-jan-25/)). The timing, account, and department fit vendor #6400. If confirmed, removing it would lower FY2024 Engineering & Design from about $3.40M to about $3.07M.
+
+## Consulting Contracts Found in City Council Records
+
+Because the check registers lack full vendor names and descriptions, we searched City Council meeting summaries ([blog.cstx.gov](https://blog.cstx.gov/)), agenda packets, local news, and state filings for consulting-type contracts. **This list is a sample built from targeted searches, not a complete inventory.** Contract amounts are what the council approved, which may differ from what was actually paid in a given year.
+
+### In Scope: FY2023–FY2024 (Oct. 2022 – Sept. 2024)
+
+| Date | Firm | What They Were Hired to Do | Contract Amount | Matches Check Register? | Source |
+|---|---|---|---:|---|---|
+| Sept. 14, 2023 | Binkley & Barfield | Professional services for rehabilitating Marion Pugh Drive (Luther St. to George Bush Dr.) | $709,136 | Yes, #2311 | [City blog](https://blog.cstx.gov/2023/09/14/live-blog-thursdays-city-council-meeting-sept-14/) |
+| Oct. 2023 | Brinkley Sargent Wiginton Architects + BerryDunn | Two-phase recreation center evaluation: market analysis, needs assessment, statistically valid survey, public engagement, building program, operations assessment, cost pro forma | Not stated | Likely, #6231 | [City blog](https://blog.cstx.gov/2025/08/28/live-from-city-hall-thursdays-city-council-meeting-aug-28/) |
+| Dec. 11, 2023 | Binkley & Barfield | Design and construction-phase services, Greens Prairie Road (county portion) widening | $113,922 | Yes, #2311 | [Council agenda](https://opendoc.cstx.gov/ScanGIS/edoc/1907631/12112023%20-%20Regular%20Agenda%20-%20City%20Council.pdf?dbid=0&repo=DOCUMENT-SERVER) |
+| 2023–2024 | The Arkitex Studio | Design of Lick Creek Park bird viewing blinds and a new Central Park operations building | Project est. $120K and $6M (design fee not stated) | Yes, #1114 | TDLR filings (linked above) |
+| Sept. 26, 2024 | Kimley-Horn and Associates | Design change order, Jones Butler extension and roundabout | $110,000 | Yes, #1303 | [City blog](https://blog.cstx.gov/2024/09/26/live-from-city-hall-thursdays-city-council-meeting-sept-26/) |
+
+**The recreation center study is the best example for an AI consultant pitch.** The city published the consultant's deliverables on its [Capital Improvement Projects page](https://www.cstx.gov/your-government/capital-improvement-projects/): an executive summary, findings report, market analysis report, engagement results report, and draft pro forma. These show exactly what a city receives from a study contract.
+
+### Out of Scope but Relevant: FY2023–FY2024
+
+| Date | Firm | What They Were Hired to Do | Amount | Why Excluded | Source |
+|---|---|---|---:|---|---|
+| Apr. 27, 2023 | Innovative Emergency Management (IEM) | Continuity of Operations Plan; 8 proposals received | Not stated | Emergency services | [Council packet](https://blog.cstx.gov/wp-content/uploads/2023/04/230427-CC-Packet.pdf) |
+| Jan. 25, 2024 | Martinez Architects | Design of Fire Station No. 7 | $925,000 | Emergency services | [City blog](https://blog.cstx.gov/2024/01/25/live-blog-thursdays-city-council-meeting-jan-25/) |
+
+### After FY2024: Examples Showing Continued Demand
+
+| Date | Firm | What They Were Hired to Do | Amount | Source |
+|---|---|---|---:|---|
+| Oct. 2024 | Hunden Strategic Partners | Convention center needs analysis. Phase 1: stakeholder interviews, hotel and convention data from College Station and peer cities, 7 years of local meeting data. Phase 2: site evaluation, feasibility, financing, economic impact, ROI | Up to $80,000 | [WTAW](https://wtaw.com/college-station-city-council-awards-a-contract-to-study-the-feasibility-of-a-convention-center/) |
+| Oct. 24, 2024 | Marmon Mok Architecture | Pre-design space programming, needs assessment, and site feasibility studies for the Public Works Facility | $372,319 | [City blog](https://blog.cstx.gov/2024/10/24/live-from-city-hall-thursdays-city-council-meeting-oct-24/) |
+| Oct. 2024 | Arkitex Studio | Design contract for Texas Independence Park | $1.8 million | [KBTX](https://www.kbtx.com/2024/10/08/college-station-city-council-approves-design-contract-texas-independence-park/) |
+| Mar. 26, 2026 | Kimley-Horn and Associates | 2026 Roadway Impact Fee 5-year Update Study | $120,000 | [City blog](https://blog.cstx.gov/2026/03/26/live-from-city-hall-thursdays-city-council-meeting-march-26/) |
+| May 18, 2026 | Studio 16:19 | Design of the Lincoln Recreation Center splash pad | $144,725 | [City blog](https://blog.cstx.gov/2026/05/18/live-from-city-hall-mondays-city-council-meeting-may-18/) |
+
+### Why Some Vendors Never Appear in RFPs
+
+Cities can buy technology and cybersecurity services through **state cooperative contracts** instead of running their own bids. For example, Kudelski Security holds a Texas DIR contract for cybersecurity software and services available to local governments ([Texas DIR](https://dir.texas.gov/contracts/dir-cpo-4891)). This supports the "Kudel..." = Kudelski Security match and explains why no local RFP or Form 1295 was found for it.
+
+## Current Consulting Demand: FY2026 Awarded Solicitations
+
+We reviewed all 95 awarded solicitations posted on the [Brazos Valley e-Marketplace](https://brazosbid.ionwave.net/) between September 2025 and September 2026. **36 were issued by the City of College Station.**
+
+| Group | Count |
+|---|---:|
+| Studies, Planning & Advisory | 4 |
+| Administrative & Business Services | 5 |
+| Engineering & Design Services | 2 |
+| Construction, Maintenance & Supplies (not consulting) | 8 |
+| Excluded by scope (electric, water/wastewater, police) | 17 |
+| **Total** | **36** |
+
+### Most Relevant to an AI Consultant
+
+| Bid # | Title | Award Date | What It Could Indicate |
+|---|---|---|---|
+| 26-077 | Density Bonus Study (re-issue) | 9/9/2026 | The city pays outside experts for housing and zoning research. The re-issue suggests difficulty sourcing this expertise. |
+| 26-049 | Harvey Road Corridor Redevelopment Plan | 5/5/2026 | Demand for land-use analysis, market research, and planning reports. |
+| 25-093 | Salary Survey for the City of College Station | 12/19/2025 | Compensation benchmarking is mostly data collection and comparison, a clear candidate for AI-assisted analysis. |
+| 26-014 | Professional Grant Writing and Consulting Services | 5/12/2026 | Research and drafting grant applications are core AI strengths. |
+
+## Additional Data Limitations
+
+- **The council contract list is a sample**, built from targeted searches. It is not a complete list, and approved contract amounts differ from yearly payments.
+- **Form 1295 filings only cover some contracts.** Texas requires them only for contracts needing a council vote or worth $1 million or more, so smaller vendors often have no filing.
+- **Several public portals block automated access** (Texas Ethics Commission, Brazos Valley e-Marketplace, the city open data portal), so records from those sites were gathered manually.
+- **Some check register rows share vendor, amount, date, and check number.** They may be separate line items rather than duplicates.
+- **The FY2025 check register link** on the city website points to an internal city SharePoint and is not publicly accessible.
+- **The FY2026 award list does not include winning vendor names or dollar amounts**, and covers a different period than the check registers, so it shows demand, not spending.
+- **Bid number 26-014 appears twice** on the portal (Grant Writing and Janitorial Services), likely a posting inconsistency.
+
+## Additional Data Sources
+
+- [City of College Station Blog](https://blog.cstx.gov/) (City Council meeting summaries with contract names and amounts)
+- [City of College Station Capital Improvement Projects](https://www.cstx.gov/your-government/capital-improvement-projects/) (published consultant deliverables)
+- [Texas Ethics Commission Form 1295 Search](https://www.ethics.state.tx.us/search/1295/)
+- [Texas Department of Licensing and Regulation TABS](https://www.tdlr.texas.gov/TABS/) (design firms on city projects)
+- [Texas DIR Cooperative Contracts](https://dir.texas.gov/) (state contracts cities use to buy IT services)
+- Local news: [WTAW](https://wtaw.com/), [KBTX](https://www.kbtx.com/)
