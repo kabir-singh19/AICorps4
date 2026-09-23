@@ -9,3 +9,5 @@ FY2026 consulting-related expenditures from Open Checkbook.
 | $49,345 | Nonoper Exp Consulting Svcs | 2026 | [Open Checkbook](https://checkbook.cstx.gov/#!/year/2026/explore/0-/object_description/Nonoper+Exp+Consulting+Svcs/1/vendor_name) |
 
 Note: the two $49,345 lines are the same expenses viewed under different groupings, not separate spend.
+
+https://www.cstx.gov/your-government/budget-and-finance/financial-transparency/contracts-and-procurement/
