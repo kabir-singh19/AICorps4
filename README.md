@@ -40,9 +40,10 @@ consulting deliverables at comparable quality and substantially lower cost?
 
 ## Timeline
 
-- Sept 17: CONOPS due 
+- Sept 17: CONOPS due ✅
 - In a few weeks: go to City Hall and explain what we'll do and what the city needs to do
 - End of spring: present to City Council (per Sam Rivera)
+- Oct 1: FSR, ICD due
 
 ## Team Notes
 
