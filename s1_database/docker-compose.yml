@@ -1,0 +1,24 @@
+# TASC S1 database (IF-09): PostgreSQL 16 + PostGIS, port 5432.
+# Start:  docker compose up -d
+# Reset:  docker compose down -v   (deletes the data volume; schema is re-created on next up)
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: tasc
+      POSTGRES_USER: tasc
+      POSTGRES_PASSWORD: tasc        # dev only; change before anything leaves your laptop
+    ports:
+      - "5432:5432"
+    mem_limit: 2g                    # the 2 GB cap from the container budget slide
+    volumes:
+      - tasc_pgdata:/var/lib/postgresql/data
+      - ./sql/init:/docker-entrypoint-initdb.d:ro   # runs 01_schema.sql on first start only
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tasc -d tasc"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  tasc_pgdata:
