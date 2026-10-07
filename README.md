@@ -1,41 +1,54 @@
-# S2 - Risk Model and Backtest
-Owner: Param Shelar | AI Corps Team 4 | AI Traffic-Safety Consultant
+# AI Corps: Group 4
 
-**Status: structure only.** Python modules, test files, and `requirements.txt` are deliberately empty. Nothing is implemented or runnable yet; no models, data, or verification results are included.
+Notes from the 9/11 kickoff meeting. Project ideas are in [IDEAS.md](IDEAS.md).
 
-## Scope and sources
-S2 compares (A) the published consultant High-Injury Network, (B) a negative binomial SPF with Empirical Bayes, and (C) a Poisson gradient-boosted model with overdispersion, EB, and a severity model. It supplies per-site expected fatal/serious-injury (F&SI) rates, rankings, flags, SHAP factors, backtest results, and reproducible artifacts.
+## Project: AI Consulting Tool (Teams 1 & 4)
 
-The source baseline is the supplied **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, ConOps Revision C dated 1 October 2026 and its accompanying FSR, ICD, and Execution and Validation Plan. Read alongside [AITRAFFIC.md](../AITRAFFIC.md), [DATASOURCES.md](../DATASOURCES.md), and the existing [S1 README](../Kabir_Singh/README.md) and [schema](../Kabir_Singh/sql/init/01_schema.sql). The PDF supplies the current named ownership and requirements; older repository brainstorming does not expand this subsystem's scope.
+Goal: reduce the city's reliance on paid outside consultants (currently about 40) with an LLM-based consulting tool.
+Core question: Can an LLM-based consulting tool reduce the City's reliance on outside consulting by reproducing selected 
+consulting deliverables at comparable quality and substantially lower cost?
 
-## Planned files
-| Empty file | Intended responsibility |
-|---|---|
-| [database.py](database.py) | Read validated S1 inputs and persist S2 results through IF-09. |
-| [leakage.py](leakage.py) | Validate input provenance, dates, and separation of training and evaluation data. |
-| [hin_baseline.py](hin_baseline.py) | Represent the published consultant HIN as method A. |
-| [nb_spf.py](nb_spf.py) | Fit the negative binomial safety performance function for method B. |
-| [ml_risk.py](ml_risk.py) | Fit the Poisson gradient-boosted crash-count model for method C. |
-| [empirical_bayes.py](empirical_bayes.py) | Estimate overdispersion and apply the EB blend for methods B and C. |
-| [severity.py](severity.py) | Estimate and calibrate fatal/serious-injury probability using pre-cutoff crashes. |
-| [ranking.py](ranking.py) | Calculate F&SI rates, rank all sites, and flag by cumulative network length. |
-| [explanations.py](explanations.py) | Produce the five largest SHAP contributions for each flagged site. |
-| [train.py](train.py) | Coordinate a frozen, reproducible training run. |
-| [backtest.py](backtest.py) | Score A/B/C with paired bootstrap intervals and sensitivity comparisons. |
-| [artifacts.py](artifacts.py) | Export and reload model files, feature tables, predictions, and run metadata. |
-| [requirements.txt](requirements.txt) | Dependency list, to be selected and pinned during implementation. |
+- Most of the city's expertise comes from outside. Figure out the consultant budget.
+- Build an expertise network: which consultants the city uses, and for what.
+- Use the tool to respond to RFPs/RFQs the way a consulting firm would.
+- Show the comparison: what a consultant delivered (and was paid) vs. what our AI generates.
 
-## Planning documents
-- [Requirements and verification](docs/requirements.md)
-- [Database interfaces and current gaps](docs/interfaces.md)
-- [Frozen backtest protocol](docs/backtest_protocol.md)
-- [Implementation sequence](docs/implementation_plan.md)
-- [Model card template](docs/model_card.md)
-- [Configuration plan](config/README.md)
-- [Generated output policy](outputs/README.md)
-- [Planned tests](tests/README.md)
+## Data Sources
 
-## Boundaries
-Kabir owns source ingestion, network construction, crash matching, feature production, and database schema. S2 exchanges data through IF-09; it does not read another owner's working files. Jose owns countermeasure tools and memos; Juan owns REST endpoints, website, deployment, and user-facing exports. Local artifact exports here support S2 reproducibility and independent model review.
+- Open Checkbook: all city transactions, vendor list (search by name)
+- Budget and operations data
+- Citizen surveys
+- Taxes (6.25%)
+- Other open sources the city has (mostly public data)
+- Not using: warrants, emergency calls
 
-Before implementation, agree with S1 on stable network/site IDs, intersection exposure and length, HIN mapping, historical provenance, and result-table migrations. Details are in the interface document. No shared files or database migrations are changed by this setup.
+## City Structure
+
+- Elected officials: separate department
+- City Manager
+  - COO: fire, police, electric utilities
+  - CIO: reports to CFO
+- Contacts: Allison, Sam Rivera (main contact)
+
+## Approach
+
+- It's a service; it may or may not be a website. Scope will change as needs grow.
+- Build on the city's existing tools: organized prompting of the A&M chatbots through the API with tokens, not the A&M interface. Learn what they can and can't do.
+- Architect solutions with pre-existing models and data.
+- Talk to someone at the city about data we need but don't have.
+- API charges are covered; get approval before going over budget.
+
+## Timeline
+
+- Sept 17: CONOPS due ✅
+- In a few weeks: go to City Hall and explain what we'll do and what the city needs to do
+- End of spring: present to City Council (per Sam Rivera)
+- Oct 1: FSR, ICD due
+
+## Team Notes
+
+- About 10 days behind
+- Competing with Team 1
+- Compare our AIs answers with the actual consulting experts solutions.
+- Meet at least once every other week; keep TAs involved
+- TA with the most experience in AI Sabyasachi Gupta — sabyasachi.gupta@tamu.edu
