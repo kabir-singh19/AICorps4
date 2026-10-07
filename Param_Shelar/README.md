@@ -6,7 +6,7 @@ Owner: Param Shelar | AI Corps Team 4 | AI Traffic-Safety Consultant
 ## Scope and sources
 S2 compares (A) the published consultant High-Injury Network, (B) a negative binomial SPF with Empirical Bayes, and (C) a Poisson gradient-boosted model with overdispersion, EB, and a severity model. It supplies per-site expected fatal/serious-injury (F&SI) rates, rankings, flags, SHAP factors, backtest results, and reproducible artifacts.
 
-The source baseline is the supplied **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, ConOps Revision C dated 1 October 2026 and its accompanying FSR, ICD, and Execution and Validation Plan. Read alongside [AITRAFFIC.md](../AITRAFFIC.md), [DATASOURCES.md](../DATASOURCES.md), and the existing [S1 README](../Kabir_Singh/README.md) and [schema](../Kabir_Singh/sql/init/01_schema.sql). The PDF supplies the current named ownership and requirements; older repository brainstorming does not expand this subsystem's scope.
+The source baseline is the supplied **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, ConOps Revision C dated 1 October 2026 and its accompanying FSR, ICD, and Execution and Validation Plan. Read alongside [AITRAFFIC.md](../Initial_Research/AITRAFFIC.md), [DATASOURCES.md](../Initial_Research/DATASOURCES.md), and the existing [S1 README](../Kabir_Singh/README.md) and [schema](../Kabir_Singh/sql/init/01_schema.sql). The PDF supplies the current named ownership and requirements; older repository brainstorming does not expand this subsystem's scope.
 
 ## Planned files
 | Empty file | Intended responsibility |

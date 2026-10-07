@@ -1,5 +1,5 @@
 # Frozen backtest protocol
-Source: Execution and Validation Plan Section 4.2, FSR 3.2.1.5-12 and 3.2.1.21, and repository AITRAFFIC.md.
+Source: Execution and Validation Plan Section 4.2, FSR 3.2.1.5-12 and 3.2.1.21, and repository Initial_Research/AITRAFFIC.md.
 
 ## 1. Freeze and validate
 Record source versions/hashes, network and feature-set versions, analysis boundary, code version, seed, and hyperparameters. Information cutoff: **31 December 2022**. Baseline fitting/history window: **2017-2022**, as specified in AITRAFFIC.md and matching the consultant window. S1 ingests 2015-2025; any use of 2015-2016 for prior-year lags must be agreed and recorded.

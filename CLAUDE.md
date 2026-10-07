@@ -63,7 +63,7 @@ editing that owner's code.
   - `backtest_protocol.md`
   - `implementation_plan.md`
   - `model_card.md`
-- Root `.md` files hold early research and brainstorming:
+- `Initial_Research/` holds early research and brainstorming:
   - `AITRAFFIC.md` (proposal)
   - `DATASOURCES.md`
   - `RESEARCH.md`
