@@ -7,7 +7,7 @@ SET search_path = tasc, public;
 
 -- ---------------------------------------------------------------------------
 -- Ingest bookkeeping: one row per file we try to load, plus every bad record.
--- FSR: "A file with 3% bad records stops the pipeline."
+-- FSR 3.2.3.1.2: more than 2% bad records stops the pipeline (enforced in ingest.py).
 -- ---------------------------------------------------------------------------
 CREATE TABLE ingest_run (
     run_id      bigserial PRIMARY KEY,

@@ -1,0 +1,9 @@
+# Python virtual environment and bytecode (made locally, never shared)
+.venv/
+__pycache__/
+
+# Local secrets such as DATABASE_URL overrides
+.env
+
+# macOS folder metadata
+.DS_Store
