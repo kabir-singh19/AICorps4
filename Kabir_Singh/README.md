@@ -17,7 +17,9 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `filter_corridors.py` | Writes the `*_3roads.csv` corridor files from the CRIS exports | Corridor scope |
 | `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections | Network build (due 10/20) |
 | `sql/03_map_match.sql` | Matches corridor crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
+| `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median; intersection legs), each value dated | Feature tables with as-of dates (due 11/3) |
 | `tests/test_validate.py` | 10 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
+| `tests/test_database.py` | 4 leakage tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
 
 ## Quickstart (the run recorded below)
 
@@ -42,6 +44,10 @@ for f in ../../raw/data_20*.csv; do .venv/bin/python ingest.py crashes "$f"; don
 docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v as_of=2019-12-31 \
     -v routes=BS0006R,FM0060,FM2154 -v city_code=9050 < sql/02_build_network.sql
 docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v tol_m=45.72 < sql/03_map_match.sql
+
+# 4. Features for the backtest, then all tests (validator + leakage)
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v feature_set=backtest_2022 < sql/04_features.sql
+.venv/bin/python -m unittest discover -s tests -v
 
 # Optional: corridor-only CSVs
 .venv/bin/python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
@@ -70,7 +76,13 @@ docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v tol
   All crashes: 5,167 matched, 80 outside tolerance, 484 corridor crashes with no coordinates,
   10,808 off corridor. The 3 F&SI misses are Wellborn crashes 115–402 m from the network (two
   recorded as N Wellborn Rd, probably past the College Station end of FM 2154).
-- **Not yet run:** feature tables (`site_feature`), OSM, streetlights, HIN.
+- **Features v0_2019 / backtest_2022 (7 Oct 2026):** `04_features.sql` wrote 925 segment values
+  (speed_limit, num_lanes, aadt, func_class, median_type for all 185 segments) and `legs` for both
+  intersections, all dated 2019-12-31. Ranges: speed 35–70 mph, AADT 5,900–55,742.
+  `tests/test_database.py`: a seeded 2024 feature is refused from `backtest_2022` and accepted into
+  `current`; a feature dated exactly 2022-12-31 is accepted; 14/14 tests pass.
+- **Not yet run:** OSM, streetlights, HIN. `func_class` and `median_type` are TxDOT codes, not yet
+  translated to plain language.
 
 ## Check these first
 
