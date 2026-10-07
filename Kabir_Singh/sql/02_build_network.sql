@@ -1,13 +1,26 @@
 -- Build sites (0.1-mi segments + intersections) from tasc.road.
--- Run:  psql "$DATABASE_URL" -v network_version=v0 -v as_of=2022-12-31 -f sql/02_build_network.sql
+-- Run (three corridors, College Station only):
+--   psql "$DATABASE_URL" -v network_version=v0_2019 -v as_of=2019-12-31 \
+--        -v routes=BS0006R,FM0060,FM2154 -v city_code=9050 -f sql/02_build_network.sql
+-- Use routes=ALL and/or city_code=ALL to drop either filter.
 --
--- FIRST DRAFT: not yet run against real TxDOT linework. Known limits are listed in the README.
+-- Only centerline roadbeds (KG) are used. TxDOT also draws each direction of a divided road
+-- (LG / RG) on top of the centerline, which would double the network.
+-- Known limits are listed in the README.
 
 SET search_path = tasc, public;
 BEGIN;
 
 -- Rebuilding a version replaces it (crash_match rows for it cascade away).
 DELETE FROM site WHERE network_version = :'network_version';
+
+-- 0. Source roads for this build.
+CREATE TEMP TABLE src ON COMMIT DROP AS
+SELECT *
+FROM road
+WHERE roadbed = 'KG'
+  AND (:'routes' = 'ALL' OR route_name = ANY (string_to_array(:'routes', ',')))
+  AND (:'city_code' = 'ALL' OR city_code = :'city_code'::integer);
 
 -- 1. Links: union all linework so lines are split wherever they cross, then merge.
 --    ST_LineMerge joins lines end to end but stops wherever 3+ lines meet,
@@ -17,7 +30,7 @@ CREATE TEMP TABLE link ON COMMIT DROP AS
 SELECT geom
 FROM (
     SELECT (ST_Dump(ST_LineMerge(ST_UnaryUnion(ST_Collect(ST_SnapToGrid(geom, 0.5)))))).geom AS geom
-    FROM road
+    FROM src
 ) d
 WHERE ST_Length(geom) > 0;
 
@@ -43,8 +56,8 @@ FROM (
 ) s
 LEFT JOIN LATERAL (
     SELECT road_id
-    FROM road
-    ORDER BY road.geom <-> ST_LineInterpolatePoint(s.geom, 0.5)
+    FROM src
+    ORDER BY src.geom <-> ST_LineInterpolatePoint(s.geom, 0.5)
     LIMIT 1
 ) r ON true;
 

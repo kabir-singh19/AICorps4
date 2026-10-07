@@ -44,7 +44,7 @@ SEVERITY_CODES = {"4": "K", "1": "A", "2": "B", "3": "C", "5": "O", "0": "U"}
 
 # TxDOT roadway inventory field names (checked against the TxDOT open-data layer, Oct 2026).
 ROAD_FIELDS = {
-    "route_name": "HWY", "func_class": "F_SYSTEM", "num_lanes": "NUM_LANES",
+    "route_name": "HWY", "roadbed": "RDBD_ID", "city_code": "CITY", "func_class": "F_SYSTEM", "num_lanes": "NUM_LANES",
     "speed_limit": "SPD_MAX", "median_type": "MED_TYPE", "aadt": "ADT_CUR", "aadt_year": "ADT_YEAR",
 }
 
@@ -279,6 +279,8 @@ def cmd_roads(args):
         rows.append({
             "geojson": json.dumps(feat["geometry"]),
             "route_name": p.get(ROAD_FIELDS["route_name"]),
+            "roadbed": p.get(ROAD_FIELDS["roadbed"]),
+            "city_code": _to_int(p.get(ROAD_FIELDS["city_code"])),
             "func_class": None if p.get(ROAD_FIELDS["func_class"]) is None else str(p.get(ROAD_FIELDS["func_class"])),
             "num_lanes": _to_int(p.get(ROAD_FIELDS["num_lanes"])),
             "speed_limit": _to_int(p.get(ROAD_FIELDS["speed_limit"])),
@@ -293,10 +295,10 @@ def cmd_roads(args):
         run_id = log_run(cur, args.source, args.file, len(features), skipped, "loaded",
                          note="rows_bad = features with no geometry")
         cur.executemany(
-            """INSERT INTO tasc.road (geom, route_name, func_class, num_lanes, speed_limit, median_type,
-                                      aadt, aadt_year, source, as_of_date, run_id)
+            """INSERT INTO tasc.road (geom, route_name, roadbed, city_code, func_class, num_lanes, speed_limit,
+                                      median_type, aadt, aadt_year, source, as_of_date, run_id)
                SELECT (ST_Dump(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%(geojson)s), 4326), 32614))).geom,
-                      %(route_name)s, %(func_class)s, %(num_lanes)s, %(speed_limit)s, %(median_type)s,
+                      %(route_name)s, %(roadbed)s, %(city_code)s, %(func_class)s, %(num_lanes)s, %(speed_limit)s, %(median_type)s,
                       %(aadt)s, %(aadt_year)s, %(source)s, %(as_of)s::date, %(run_id)s""",
             [dict(r, run_id=run_id) for r in rows],
         )

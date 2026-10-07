@@ -51,7 +51,12 @@ before downloading as GeoJSON. The statewide file is too big to load this way.
 - **Loaded into PostGIS (7 Oct 2026):** all 10 files through `ingest.py crashes`: 16,539 crashes,
   10 `ingest_run` rows marked `loaded`, geometry stored in EPSG:32614 and converting back to the
   source lat/lon exactly. Runs on Apple Silicon under amd64 emulation (see below).
-- **Not yet run:** `ingest.py roads`, `02_build_network.sql` and `03_map_match.sql` (no road file yet).
+- **Network v0_2019 (7 Oct 2026):** `fetch_roads.py 2019` → `ingest.py roads --as-of 2019-12-31` →
+  `02_build_network.sql` with `routes=BS0006R,FM0060,FM2154 city_code=9050` (Texas Ave, University Dr,
+  Wellborn Rd inside College Station, centerline only). Result: 185 segments, 18.1 mi, all 0.055–0.099 mi;
+  2 intersections (University & Wellborn, University & Texas). The 2019 snapshot is used because TxDOT
+  publishes no 2020–2022 snapshot and later ones carry post-2022 AADT.
+- **Not yet run:** `03_map_match.sql`.
 
 ## Check these first
 
