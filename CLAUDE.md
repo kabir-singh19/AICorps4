@@ -203,9 +203,8 @@ The shared `atsc` CLI does not exist yet.
   all seeds.
 - **Input validation (FSR 3.2.3.1.2):** check counts, required fields, coordinate bounds, dates,
   and severity codes, and stop the pipeline if **more than 2%** of records fail.
-  > ⚠️ Known inconsistency: EVP Table 8 tests "3% bad records stops," and
-  > `Kabir_Singh/ingest.py` uses `BAD_RECORD_LIMIT = 0.03` (≥ 3%). The FSR's 2% governs. Flag
-  > this rather than silently changing S1 code.
+  `Kabir_Singh/ingest.py` implements this (`> 0.02`; exactly 2% passes). EVP Table 8 still
+  says "3% bad records stops"; the FSR's 2% governs.
 - **Map-matching:** at least 95% of geocoded F&SI crashes matched, and every unmatched crash
   logged with its reason. Coordinates are noisy, so the tolerance is generous but logged.
 - **LLM rule (S3):** the LLM never computes a number. Deterministic tools compute every value.
