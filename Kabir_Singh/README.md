@@ -19,6 +19,7 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `sql/03_map_match.sql` | Matches corridor crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
 | `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median; intersection legs), each value dated | Feature tables with as-of dates (due 11/3) |
 | `tests/test_validate.py` | 10 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
+| `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
 | `tests/test_database.py` | 4 leakage tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
 
 ## Quickstart (the run recorded below)
@@ -26,6 +27,13 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 CRIS files are CRIS Query exports (Brazos County, City of College Station, one year each) with
 columns Crash ID, Crash Date, Crash Severity, Latitude, Longitude, Light Condition,
 Manner of Collision, Street Name. They are not in the repo; paths below assume `../../raw/`.
+
+> **Provenance note (7 Oct 2026):** the 2023–2025 files used here were downloaded from CRIS Query
+> with all 8 columns. The 2016–2022 files were not: they were made by a one-off script (not in the
+> repo) that took a 7-column download (without Street Name) and copied Street Name in from an
+> earlier 13-column download of the same years, matching on Crash ID. Every Crash ID matched and the
+> shared columns were identical, so the result equals a direct 8-column download. To reproduce from
+> scratch, download all ten years directly with the 8 columns above.
 
 ```bash
 docker compose up -d                      # database + schema (01_schema.sql runs on first start)
@@ -48,6 +56,9 @@ docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v tol
 # 4. Features for the backtest, then all tests (validator + leakage)
 docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v feature_set=backtest_2022 < sql/04_features.sql
 .venv/bin/python -m unittest discover -s tests -v
+
+# 5. Progress figures (figures/*.png), every number queried from the database
+.venv/bin/python make_figures.py
 
 # Optional: corridor-only CSVs
 .venv/bin/python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
@@ -96,8 +107,9 @@ docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v fea
 ## Decisions that are yours to make
 
 - **Match tolerance.** `tol_m=45.72` (150 ft) is still a placeholder, but it barely matters: CRIS places
-  corridor crashes on the TxDOT centerline (median 0.4 m, 95th percentile 2.1 m away), and the F&SI
-  match rate was the same at every tolerance from 15 m to 100 m. `crash_match.distance_m` is stored for
+  corridor crashes close to the TxDOT centerline (outside intersection zones, measured to their own
+  corridor: median 0.7 m, 95th percentile 9.4 m; see `figures/fig3_map_matching.png`), and in a
+  2016–2022 check the F&SI match rate was the same at every tolerance from 15 m to 100 m. `crash_match.distance_m` is stored for
   every corridor crash, so any other tolerance can be checked with one query.
 - ~~**Is exactly 3.00% a stop?**~~ Decided: the FSR says *more than* 2%, so exactly 2.00% loads and
   anything above it stops. Covered by `test_exactly_two_percent_loads` and `test_over_two_percent_bad_stops`.
