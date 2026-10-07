@@ -42,17 +42,25 @@ before downloading as GeoJSON. The statewide file is too big to load this way.
 
 ## What has and has not been run
 
-- **Run and passing:** the 8 validator tests; the schema's tables, views and leakage trigger on plain
+- **Run and passing:** the 10 validator tests; the schema's tables, views and leakage trigger on plain
   PostgreSQL 16 (a 2024-dated feature was refused from `backtest_2022` and accepted into `current`).
-- **Not yet run:** anything that needs PostGIS itself, which means `ingest.py` writing to the database,
-  `02_build_network.sql` and `03_map_match.sql`. Expect to fix small things the first time you run them.
+- **Dry run on real data (7 Oct 2026):** CRIS Query exports for 2016–2025, filtered to Brazos County,
+  City of College Station, one file per year. All 10 files: 0% bad, and the row count read by
+  `ingest.py` equals the "Your query returned a total of N Crashes" line in each file's preamble.
+  CRIS keeps 10 years plus the current one, so 2015 is no longer available from CRIS Query.
+- **Loaded into PostGIS (7 Oct 2026):** all 10 files through `ingest.py crashes`: 16,539 crashes,
+  10 `ingest_run` rows marked `loaded`, geometry stored in EPSG:32614 and converting back to the
+  source lat/lon exactly. Runs on Apple Silicon under amd64 emulation (see below).
+- **Not yet run:** `ingest.py roads`, `02_build_network.sql` and `03_map_match.sql` (no road file yet).
 
 ## Check these first
 
-1. **CRIS column names.** `CRIS_COLUMNS` at the top of `ingest.py` is a best guess. The dry run tells
-   you exactly which column it could not find and prints your file's header.
-2. **Severity codes.** `SEVERITY_CODES` assumes 4 = fatal, 1 = serious injury. Confirm against the
-   CRIS extract file specification; if it is wrong, F&SI counts are wrong everywhere downstream.
+1. **CRIS column names.** Checked against CRIS Query exports (`Crash ID`, `Crash Date`,
+   `Crash Severity`, `Latitude`, `Longitude`, `Light Condition`, `Manner of Collision`). The 11-line
+   preamble those exports start with is skipped automatically. Bulk extract files are still unchecked.
+2. **Severity codes.** CRIS Query exports use labels (`K - FATAL INJURY`, `A - SUSPECTED SERIOUS
+   INJURY`, `99 - UNKNOWN`), which parse correctly. The numeric `SEVERITY_CODES` (4 = fatal,
+   1 = serious injury) only matter for bulk extract files and are still unconfirmed.
 
 ## Decisions that are yours to make
 
@@ -63,6 +71,12 @@ before downloading as GeoJSON. The statewide file is too big to load this way.
 - **Intersection zone vs. segment length.** Segments currently run all the way to the intersection
   point. Crashes inside the 250 ft zone go to the intersection, so agree with Param whether segment
   length (his per-mile denominator) should exclude the zone.
+
+## Known limits of the database container
+
+- `postgis/postgis:16-3.4` is published for amd64 only. On Apple Silicon (and the arm64 Raspberry Pi 5
+  reference host) it runs under emulation, which works but is slow to start. An image built for both
+  amd64 and arm64 is still to be chosen.
 
 ## Known limits of the network build
 

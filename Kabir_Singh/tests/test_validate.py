@@ -91,6 +91,40 @@ class ValidateTests(unittest.TestCase):
         self.assertEqual(cols["crash_id"], "Crash ID")
         self.assertEqual(cols["severity"], "Crash Severity")
 
+    def test_cris_query_preamble_is_skipped(self):
+        preamble = [
+            ["All crash data available using this tool represents reportable data ..."],
+            [],
+            ["Query Result Counts:"],
+            ["Your query returned a total of 2 Crashes"],
+            [],
+            ["Filters Applied to current Query:"],
+            ["Crash Year Is Equal To 2021"],
+            [],
+        ]
+        f = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="")
+        w = csv.writer(f)
+        w.writerows(preamble)
+        w.writerow(["Crash ID", "Crash Date", "Crash Severity", "Latitude", "Longitude"])
+        w.writerows([[1, "2021-03-14", "A - SUSPECTED SERIOUS INJURY", "30.6", "-96.3"],
+                     [2, "2021-03-15", "N - NOT INJURED", "No Data", "No Data"]])
+        f.close()
+        try:
+            good, rejects, total = ingest.validate_crash_file(f.name)
+        finally:
+            os.unlink(f.name)
+        self.assertEqual((len(good), len(rejects), total), (2, 0, 2))
+
+    def test_file_without_header_row_is_reported(self):
+        f = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="")
+        f.write("just a disclaimer\nand nothing else\n")
+        f.close()
+        try:
+            with self.assertRaises(ValueError):
+                ingest.validate_crash_file(f.name)
+        finally:
+            os.unlink(f.name)
+
     def test_missing_required_column_is_reported(self):
         with self.assertRaises(ValueError):
             ingest.resolve_columns(["Crash ID", "Latitude", "Longitude"])

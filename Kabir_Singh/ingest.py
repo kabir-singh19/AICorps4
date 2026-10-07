@@ -157,10 +157,29 @@ def validate_row(row, cols, seen_ids):
     }, None
 
 
+def skip_preamble(f):
+    """Move the file position to the header row.
+
+    CRIS Query exports start with a disclaimer, result counts and the filters used, and put the
+    column names on about line 12. Search for the row whose first cell is 'Crash ID' rather than
+    skipping a fixed number of lines, so a longer or missing preamble still works.
+    """
+    while True:
+        pos = f.tell()
+        line = f.readline()
+        if not line:
+            raise ValueError("No header row starting with 'Crash ID' found in the file.")
+        first_cell = next(csv.reader([line]), [""])
+        if first_cell and _norm(first_cell[0]) == _norm(CRIS_COLUMNS["crash_id"][0]):
+            f.seek(pos)
+            return
+
+
 def validate_crash_file(path):
     """Read a CRIS CSV. Returns (good_records, rejects, total) where rejects = [(row_number, reason, raw_row)]."""
     good, rejects, seen = [], [], set()
     with open(path, newline="", encoding="utf-8-sig") as f:
+        skip_preamble(f)
         reader = csv.DictReader(f)
         cols = resolve_columns(reader.fieldnames or [])
         total = 0
