@@ -40,6 +40,7 @@ CREATE TABLE crash (
     is_fsi          boolean GENERATED ALWAYS AS (severity IN ('K','A')) STORED,      -- fatal + serious injury
     crash_type      text,
     light_condition text,
+    street_name     text,                          -- CRIS "Street Name", as written in the file
     lat             double precision,
     lon             double precision,
     geom            geometry(Point, 32614),        -- NULL when CRIS has no coordinates
@@ -47,6 +48,17 @@ CREATE TABLE crash (
 );
 CREATE INDEX crash_geom_gix ON crash USING gist (geom);
 CREATE INDEX crash_year_ix  ON crash (crash_year);
+
+-- ---------------------------------------------------------------------------
+-- Study corridors: which CRIS street-name spellings belong to which TxDOT route.
+-- Filled from corridors.py by `python ingest.py corridors`. Map-matching only places crashes
+-- whose street_name is listed here, and only on segments of the same route.
+-- ---------------------------------------------------------------------------
+CREATE TABLE corridor_street (
+    street_name text PRIMARY KEY,                  -- upper case, trimmed
+    corridor    text NOT NULL,                     -- 'Texas Ave', 'University Dr', 'Wellborn Rd'
+    route_name  text NOT NULL                      -- TxDOT HWY code, matches road.route_name
+);
 
 -- ---------------------------------------------------------------------------
 -- Source road linework (IF-02, TxDOT roadway inventory), one row per line part.
@@ -99,7 +111,7 @@ CREATE TABLE crash_match (
     distance_m      double precision,                           -- distance to nearest site
     tolerance_m     double precision NOT NULL,                  -- tolerance used for this run
     status          text NOT NULL CHECK (status IN ('matched', 'unmatched')),
-    reason          text,                                       -- 'no_coordinates' | 'outside_tolerance'
+    reason          text,                                       -- 'off_corridor' | 'no_coordinates' | 'outside_tolerance'
     matched_at      timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (crash_id, network_version)
 );
@@ -159,7 +171,7 @@ JOIN crash c USING (crash_id)
 WHERE m.status = 'matched'
 GROUP BY m.network_version, m.site_id, c.crash_year;
 
--- The 95% metric, straight from the data.
+-- The 95% metric, straight from the data. Crashes off the study corridors are not counted.
 CREATE VIEW match_rate AS
 SELECT m.network_version,
        count(*) FILTER (WHERE c.is_fsi AND c.geom IS NOT NULL)                          AS fsi_geocoded,
@@ -170,4 +182,5 @@ SELECT m.network_version,
        count(*) FILTER (WHERE m.reason = 'outside_tolerance')                           AS outside_tolerance
 FROM crash_match m
 JOIN crash c USING (crash_id)
+WHERE m.reason IS DISTINCT FROM 'off_corridor'
 GROUP BY m.network_version;

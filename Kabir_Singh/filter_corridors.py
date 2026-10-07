@@ -2,14 +2,12 @@
 
     python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
 
-Keeps crashes whose CRIS "Street Name" is one of the spellings listed in CORRIDORS, adds a
+Keeps crashes whose CRIS "Street Name" is one of the spellings listed in corridors.py, adds a
 "Corridor" column, and writes one file per input as <name>_3roads.csv (no preamble).
 
-CRIS spells the same road several ways (route codes like BS0006R and street names like
-S TEXAS AVE). After filtering, the script lists street names that look like one of the
-corridors but are not in CORRIDORS, so a new spelling is never dropped silently. Add it to the
-list if it belongs. Crashes recorded under a cross street at an intersection are not caught;
-that is accepted for now.
+After filtering, the script lists street names that look like one of the corridors but are not
+listed, so a new spelling is never dropped silently. Add it to corridors.py if it belongs.
+Crashes recorded under a cross street at an intersection are not caught; that is accepted.
 """
 import argparse
 import csv
@@ -18,24 +16,8 @@ import re
 import sys
 from collections import Counter
 
+from corridors import STREET_TO_CORRIDOR
 from ingest import skip_preamble
-
-# Every CRIS spelling seen for each corridor in the 2016-2022 College Station files.
-CORRIDORS = {
-    "Texas Ave": [
-        "BS0006R", "BS0006", "BS0006B", "BS0006S", "BI0006", "BU0006",
-        "TEXAS AVE", "S TEXAS AVE", "BUSINESS SH 6STEXAS AVE",
-    ],
-    "University Dr": [
-        "FM0060", "FM 60", "RM0060", "SH0060", "BS0060",
-        "UNIVERSITY DR", "E UNIVERSITY DR", "N UNIVERSITY DR",
-    ],
-    "Wellborn Rd": [
-        "FM2154", "FM 2154", "SH2154", "2154 HWY",
-        "WELLBORN RD", "N WELLBORN RD",
-    ],
-}
-STREET_TO_CORRIDOR = {s: c for c, names in CORRIDORS.items() for s in names}
 
 # A street name that matches this but is not listed above gets reported for review.
 LOOKS_LIKE_CORRIDOR = re.compile(r"TEXAS|UNIVERSITY|WELLBORN|0006|\b6\b|0060|\b60\b|2154")
@@ -82,7 +64,7 @@ def main(argv=None):
         print(f"{os.path.basename(path)}: {n_in} crashes, {n_out} on the corridors")
 
     if all_unlisted:
-        print("\nStreet names that look like a corridor but are NOT in CORRIDORS (review these):")
+        print("\nStreet names that look like a corridor but are NOT in corridors.py (review these):")
         for street, n in all_unlisted.most_common():
             print(f"  {n:5d}  {street}")
     return 0

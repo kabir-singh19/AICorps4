@@ -3,6 +3,7 @@
     python ingest.py crashes data/cris_2022.csv --dry-run     # validate only, no database needed
     python ingest.py crashes data/cris_2022.csv               # validate, then load
     python ingest.py roads   data/roadway_brazos.geojson --as-of 2022-12-31
+    python ingest.py corridors                                # study-corridor street spellings
 
 A crash file with more than 2% bad records is rejected whole: nothing is loaded, the run is
 logged as 'rejected', and the script exits with code 2 so a pipeline stops there.
@@ -36,6 +37,7 @@ CRIS_COLUMNS = {
     "lon":             ["Longitude"],
     "crash_type":      ["FHE_Collsn_ID", "Manner_of_Collision"],     # optional
     "light_condition": ["Light_Cond_ID", "Light_Condition"],         # optional
+    "street_name":     ["Street_Name", "Rpt_Street_Name"],           # optional; needed for corridors
 }
 REQUIRED = ["crash_id", "crash_date", "severity", "lat", "lon"]
 
@@ -154,6 +156,7 @@ def validate_row(row, cols, seen_ids):
         "lon": lon,
         "crash_type": (row.get(cols.get("crash_type", ""), "") or "").strip() or None,
         "light_condition": (row.get(cols.get("light_condition", ""), "") or "").strip() or None,
+        "street_name": (row.get(cols.get("street_name", ""), "") or "").strip() or None,
     }, None
 
 
@@ -245,14 +248,16 @@ def cmd_crashes(args):
             )
             if not stop:
                 cur.executemany(
-                    """INSERT INTO tasc.crash (crash_id, crash_date, severity, crash_type, light_condition, lat, lon, geom, run_id)
+                    """INSERT INTO tasc.crash (crash_id, crash_date, severity, crash_type, light_condition, street_name,
+                                              lat, lon, geom, run_id)
                        VALUES (%(crash_id)s, %(crash_date)s, %(severity)s, %(crash_type)s, %(light_condition)s,
-                               %(lat)s, %(lon)s,
+                               %(street_name)s, %(lat)s, %(lon)s,
                                ST_Transform(ST_SetSRID(ST_MakePoint(%(lon)s::float8, %(lat)s::float8), 4326), 32614),
                                %(run_id)s)
                        ON CONFLICT (crash_id) DO UPDATE SET
                            crash_date = EXCLUDED.crash_date, severity = EXCLUDED.severity,
                            crash_type = EXCLUDED.crash_type, light_condition = EXCLUDED.light_condition,
+                           street_name = EXCLUDED.street_name,
                            lat = EXCLUDED.lat, lon = EXCLUDED.lon, geom = EXCLUDED.geom, run_id = EXCLUDED.run_id""",
                     [dict(r, run_id=run_id) for r in good],
                 )
@@ -306,6 +311,19 @@ def cmd_roads(args):
     return 0
 
 
+def cmd_corridors(args):
+    """Replace tasc.corridor_street with the spellings in corridors.py."""
+    from corridors import CORRIDORS
+    rows = [(street.strip().upper(), name, c["route"])
+            for name, c in CORRIDORS.items() for street in c["streets"]]
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM tasc.corridor_street")
+        cur.executemany(
+            "INSERT INTO tasc.corridor_street (street_name, corridor, route_name) VALUES (%s, %s, %s)", rows)
+    print(f"Loaded {len(rows)} street spellings for {len(CORRIDORS)} corridors.")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="TASC S1 ingest")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -320,6 +338,9 @@ def main(argv=None):
     r.add_argument("--as-of", required=True, help="date the data describes, YYYY-MM-DD")
     r.add_argument("--source", default="roadway_inventory")
     r.set_defaults(func=cmd_roads)
+
+    k = sub.add_parser("corridors", help="load the study-corridor street spellings from corridors.py")
+    k.set_defaults(func=cmd_corridors)
 
     args = parser.parse_args(argv)
     return args.func(args)

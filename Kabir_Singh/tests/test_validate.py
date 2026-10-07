@@ -105,15 +105,16 @@ class ValidateTests(unittest.TestCase):
         f = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="")
         w = csv.writer(f)
         w.writerows(preamble)
-        w.writerow(["Crash ID", "Crash Date", "Crash Severity", "Latitude", "Longitude"])
-        w.writerows([[1, "2021-03-14", "A - SUSPECTED SERIOUS INJURY", "30.6", "-96.3"],
-                     [2, "2021-03-15", "N - NOT INJURED", "No Data", "No Data"]])
+        w.writerow(["Crash ID", "Crash Date", "Crash Severity", "Latitude", "Longitude", "Street Name"])
+        w.writerows([[1, "2021-03-14", "A - SUSPECTED SERIOUS INJURY", "30.6", "-96.3", "FM0060"],
+                     [2, "2021-03-15", "N - NOT INJURED", "No Data", "No Data", " S TEXAS AVE "]])
         f.close()
         try:
             good, rejects, total = ingest.validate_crash_file(f.name)
         finally:
             os.unlink(f.name)
         self.assertEqual((len(good), len(rejects), total), (2, 0, 2))
+        self.assertEqual([r["street_name"] for r in good], ["FM0060", "S TEXAS AVE"])
 
     def test_file_without_header_row_is_reported(self):
         f = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="")

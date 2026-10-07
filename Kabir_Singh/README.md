@@ -11,34 +11,41 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `sql/init/01_schema.sql` | Tables, views, and the leakage trigger. Runs on first start. | "owns the database schema" |
 | `ingest.py crashes` | Validates a CRIS CSV, rejects the whole file at more than 2% bad records, loads the rest | 2% bad-record stop (FSR 3.2.3.1.2) |
 | `ingest.py roads` | Loads TxDOT roadway inventory GeoJSON into UTM 14N | IF-02 |
+| `ingest.py corridors` | Loads the study-corridor street spellings from `corridors.py` | Corridor scope |
+| `fetch_roads.py` | Downloads Brazos County roadway inventory snapshots from TxDOT | IF-02 |
+| `corridors.py` | The three corridors: TxDOT route code + every CRIS street spelling | Corridor scope |
+| `filter_corridors.py` | Writes the `*_3roads.csv` corridor files from the CRIS exports | Corridor scope |
 | `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections | Network build (due 10/20) |
-| `sql/03_map_match.sql` | Matches crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
-| `tests/test_validate.py` | 8 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
+| `sql/03_map_match.sql` | Matches corridor crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
+| `tests/test_validate.py` | 10 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
 
-## Quickstart
+## Quickstart (the run recorded below)
+
+CRIS files are CRIS Query exports (Brazos County, City of College Station, one year each) with
+columns Crash ID, Crash Date, Crash Severity, Latitude, Longitude, Light Condition,
+Manner of Collision, Street Name. They are not in the repo; paths below assume `../../raw/`.
 
 ```bash
-docker compose up -d                      # database + schema
-pip install -r requirements.txt
+docker compose up -d                      # database + schema (01_schema.sql runs on first start)
+python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
-# 1. Check your CRIS download before touching the database
-python ingest.py crashes data/cris_2022.csv --dry-run
+# 1. Crashes: check, then load (one file per year)
+.venv/bin/python ingest.py crashes ../../raw/data_2022.csv --dry-run
+for f in ../../raw/data_20*.csv; do .venv/bin/python ingest.py crashes "$f"; done
 
-# 2. Load crashes (one file per year) and roads
-python ingest.py crashes data/cris_2022.csv
-python ingest.py roads data/roadway_brazos.geojson --as-of 2022-12-31
+# 2. Roads (2019 snapshot for the backtest) and the corridor spellings
+.venv/bin/python fetch_roads.py 2019 --out ../../raw/roads
+.venv/bin/python ingest.py roads ../../raw/roads/roadway_brazos_2019.geojson --as-of 2019-12-31 --source roadway_inventory_2019
+.venv/bin/python ingest.py corridors
 
-# 3. Build the network and match crashes
-export DATABASE_URL=postgresql://tasc:tasc@localhost:5432/tasc
-psql "$DATABASE_URL" -v network_version=v0 -v as_of=2022-12-31 -f sql/02_build_network.sql
-psql "$DATABASE_URL" -v network_version=v0 -v tol_m=45.72      -f sql/03_map_match.sql
+# 3. Build the three-corridor network and match crashes
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v as_of=2019-12-31 \
+    -v routes=BS0006R,FM0060,FM2154 -v city_code=9050 < sql/02_build_network.sql
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v tol_m=45.72 < sql/03_map_match.sql
+
+# Optional: corridor-only CSVs
+.venv/bin/python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
 ```
-
-No `psql` on your machine? Use the one in the container:
-`docker compose exec -T db psql -U tasc -d tasc -v network_version=v0 -v as_of=2022-12-31 < sql/02_build_network.sql`
-
-Road data: on the TxDOT open-data portal, filter the Roadway Inventory layer to Brazos County
-before downloading as GeoJSON. The statewide file is too big to load this way.
 
 ## What has and has not been run
 
@@ -56,7 +63,14 @@ before downloading as GeoJSON. The statewide file is too big to load this way.
   Wellborn Rd inside College Station, centerline only). Result: 185 segments, 18.1 mi, all 0.055–0.099 mi;
   2 intersections (University & Wellborn, University & Texas). The 2019 snapshot is used because TxDOT
   publishes no 2020–2022 snapshot and later ones carry post-2022 AADT.
-- **Not yet run:** `03_map_match.sql`.
+- **Map-matching v0_2019 (7 Oct 2026), full pipeline from an empty database:** only crashes whose
+  CRIS Street Name is a corridor spelling are matched, each to its own corridor (a crash CRIS records
+  on a cross street is `off_corridor`, logged but not counted). At `tol_m=45.72`:
+  **F&SI matched 156 / 159 geocoded = 98.1%** (2016–2022: 102/105 = 97.1%; 2023–2025: 54/54 = 100%).
+  All crashes: 5,167 matched, 80 outside tolerance, 484 corridor crashes with no coordinates,
+  10,808 off corridor. The 3 F&SI misses are Wellborn crashes 115–402 m from the network (two
+  recorded as N Wellborn Rd, probably past the College Station end of FM 2154).
+- **Not yet run:** feature tables (`site_feature`), OSM, streetlights, HIN.
 
 ## Check these first
 
@@ -69,8 +83,10 @@ before downloading as GeoJSON. The statewide file is too big to load this way.
 
 ## Decisions that are yours to make
 
-- **Match tolerance.** `tol_m=45.72` (150 ft) is a placeholder. `crash_match.distance_m` is stored for
-  every crash, so you can see the match rate at any tolerance with one query.
+- **Match tolerance.** `tol_m=45.72` (150 ft) is still a placeholder, but it barely matters: CRIS places
+  corridor crashes on the TxDOT centerline (median 0.4 m, 95th percentile 2.1 m away), and the F&SI
+  match rate was the same at every tolerance from 15 m to 100 m. `crash_match.distance_m` is stored for
+  every corridor crash, so any other tolerance can be checked with one query.
 - ~~**Is exactly 3.00% a stop?**~~ Decided: the FSR says *more than* 2%, so exactly 2.00% loads and
   anything above it stops. Covered by `test_exactly_two_percent_loads` and `test_over_two_percent_bad_stops`.
 - **Intersection zone vs. segment length.** Segments currently run all the way to the intersection
