@@ -18,7 +18,7 @@ import re
 import sys
 from datetime import datetime
 
-BAD_RECORD_LIMIT = 0.03            # FSR: a file with 3% bad records stops the pipeline
+BAD_RECORD_LIMIT = 0.02            # FSR: a file with 2% bad records stops the pipeline
 YEAR_RANGE = (2015, 2025)          # crash years the project uses
 TEXAS_BBOX = (25.8, 36.6, -106.7, -93.5)   # lat_min, lat_max, lon_min, lon_max
 DEFAULT_DB = "postgresql://tasc:tasc@localhost:5432/tasc"
