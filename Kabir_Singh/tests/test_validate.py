@@ -40,13 +40,13 @@ class ValidateTests(unittest.TestCase):
         self.assertEqual((len(good), len(rejects), total), (100, 0, 100))
         self.assertFalse(ingest.exceeds_limit(len(rejects), total))
 
-    def test_three_percent_bad_stops(self):
+    def test_over_two_percent_bad_stops(self):
         rows = good_rows(97) + [[1000 + i, "not a date", "2", "30.6", "-96.3", "1"] for i in range(3)]
         good, rejects, total = self.run_file(rows)
         self.assertEqual(len(rejects), 3)
         self.assertTrue(ingest.exceeds_limit(len(rejects), total))
 
-    def test_just_under_three_percent_loads(self):
+    def test_exactly_two_percent_loads(self):
         rows = good_rows(98) + [[1000 + i, "not a date", "2", "30.6", "-96.3", "1"] for i in range(2)]
         good, rejects, total = self.run_file(rows)
         self.assertFalse(ingest.exceeds_limit(len(rejects), total))
@@ -67,8 +67,14 @@ class ValidateTests(unittest.TestCase):
         self.assertEqual(len(rejects), 6)
 
     def test_missing_coordinates_is_not_bad(self):
-        good, rejects, _ = self.run_file([[1, "03/14/2021", "4", "", "", "1"], [2, "03/14/2021", "1", "0", "0", "1"]])
+        good, rejects, _ = self.run_file([
+            [1, "03/14/2021", "4", "", "", "1"],
+            [2, "03/14/2021", "1", "0", "0", "1"],
+            [3, "03/14/2021", "2", "No Data", "No Data", "1"],      # CRIS Query export style
+            [4, "03/14/2021", "2", "no data", "NA", "1"],
+        ])
         self.assertEqual(len(rejects), 0)
+        self.assertEqual(len(good), 4)
         self.assertTrue(all(r["lat"] is None and r["lon"] is None for r in good))
 
     def test_severity_codes_and_labels(self):

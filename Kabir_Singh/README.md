@@ -9,7 +9,7 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 |---|---|---|
 | `docker-compose.yml` | PostgreSQL 16 + PostGIS on port 5432, 2 GB cap | IF-09, container budget |
 | `sql/init/01_schema.sql` | Tables, views, and the leakage trigger. Runs on first start. | "owns the database schema" |
-| `ingest.py crashes` | Validates a CRIS CSV, rejects the whole file at 3% bad records, loads the rest | 3% bad-record stop |
+| `ingest.py crashes` | Validates a CRIS CSV, rejects the whole file at more than 2% bad records, loads the rest | 2% bad-record stop (FSR 3.2.3.1.2) |
 | `ingest.py roads` | Loads TxDOT roadway inventory GeoJSON into UTM 14N | IF-02 |
 | `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections | Network build (due 10/20) |
 | `sql/03_map_match.sql` | Matches crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
@@ -58,7 +58,8 @@ before downloading as GeoJSON. The statewide file is too big to load this way.
 
 - **Match tolerance.** `tol_m=45.72` (150 ft) is a placeholder. `crash_match.distance_m` is stored for
   every crash, so you can see the match rate at any tolerance with one query.
-- **Is exactly 3.00% a stop?** The code stops at 3% or more.
+- ~~**Is exactly 3.00% a stop?**~~ Decided: the FSR says *more than* 2%, so exactly 2.00% loads and
+  anything above it stops. Covered by `test_exactly_two_percent_loads` and `test_over_two_percent_bad_stops`.
 - **Intersection zone vs. segment length.** Segments currently run all the way to the intersection
   point. Crashes inside the 250 ft zone go to the intersection, so agree with Param whether segment
   length (his per-mile denominator) should exclude the zone.

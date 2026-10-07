@@ -4,7 +4,7 @@
     python ingest.py crashes data/cris_2022.csv               # validate, then load
     python ingest.py roads   data/roadway_brazos.geojson --as-of 2022-12-31
 
-A crash file with 3% or more bad records is rejected whole: nothing is loaded, the run is
+A crash file with more than 2% bad records is rejected whole: nothing is loaded, the run is
 logged as 'rejected', and the script exits with code 2 so a pipeline stops there.
 
 Database: set DATABASE_URL, default postgresql://tasc:tasc@localhost:5432/tasc
@@ -18,9 +18,11 @@ import re
 import sys
 from datetime import datetime
 
-BAD_RECORD_LIMIT = 0.02            # FSR: a file with 2% bad records stops the pipeline
+BAD_RECORD_LIMIT = 0.02            # FSR: more than 2% bad records stops the pipeline
 YEAR_RANGE = (2015, 2025)          # crash years the project uses
 TEXAS_BBOX = (25.8, 36.6, -106.7, -93.5)   # lat_min, lat_max, lon_min, lon_max
+# Text CRIS uses for "no value". A coordinate with one of these means "not geocoded", not bad.
+MISSING_VALUES = {"", "NO DATA", "NA", "N/A", "NULL", "NONE"}
 DEFAULT_DB = "postgresql://tasc:tasc@localhost:5432/tasc"
 
 # CHECK THESE AGAINST YOUR ACTUAL CRIS FILE. Header names differ between the CRIS bulk
@@ -106,8 +108,8 @@ def parse_date(value):
 def validate_row(row, cols, seen_ids):
     """Return (record, None) for a good row or (None, reason) for a bad one.
 
-    A crash with no coordinates is NOT a bad record: it is loaded without a location and
-    logged later by the map-matching step as 'no_coordinates'.
+    A crash with no coordinates (blank, 0,0, or text like 'No Data') is NOT a bad record: it is
+    loaded without a location and logged later by the map-matching step as 'no_coordinates'.
     """
     raw_id = (row.get(cols["crash_id"]) or "").strip()
     if not raw_id.isdigit():
@@ -128,6 +130,10 @@ def validate_row(row, cols, seen_ids):
 
     lat_s = (row.get(cols["lat"]) or "").strip()
     lon_s = (row.get(cols["lon"]) or "").strip()
+    if lat_s.upper() in MISSING_VALUES:
+        lat_s = ""
+    if lon_s.upper() in MISSING_VALUES:
+        lon_s = ""
     lat = lon = None
     if lat_s or lon_s:
         try:
@@ -168,7 +174,8 @@ def validate_crash_file(path):
 
 
 def exceeds_limit(n_bad, n_total):
-    return n_total == 0 or n_bad / n_total >= BAD_RECORD_LIMIT
+    """FSR 3.2.3.1.2: stop if MORE than 2% fail. Exactly 2% passes. An empty file also stops."""
+    return n_total == 0 or n_bad / n_total > BAD_RECORD_LIMIT
 
 
 # --------------------------------------------------------------------------- database
