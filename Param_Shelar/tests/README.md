@@ -1,7 +1,7 @@
 # Planned S2 tests
-All test modules are currently empty. There is no test suite to run yet, and these files do not demonstrate passing requirements.
+Only `test_empirical_bayes.py` has tests so far: the FSR 3.2.1.7 hand-checked example, weight bounds, input checks, and recovery of a known k from simulated data. The other modules are empty. These are unit tests on synthetic data, not milestone verification evidence.
 
-| Empty file | Planned checks |
+| File | Planned checks |
 |---|---|
 | [test_database_contract.py](test_database_contract.py) | IF-09 fields, joins, version isolation, and zero-crash site coverage. |
 | [test_leakage.py](test_leakage.py) | Reject post-cutoff or undated inputs; exclude HIN and test labels from training. |

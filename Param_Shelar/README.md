@@ -1,7 +1,7 @@
 # S2 - Risk Model and Backtest
 Owner: Param Shelar | AI Corps Team 4 | AI Traffic-Safety Consultant
 
-**Status: structure only.** Python modules, test files, and `requirements.txt` are deliberately empty. Nothing is implemented or runnable yet; no models, data, or verification results are included.
+**Status: early implementation.** `empirical_bayes.py` is implemented and unit-tested on synthetic data (`pip install -r requirements.txt`, then `pytest tests/test_empirical_bayes.py`). The other modules and tests are still empty. No models have been fitted to real data, and no verification results are included.
 
 ## Scope and sources
 S2 compares (A) the published consultant High-Injury Network, (B) a negative binomial SPF with Empirical Bayes, and (C) a Poisson gradient-boosted model with overdispersion, EB, and a severity model. It supplies per-site expected fatal/serious-injury (F&SI) rates, rankings, flags, SHAP factors, backtest results, and reproducible artifacts.
@@ -9,7 +9,7 @@ S2 compares (A) the published consultant High-Injury Network, (B) a negative bin
 The source baseline is the supplied **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, ConOps Revision C dated 1 October 2026 and its accompanying FSR, ICD, and Execution and Validation Plan. Read alongside [AITRAFFIC.md](../Initial_Research/AITRAFFIC.md), [DATASOURCES.md](../Initial_Research/DATASOURCES.md), and the existing [S1 README](../Kabir_Singh/README.md) and [schema](../Kabir_Singh/sql/init/01_schema.sql). The PDF supplies the current named ownership and requirements; older repository brainstorming does not expand this subsystem's scope.
 
 ## Planned files
-| Empty file | Intended responsibility |
+| File | Intended responsibility |
 |---|---|
 | [database.py](database.py) | Read validated S1 inputs and persist S2 results through IF-09. |
 | [leakage.py](leakage.py) | Validate input provenance, dates, and separation of training and evaluation data. |
