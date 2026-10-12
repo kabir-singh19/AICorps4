@@ -1,7 +1,7 @@
 # S2 - Risk Model and Backtest
 Owner: Param Shelar | AI Corps Team 4 | AI Traffic-Safety Consultant
 
-**Status: early implementation.** `empirical_bayes.py` is implemented and unit-tested on synthetic data (`pip install -r requirements.txt`, then `pytest tests/test_empirical_bayes.py`). The other modules and tests are still empty. No models have been fitted to real data, and no verification results are included.
+**Status: early implementation.** [empirical_bayes.ipynb](empirical_bayes.ipynb) is implemented and checked on synthetic data, with tables and charts (`pip install -r requirements.txt`, then `jupyter nbconvert --to notebook --execute empirical_bayes.ipynb`; any failed check stops the run). The other modules and tests are still empty. No models have been fitted to real data, and no verification results are included.
 
 ## Scope and sources
 S2 compares (A) the published consultant High-Injury Network, (B) a negative binomial SPF with Empirical Bayes, and (C) a Poisson gradient-boosted model with overdispersion, EB, and a severity model. It supplies per-site expected fatal/serious-injury (F&SI) rates, rankings, flags, SHAP factors, backtest results, and reproducible artifacts.
@@ -16,7 +16,7 @@ The source baseline is the supplied **Team4_AI_Traffic_Safety_Consultant_ConOps_
 | [hin_baseline.py](hin_baseline.py) | Represent the published consultant HIN as method A. |
 | [nb_spf.py](nb_spf.py) | Fit the negative binomial safety performance function for method B. |
 | [ml_risk.py](ml_risk.py) | Fit the Poisson gradient-boosted crash-count model for method C. |
-| [empirical_bayes.py](empirical_bayes.py) | Estimate overdispersion and apply the EB blend for methods B and C. |
+| [empirical_bayes.ipynb](empirical_bayes.ipynb) | Estimate overdispersion and apply the EB blend for methods B and C. |
 | [severity.py](severity.py) | Estimate and calibrate fatal/serious-injury probability using pre-cutoff crashes. |
 | [ranking.py](ranking.py) | Calculate F&SI rates, rank all sites, and flag by cumulative network length. |
 | [explanations.py](explanations.py) | Produce the five largest SHAP contributions for each flagged site. |

@@ -5,7 +5,7 @@ Source: supplied FSR and Execution and Validation Plan, Section 4.6. All evidenc
 |---|---|---|---|
 | 3.2.1.1 | Predict F&SI rate for every segment and intersection in the College Station public-road analysis network. | database.py, ranking.py | Zero missing predictions; M2. |
 | 3.2.1.6 | Compare published HIN (A), NB-SPF + EB (B), and ML-EB (C) on identical inputs. | hin_baseline.py, nb_spf.py, ml_risk.py | Frozen common network and A/B/C comparison; M2. |
-| 3.2.1.7 | Apply EB with w = 1 / (1 + k * sum(mu)). | empirical_bayes.py | Review, valid weights, hand-checked example; M2. |
+| 3.2.1.7 | Apply EB with w = 1 / (1 + k * sum(mu)). | empirical_bayes.ipynb | Review, valid weights, hand-checked example; M2. |
 | 3.2.1.8 | Estimate P(K or A given a crash) and rank by expected F&SI per mile per year. | severity.py, ranking.py | Severity calibration curve; M4. |
 | 3.2.1.9 | Flag highest-risk sites covering 11% +/- 0.5 percentage points of network length. | ranking.py | Length-budget check; M2. |
 | 3.2.1.10 | Report A/B/C capture rates and 95% bootstrap intervals using at least 1,000 resamples. | backtest.py | Frozen backtest report; M4. |
