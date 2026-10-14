@@ -1,7 +1,7 @@
 # S2 - Risk Model and Backtest
 Owner: Param Shelar | AI Corps Team 4 | AI Traffic-Safety Consultant
 
-**Status: early implementation.** [empirical_bayes.ipynb](empirical_bayes.ipynb) is implemented and checked on synthetic data, with tables and charts (`pip install -r requirements.txt`, then `jupyter nbconvert --to notebook --execute empirical_bayes.ipynb`; any failed check stops the run). The other modules and tests are still empty. No models have been fitted to real data, and no verification results are included.
+**Status: early implementation.** [empirical_bayes.ipynb](empirical_bayes.ipynb) is implemented and checked on synthetic data, with tables and charts (`pip install -r requirements.txt`, then `jupyter nbconvert --to notebook --execute empirical_bayes.ipynb`; any failed check stops the run). [ranking.py](ranking.py) (F&SI rate, ranking, length-based flagging, capture rate) is implemented with pytest tests in `tests/test_ranking.py`. The other modules and tests are still empty. No models have been fitted to real data, and no verification results are included.
 
 ## Scope and sources
 S2 compares (A) the published consultant High-Injury Network, (B) a negative binomial SPF with Empirical Bayes, and (C) a Poisson gradient-boosted model with overdispersion, EB, and a severity model. It supplies per-site expected fatal/serious-injury (F&SI) rates, rankings, flags, SHAP factors, backtest results, and reproducible artifacts.

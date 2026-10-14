@@ -1,5 +1,5 @@
 # Planned S2 tests
-No test files exist yet. The EB checks (FSR 3.2.1.7 hand-checked example, weight bounds, input checks, recovery of a known k) live as asserts in [empirical_bayes.ipynb](../empirical_bayes.ipynb). The other modules are empty. These are unit tests on synthetic data, not milestone verification evidence.
+[test_ranking.py](test_ranking.py) has 28 pytest tests for `ranking.py` (run `pytest tests/test_ranking.py` from `Param_Shelar/`). The EB checks (FSR 3.2.1.7 hand-checked example, weight bounds, input checks, recovery of a known k) live as asserts in [empirical_bayes.ipynb](../empirical_bayes.ipynb). The other test files are empty. All of these run on synthetic data and are not milestone verification evidence.
 
 | File | Planned checks |
 |---|---|
