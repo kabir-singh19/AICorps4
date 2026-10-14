@@ -47,7 +47,9 @@ python cli.py train --run-id backtest-001 --config config/default.json --snapsho
 ```
 
 For a database run, copy `config/database.example.json` to `config/local.json`, replace its explicit
-placeholders, set `DATABASE_URL` in the environment, and run after S1 provides the required views:
+placeholders, set `DATABASE_URL` in the environment, and run after S1 provides the required views
+(draft: [s1_views_proposal.sql](docs/s1_views_proposal.sql)). For the M2 diagnostic on the S1
+corridor network, start from `config/corridor_diagnostic.example.json` instead:
 
 ```bash
 python cli.py train --run-id backtest-001 --config config/local.json
@@ -55,7 +57,7 @@ python cli.py train --run-id backtest-001 --config config/local.json
 
 A new run ID is required for changed inputs. `--replay` refits stored inputs and checks exact
 prediction/ranking and backtest equality; it never overwrites a stored run. Training fits on
-2015-2022 by default, consistent with the FSR; 2023-2025 labels are used only for scoring.
+2016-2022 by default (CRIS no longer serves 2015); 2023-2025 labels are used only for scoring.
 
 ## Results and handoff
 
@@ -82,5 +84,6 @@ CSV/GeoJSON delivery and the shared `atsc` command. `cli.py` supplies the S2 com
 Real runs require the full College Station public-road network, all-in-area held-out crashes,
 approved intersection risk exposure and disjoint network-length allocation, stable site IDs,
 historical feature provenance and published HIN membership. Missing HIN permits an explicitly
-labeled B/C diagnostic. Partial HIN mapping, leakage, unknown provenance and corridor-only scope
-block the run. No other subsystem files or database tables were modified.
+labeled B/C diagnostic, and the S1 corridor network runs as `corridor_diagnostic`, labeled in the
+model card and manifest as not meeting FSR 3.2.1.1. Partial HIN mapping, leakage, unknown
+provenance and any other scope block the run. No other subsystem files or database tables were modified.

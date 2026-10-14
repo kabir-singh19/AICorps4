@@ -10,6 +10,8 @@ S2 BIT, structured logs, result-payload export, configuration and synthetic fixt
 The owner runs training. Before real-data use:
 
 1. S1 supplies full City scope, stable IDs, approved lengths, historical provenance and complete features.
+   Until then, an M2 diagnostic can run on the S1 corridor network with
+   `config/corridor_diagnostic.example.json` once S1 adopts the views in `s1_views_proposal.sql`.
 2. S1/S2 agree HIN mapping, including intersections, and all-in-area test membership.
 3. Install requirements and run the full suite with coverage; resolve every skip/failure.
 4. Run the frozen model and record all results, including outcomes favoring HIN.

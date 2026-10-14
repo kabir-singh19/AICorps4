@@ -83,3 +83,20 @@ def test_ml_offset_and_exact_shap():
     p = model.predict(X,e)
     np.testing.assert_allclose(model.predict(X,2*e),2*p,rtol=1e-5)
     assert model.contributions(X,e).shape == (100,3)
+
+
+def test_ml_out_of_fold_predictions_never_see_their_own_site():
+    pytest.importorskip("xgboost")
+    from ml_risk import PoissonRiskModel
+    rng = np.random.default_rng(11)
+    X = rng.normal(size=(200, 2))
+    e = np.full(200, .5)
+    y = rng.poisson(2, size=200)
+    model = PoissonRiskModel(rounds=50, max_depth=4)
+    in_sample = model.fit(X, y, e).predict(X, e)
+    oof = model.out_of_fold_predict(X, y, e, folds=5)
+    np.testing.assert_array_equal(oof, model.out_of_fold_predict(X, y, e, folds=5))  # reproducible
+    # In-sample predictions chase the noise in y; held-out ones cannot.
+    assert np.corrcoef(in_sample, y)[0, 1] > np.corrcoef(oof, y)[0, 1]
+    with pytest.raises(ValueError):
+        model.out_of_fold_predict(X, y, e, folds=1)

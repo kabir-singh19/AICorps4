@@ -5,6 +5,11 @@ import math
 from datetime import date
 
 CUTOFF = date(2022, 12, 31)
+FIRST_HISTORY_YEAR = 2016  # CRIS Query keeps ten years plus the current one; 2015 is gone
+FULL_SCOPE = "college_station_public_roads"
+# A smaller network can be run for diagnostics (for example, M2 on the S1 corridors), but every
+# output is labeled as not meeting FSR 3.2.1.1 network coverage.
+DIAGNOSTIC_SCOPES = {"corridor_diagnostic"}
 FORBIDDEN_FEATURES = {"in_hin", "hin", "fsi_crashes", "crashes", "crash_count", "site_id",
                       "rank", "flagged", "fsi_rate", "n_eb", "p_fsi", "test_crashes"}
 
@@ -29,7 +34,7 @@ def require(mapping, names, context):
             raise ValueError(f"{context}: missing {name}")
 
 
-def validate_snapshot(snapshot, feature_names, history_start=2015, history_end=2022):
+def validate_snapshot(snapshot, feature_names, history_start=FIRST_HISTORY_YEAR, history_end=2022):
     """Validate before importing model libraries or touching existing run outputs.
 
     Feature names are an explicit allowlist. No target/history aggregates are used
@@ -41,8 +46,11 @@ def validate_snapshot(snapshot, feature_names, history_start=2015, history_end=2
     meta = snapshot["metadata"]
     require(meta, ("network_version", "feature_set", "analysis_scope", "length_policy",
                    "data_versions", "sources", "as_of_date", "history_years_loaded", "test_years_loaded"), "metadata")
-    if meta["feature_set"] != "backtest_2022" or meta["analysis_scope"] != "college_station_public_roads":
-        raise ValueError("backtest requires backtest_2022 and the complete College Station public-road scope")
+    if meta["feature_set"] != "backtest_2022":
+        raise ValueError("backtest requires feature set backtest_2022")
+    if meta["analysis_scope"] != FULL_SCOPE and meta["analysis_scope"] not in DIAGNOSTIC_SCOPES:
+        raise ValueError(f"analysis_scope must be {FULL_SCOPE} or a labeled diagnostic scope "
+                         f"{sorted(DIAGNOSTIC_SCOPES)}")
     historical_date(meta["as_of_date"], "metadata.as_of_date")
     if not set(range(history_start, history_end+1)) <= set(meta["history_years_loaded"]):
         raise ValueError("history extract is missing required years, including zero-crash years")
@@ -158,4 +166,5 @@ def validate_snapshot(snapshot, feature_names, history_start=2015, history_end=2
         historical_date(meta["hin_as_of_date"], "HIN crash-history cutoff")
     return {"sites": len(sites), "features": len(snapshot["features"]),
             "history_rows": len(history_keys), "test_crashes": len(seen),
-            "hin_available": all(v is not None for v in hin)}
+            "hin_available": all(v is not None for v in hin),
+            "analysis_scope": meta["analysis_scope"], "full_network": meta["analysis_scope"] == FULL_SCOPE}

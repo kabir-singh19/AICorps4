@@ -2,7 +2,9 @@
 
 `database.py` reads existing singular `tasc.site`, `tasc.site_feature`, `tasc.crash` and
 `tasc.crash_match` tables in a repeatable-read, read-only transaction. No S1 SQL was changed.
-These proposed integration views do not exist yet; S1 owns their approval and implementation:
+These proposed integration views do not exist yet; S1 owns their approval and implementation.
+A draft for the corridor network, written against the S1 schema, is in
+[s1_views_proposal.sql](s1_views_proposal.sql):
 
 | View | Required columns | Purpose |
 |---|---|---|
@@ -28,7 +30,7 @@ that a 250-ft influence zone contributes a particular additional network length.
 
 | Field | Contract |
 |---|---|
-| metadata | network_version, feature_set=backtest_2022, analysis_scope=college_station_public_roads, as_of_date, length_policy, nonempty data_versions, sources, history_years_loaded, test_years_loaded |
+| metadata | network_version, feature_set=backtest_2022, analysis_scope=college_station_public_roads (or corridor_diagnostic, labeled as not meeting FSR 3.2.1.1 in every output), as_of_date, length_policy, nonempty data_versions, sources, history_years_loaded, test_years_loaded |
 | sites | site_id, site_type, risk_length_mi, network_length_mi, as_of_date; road_name optional; complete boolean in_hin or entirely unavailable |
 | features | site_id, feature_name, value, as_of_date, source; one row/site/selected feature; null means explicitly missing |
 | history | site_id, year, crashes, known_crashes, fsi_crashes; unique site/year in selected history window |
@@ -45,10 +47,12 @@ denominator when site_id is null. The adapter checks that crash scope classifies
 record; S1 must establish area membership from public location fields where coordinates are absent.
 
 Every selected feature needs a provenance record for every site, including explicit nulls.
-S1 currently emits only available type-specific attributes; it needs a complete approved
-snapshot before full-network training. Features are a static historical snapshot; target counts
-and crash-history lags are not predictors. A recorded 2017-2022 history sensitivity is supported,
-while the FSR's 2015-2022 history remains the default.
+S1 stores only type-specific attributes (road attributes for segments, legs for intersections),
+so `database.py` adds an explicit null for each absent site/feature pair, attributed to a
+registered predictor source `s1_not_recorded`. Training imputes these with missing indicators. Features are a static historical snapshot; target counts
+and crash-history lags are not predictors. A recorded 2017-2022 history sensitivity is supported.
+The default history is 2016-2022: CRIS Query keeps ten years plus the current one, so 2015 is no
+longer available. This is a recorded deviation from the FSR 3.2.1.3 window of 2015-2025.
 
 ## Output contract
 

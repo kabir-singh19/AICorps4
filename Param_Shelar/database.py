@@ -1,12 +1,18 @@
 """IF-09 snapshot adapter. Read-only; never creates or modifies S1 tables.
 
 S1 must first provide the agreed scope, HIN and provenance views described in
-docs/interfaces.md. Existing corridor-only data cannot pass as a city network.
+docs/interfaces.md (docs/s1_views_proposal.sql is a draft for S1 to review). Corridor-only data
+runs only with analysis_scope "corridor_diagnostic", and every output says it is not the FSR
+3.2.1.1 network.
 """
 from __future__ import annotations
 
 import os
 from datetime import date, datetime
+
+# Registered source for site/feature pairs S1 does not store, such as road attributes at
+# intersections. Their values are null and training imputes them with missing indicators.
+NOT_RECORDED_SOURCE = "s1_not_recorded"
 
 
 def _json_value(value):
@@ -27,7 +33,7 @@ def relation(name):
     return sql.Identifier(*pieces)
 
 
-def load_snapshot(db_config, feature_names, history_start=2015, history_end=2022):
+def load_snapshot(db_config, feature_names, history_start=2016, history_end=2022):
     import psycopg
     from psycopg import sql
     from psycopg.rows import dict_row
@@ -93,6 +99,7 @@ def load_snapshot(db_config, feature_names, history_start=2015, history_end=2022
             SELECT source, version, as_of_date, available_as_of, role FROM {}
             WHERE network_version=%s AND feature_set=%s ORDER BY source
         """).format(registry), (version, feature_set)).fetchall()
+        sources.extend(_fill_absent_features(sites, features, feature_names, version, db_config["metadata"]))
         hin_view = db_config.get("hin_view")
         if hin_view:
             hin = conn.execute(sql.SQL("""
@@ -107,6 +114,25 @@ def load_snapshot(db_config, feature_names, history_start=2015, history_end=2022
         meta = {**db_config["metadata"], "network_version": version, "feature_set": feature_set, "sources": sources}
     return _json_value({"metadata": meta, "sites": sites, "features": features,
                         "history": history, "test_crashes": test})
+
+
+def _fill_absent_features(sites, features, feature_names, network_version, metadata):
+    """Add an explicit null record for every selected feature S1 does not store for a site.
+
+    Returns the registry entry for those records (empty if nothing was absent), so they carry
+    provenance like every other predictor.
+    """
+    present = {(f["site_id"], f["feature_name"]) for f in features}
+    absent = [(site, name) for site in sites for name in feature_names
+              if (site["site_id"], name) not in present]
+    for site, name in absent:
+        features.append({"site_id": site["site_id"], "feature_name": name, "value": None,
+                         "as_of_date": site["as_of_date"], "source": NOT_RECORDED_SOURCE})
+    if not absent:
+        return []
+    as_of = metadata.get("as_of_date", "2022-12-31")
+    return [{"source": NOT_RECORDED_SOURCE, "version": network_version, "as_of_date": as_of,
+             "available_as_of": as_of, "role": "predictor"}]
 
 
 def result_payload(bundle):

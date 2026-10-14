@@ -18,6 +18,6 @@ def test_frozen_run_refit_is_exact_and_models_reload(tmp_path):
     def reload_check(directory):
         encoder, models = load_models(directory, require_complete=False)
         sites, raw, _, totals = prepare_inputs(snapshot,config)
-        pred = make_predictions(sites,models,encoder.transform(raw),totals,sites.risk_length_mi.to_numpy()*8,8)
+        pred = make_predictions(sites,models,encoder.transform(raw),totals,sites.risk_length_mi.to_numpy()*7,7)
         assert canonical_json({m:f.to_dict("records") for m,f in pred.items()}) == canonical_json(records(first))
     save_bundle(tmp_path,"test",snapshot,config,code_version="test",duration=1,verifier=reload_check,**first)

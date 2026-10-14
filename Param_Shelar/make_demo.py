@@ -21,7 +21,7 @@ def demo_snapshot(seed=7, n_sites=100):
     metadata = {"network_version": "synthetic-network-v1", "feature_set": "backtest_2022",
                 "analysis_scope": "college_station_public_roads", "synthetic": True,
                 "as_of_date": "2022-12-31", "length_policy": "SYNTHETIC: disjoint 0.1-mile segments; intersection exposure untested",
-                "data_versions": {"all": "synthetic-v1"}, "history_years_loaded": list(range(2015, 2023)),
+                "data_versions": {"all": "synthetic-v1"}, "history_years_loaded": list(range(2016, 2023)),
                 "test_years_loaded": [2023, 2024, 2025], "hin_version": "synthetic-hin-v1",
                 "hin_source": "synthetic-hin", "hin_as_of_date": "2022-12-31",
                 "sources": [{"source": "synthetic-features", "role": "predictor", "version": "v1",
@@ -45,7 +45,7 @@ def demo_snapshot(seed=7, n_sites=100):
                          "source": "synthetic-features"} for name, value in attrs.items())
         mu = .1 * math.exp(1.2 + .012*(speed-25) + .00003*traffic) * rng.gammavariate(2, .5)
         p = .015 + .001*speed
-        for year in range(2015,2023):
+        for year in range(2016,2023):
             total = poisson(rng, mu)
             known = sum(rng.random() > .02 for _ in range(total))
             fatal = sum(rng.random() < p for _ in range(known))

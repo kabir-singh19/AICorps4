@@ -1,22 +1,17 @@
-"""Paired crash-level bootstrap and capture reports, using only the standard library."""
+"""Paired crash-level bootstrap and capture reports."""
 from __future__ import annotations
 
-import math
-import random
+import numpy as np
 
-
-def percentile(values, q):
-    ordered = sorted(values)
-    pos = (len(ordered)-1)*q
-    lo = math.floor(pos)
-    hi = math.ceil(pos)
-    return ordered[lo] + (ordered[hi]-ordered[lo])*(pos-lo)
+# Resamples drawn per batch: bounds memory at about BATCH x crashes x methods bytes.
+BATCH = 100
 
 
 def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_only=True):
     """Resample the same crashes for every method and paired difference.
 
-    Samples are processed one at a time to avoid a resamples-by-crashes allocation.
+    Each resample draws test crashes with replacement and recounts how many fall on each method's
+    flagged sites. Every method sees the same draws, so B-A and C-A are paired comparisons.
     """
     if not isinstance(resamples, int) or isinstance(resamples, bool) or resamples < 1000:
         raise ValueError("at least 1000 bootstrap resamples required")
@@ -29,36 +24,40 @@ def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_onl
         if row["in_analysis_area"] and (not fsi_only or row["severity"] in {"K", "A"}):
             events.append(None if row.get("site_id") is None else str(row["site_id"]))
     names = sorted(flagged_methods)
-    flagged = {m: {str(s) for s in flagged_methods[m]} for m in names}
     if any(None in flagged_methods[m] for m in names):
         raise ValueError("unmatched crashes must never be flagged")
+    flagged = {m: {str(s) for s in flagged_methods[m]} for m in names}
     n = len(events)
     if n == 0:
         return {"status": "undefined: no test crashes", "n_test_fsi": 0, "methods": {}, "differences": {},
                 "resamples": resamples, "target": "fsi" if fsi_only else "total"}
-    vectors = [tuple(int(site is not None and site in flagged[m]) for m in names) for site in events]
-    point = [sum(v[i] for v in vectors)/n for i in range(len(names))]
-    draws = {m: [] for m in names}
+    # captured[i, j] = 1 if crash i fell on a site flagged by method j (unmatched crashes never do).
+    captured = np.array([[site is not None and site in flagged[m] for m in names] for site in events],
+                        dtype=np.int32).reshape(n, len(names))
+    point = captured.sum(axis=0) / n
+    rng = np.random.default_rng(seed)
+    draws = np.empty((resamples, len(names)))
+    for first in range(0, resamples, BATCH):
+        size = min(BATCH, resamples - first)
+        picks = rng.integers(0, n, size=(size, n))
+        draws[first:first + size] = captured[picks].sum(axis=1) / n
     comparisons = [f"{m}-A" for m in ("B", "C") if m in names and "A" in names]
-    paired = {c: [] for c in comparisons}
-    # Sampling whole events preserves correlations between A/B/C capture indicators.
-    rng = random.Random(seed)
-    for _ in range(resamples):
-        total = [0]*len(names)
-        for _ in range(n):
-            event = vectors[rng.randrange(n)]
-            for i, v in enumerate(event):
-                total[i] += v
-        sample = {m: total[i]/n for i, m in enumerate(names)}
-        for m in names:
-            draws[m].append(sample[m])
-        for c in paired:
-            paired[c].append(sample[c[0]]-sample["A"])
-    methods = {m: {"capture": point[i], "ci_low": percentile(draws[m], .025),
-                   "ci_high": percentile(draws[m], .975), "n_test_fsi": n,
-                   "captured_crashes": int(round(point[i]*n))} for i, m in enumerate(names)}
-    differences = {c: {"difference": methods[c[0]]["capture"]-methods["A"]["capture"],
-                       "ci_low": percentile(paired[c], .025), "ci_high": percentile(paired[c], .975)} for c in paired}
+    column = {m: i for i, m in enumerate(names)}
+
+    def interval(values):
+        low, high = np.percentile(values, [2.5, 97.5])
+        return float(low), float(high)
+
+    methods = {}
+    for m, i in column.items():
+        low, high = interval(draws[:, i])
+        methods[m] = {"capture": float(point[i]), "ci_low": low, "ci_high": high, "n_test_fsi": n,
+                      "captured_crashes": int(captured[:, i].sum())}
+    differences = {}
+    for c in comparisons:
+        low, high = interval(draws[:, column[c[0]]] - draws[:, column["A"]])
+        differences[c] = {"difference": methods[c[0]]["capture"] - methods["A"]["capture"],
+                          "ci_low": low, "ci_high": high}
     return {"status": "ok", "n_test_fsi": n, "unmatched_crashes": sum(s is None for s in events),
             "methods": methods, "differences": differences, "resamples": resamples,
             "seed": seed, "target": "fsi" if fsi_only else "total", "bootstrap_unit": "individual crash"}
@@ -83,11 +82,8 @@ def evaluate(predictions, test_crashes, hin_ids, resamples=1000, seed=42):
     for share in shares:
         flagged, length_details = {}, {}
         for m, frame in methods.items():
-            if share == 0:
-                mask = frame["flagged"].to_numpy() & False
-            else:
-                mask = flag_by_length(frame["rank"], lengths, share=share,
-                                      tolerance=0.005 if share == .11 else None, allow_zero_lengths=True)
+            mask = flag_by_length(frame["rank"], lengths, share=share,
+                                  tolerance=0.005 if share == .11 else None, allow_zero_lengths=True)
             flagged[m] = set(frame.loc[mask, "site_id"].astype(str))
             miles = float(lengths[mask].sum())
             length_details[m] = {"flagged_miles": miles, "flagged_share": miles/total_length,

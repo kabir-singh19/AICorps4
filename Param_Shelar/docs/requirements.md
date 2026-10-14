@@ -4,7 +4,7 @@
 |---|---|---|
 | 3.2.1.1 | Complete-site predictions and BIT coverage | Contract/unit checks; actual City coverage pending S1 |
 | 3.2.1.6 | HIN membership, NB-SPF+EB, Poisson ML+EB | Implemented; full A/B/C run awaits dependencies/data |
-| 3.2.1.7 | empirical_bayes.py, site-total k | Hand calculations, synthetic dispersion recovery tested |
+| 3.2.1.7 | empirical_bayes.py; site-total k (B from NB fit, C from 5-fold out-of-fold predictions) | Hand calculations, synthetic dispersion recovery tested |
 | 3.2.1.8 | Weighted binomial severity, annual/rate conversion, calibration | Weighting/reload/Brier checks; City calibration pending |
 | 3.2.1.9 | Ranked prefix closest to 11% with tolerance | Existing and expanded length/rank tests passing |
 | 3.2.1.10-11 | Paired >=1,000 resamples, A/B/C and differences | Bootstrap/denominator/reproducibility checks passing |

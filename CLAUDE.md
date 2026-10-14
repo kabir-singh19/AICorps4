@@ -56,8 +56,10 @@ editing that owner's code.
   `sql/init/01_schema.sql` (schema `tasc`, leakage trigger), `ingest.py`,
   `sql/02_build_network.sql`, `sql/03_map_match.sql`, and `tests/`. Its README lists what has
   and has not actually been run.
-- `Param_Shelar/` is the S2 skeleton. The `.py` files, the tests, and `requirements.txt` are
-  **empty placeholders**. Planning lives in `Param_Shelar/docs/`:
+- `Param_Shelar/` is S2: NB-SPF (B), Poisson XGBoost (C), EB, severity, ranking, SHAP,
+  paired bootstrap backtest, run bundles with exact replay, and the `cli.py train|backtest|bit`
+  commands. Tested on synthetic data only; no City model has been trained. Real runs need the S1
+  views drafted in `Param_Shelar/docs/s1_views_proposal.sql`. Docs live in `Param_Shelar/docs/`:
   - `requirements.md`
   - `interfaces.md` (S1 schema mapping and open interface decisions)
   - `backtest_protocol.md`
@@ -85,8 +87,8 @@ editing that owner's code.
 - **CRS:** all lengths and distances are computed in **EPSG:32614** (UTM 14N, meters) and
   reported in miles and feet. Interchange data (GeoJSON, API) uses EPSG:4326.
 - **Backtest split:** training and ranking may use only information knowable as of
-  **31 Dec 2022**. Training history is 2015–2022 (the HIN used 2017–2022). The test window is
-  **2023–2025**.
+  **31 Dec 2022**. The FSR says 2015–2022 history, but CRIS Query no longer serves 2015, so S2
+  defaults to 2016–2022 (the HIN used 2017–2022). The test window is **2023–2025**.
 - **Flagging:** the highest-ranked sites whose total length is **11% ± 0.5%** of network length,
   the same share the HIN covers.
 - **Capture rate:** 2023–2025 F&SI crashes on flagged sites, divided by **all** 2023–2025 F&SI

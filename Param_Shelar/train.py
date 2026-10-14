@@ -17,10 +17,10 @@ except ImportError:
     from bit import check_explanations, check_predictions, preflight
     from leakage import validate_snapshot
 
-DEFAULT_CONFIG = {"seed": 42, "history_start": 2015, "history_end": 2022,
+DEFAULT_CONFIG = {"seed": 42, "history_start": 2016, "history_end": 2022,
                   "features": ["speed_limit", "num_lanes", "aadt", "func_class", "median_type"],
                   "bootstrap_resamples": 1000, "rounds": 200, "max_depth": 3,
-                  "learning_rate": .05, "threads": 2, "nb_ridge": .01, "severity_C": 1.0,
+                  "learning_rate": .05, "threads": 2, "oof_folds": 5, "nb_ridge": .01, "severity_C": 1.0,
                   "feature_labels": {}}
 
 
@@ -30,11 +30,13 @@ def load_config(path=None):
     if extra:
         raise ValueError(f"unknown config fields: {sorted(extra)}")
     config = {**DEFAULT_CONFIG, **provided}
-    for key in ("seed", "history_start", "history_end", "bootstrap_resamples", "rounds", "max_depth", "threads"):
+    for key in ("seed", "history_start", "history_end", "bootstrap_resamples", "rounds", "max_depth", "threads", "oof_folds"):
         if isinstance(config[key], bool) or not isinstance(config[key], int):
             raise ValueError(f"{key} must be an integer")
     if config["seed"] < 0 or config["bootstrap_resamples"] < 1000 or not 1 <= config["threads"] <= 2:
         raise ValueError("invalid seed, bootstrap resamples or worker thread budget")
+    if config["oof_folds"] < 2:
+        raise ValueError("oof_folds must be at least 2")
     return config
 
 
@@ -150,8 +152,10 @@ def fit_run(snapshot, config, log=None):
     note("nb_spf_fitted", k=nb.k)
     ml = PoissonRiskModel(seed=config["seed"], rounds=config["rounds"], max_depth=config["max_depth"],
                           learning_rate=config["learning_rate"], threads=config["threads"]).fit(X, totals.crashes.to_numpy(), exposure)
-    ml.k = estimate_k(totals.crashes.to_numpy(), ml.predict(X, exposure))
-    note("ml_eb_fitted", k=ml.k)
+    # k from out-of-fold predictions: in-sample boosted predictions understate overdispersion.
+    oof = ml.out_of_fold_predict(X, totals.crashes.to_numpy(), exposure, folds=config["oof_folds"])
+    ml.k = estimate_k(totals.crashes.to_numpy(), oof)
+    note("ml_eb_fitted", k=ml.k, k_method=f"{config['oof_folds']}-fold out-of-fold site predictions")
     severity = SeverityModel(config["seed"], config["severity_C"])
     # Calibration evidence uses held-out sites from the historical period only.
     # This diagnostic fit has its own train-only preprocessing; it never sees test-window labels.
@@ -180,7 +184,10 @@ def fit_run(snapshot, config, log=None):
     report = evaluate(predictions, snapshot["test_crashes"], hin_membership(snapshot["sites"]),
                       config["bootstrap_resamples"], config["seed"])
     note("backtest_scored", resamples=config["bootstrap_resamples"], n_test_fsi=report["primary"]["n_test_fsi"])
+    scope = snapshot["metadata"]["analysis_scope"]
     diagnostics = {"runtime_versions": runtime_versions(), "nb": nb.diagnostics, "ml_k": ml.k,
+                   "ml_k_method": f"{config['oof_folds']}-fold out-of-fold site predictions",
+                   "analysis_scope": scope, "full_network": scope == "college_station_public_roads",
                    "missing_features": {name: int(raw[name].isna().sum()) for name in raw},
                    "panel_rows": len(panel), "history_years": years, "site_count": len(sites),
                    "severity_constant": severity.constant,

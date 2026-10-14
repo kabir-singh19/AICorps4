@@ -91,6 +91,7 @@ def save_bundle(output_root, run_id, snapshot, config, models, encoder, predicti
         manifest = {"schema_version": 1, "run_id": run_id, "created": created, "published": False,
                     "code_version": code_version, "data_versions": snapshot["metadata"]["data_versions"],
                     "as_of_date": "2022-12-31", "seed": config["seed"], "hyperparameters": config,
+                    "analysis_scope": snapshot["metadata"].get("analysis_scope"),
                     "input_hash": json_hash(snapshot), "config_hash": json_hash(config),
                     "duration_seconds": duration, "training_limit_seconds": 14400,
                     "reference_host_verified": False,
@@ -155,7 +156,12 @@ def write_model_card(path, run_id, snapshot, config, backtest, calibration, diag
             rows.append(f"| {method} | {result['flagged_miles']:.4f} | {result['capture']:.4f} | [{result['ci_low']:.4f}, {result['ci_high']:.4f}] |")
         else:
             rows.append(f"| {method} | - | unavailable/undefined | - |")
+    scope = snapshot["metadata"].get("analysis_scope", "unknown")
+    scope_line = ("Scope: full College Station public-road network (FSR 3.2.1.1)." if scope == "college_station_public_roads"
+                  else f"Scope: {scope}. DIAGNOSTIC ONLY: this is not the FSR 3.2.1.1 network, "
+                       "so these results are not the City backtest.")
     text = (f"# S2 model card: {run_id}\n\n"
+            f"{scope_line}\n\n"
             f"Synthetic inputs: {snapshot['metadata'].get('synthetic', False)}. Published: false.\n\n"
             f"Code fingerprint: {code_version}. Seed: {config['seed']}.\n"
             f"History: {config['history_start']}-{config['history_end']}. Cutoff: 2022-12-31. Test: 2023-2025.\n"
@@ -167,7 +173,7 @@ def write_model_card(path, run_id, snapshot, config, backtest, calibration, diag
             "B is a locally fitted NB2 SPF with EB; C is Poisson gradient boosting with EB. "
             "Both use the same crash-weighted binomial severity model. Missing numeric values use historical medians. "
             "Unknown severity is excluded from severity labels; multiplying the resulting probability by total crashes assumes unknown severity is missing at random. "
-            "ML dispersion is fitted on in-sample site totals and may be understated when boosting overfits. "
+            f"ML dispersion is fitted on {diagnostics.get('ml_k_method', 'site totals')}. "
             "Predictors are a static historically available snapshot, not reconstructed year-specific conditions. "
             "TreeSHAP explains the ML log-count component before EB/severity and does not establish treatment causality. "
             "Bootstrap intervals condition on the fitted ranking and resample individual crashes, not road clusters or training uncertainty.\n\n"

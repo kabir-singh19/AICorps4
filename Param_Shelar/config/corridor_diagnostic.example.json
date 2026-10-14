@@ -1,0 +1,23 @@
+{
+  "seed": 42,
+  "features": ["speed_limit", "num_lanes", "aadt", "func_class", "median_type"],
+  "database": {
+    "network_version": "v0_2019",
+    "feature_set": "backtest_2022",
+    "site_scope_view": "tasc.s2_site_scope",
+    "crash_scope_view": "tasc.s2_crash_scope",
+    "source_registry_view": "tasc.s2_source_registry",
+    "metadata": {
+      "analysis_scope": "corridor_diagnostic",
+      "as_of_date": "2022-12-31",
+      "length_policy": "PROPOSED, needs S1 agreement: segments use their own length for exposure and flagging; intersections use 250 ft (0.0473 mi) exposure and 0 flagging length because segments already run through them",
+      "data_versions": {
+        "cris": "CRIS Query exports, College Station, 2016-2025, downloaded 2026-10-07",
+        "inventory": "TxDOT roadway inventory 2019 snapshot",
+        "network": "v0_2019: Texas Ave, University Dr, Wellborn Rd centerlines"
+      },
+      "history_years_loaded": [2016, 2017, 2018, 2019, 2020, 2021, 2022],
+      "test_years_loaded": [2023, 2024, 2025]
+    }
+  }
+}

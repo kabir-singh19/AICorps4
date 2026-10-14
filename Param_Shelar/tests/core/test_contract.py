@@ -74,6 +74,16 @@ class ContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_snapshot(self.snapshot, FEATURES)
 
+    def test_corridor_diagnostic_is_accepted_and_labeled(self):
+        self.snapshot["metadata"]["analysis_scope"] = "corridor_diagnostic"
+        result = validate_snapshot(self.snapshot, FEATURES)
+        self.assertEqual(result["analysis_scope"], "corridor_diagnostic")
+        self.assertFalse(result["full_network"])
+
+    def test_2015_history_is_not_required(self):
+        self.snapshot["metadata"]["history_years_loaded"] = list(range(2016, 2023))
+        validate_snapshot(self.snapshot, FEATURES)
+
     def test_unresolved_policy_blocks_production(self):
         self.snapshot["metadata"]["length_policy"] = "REPLACE_WITH_APPROVED_POLICY"
         with self.assertRaises(ValueError):

@@ -1,6 +1,6 @@
 {
   "seed": 42,
-  "history_start": 2015,
+  "history_start": 2016,
   "history_end": 2022,
   "features": ["speed_limit", "num_lanes", "aadt", "func_class", "median_type"],
   "bootstrap_resamples": 1000,
@@ -8,6 +8,7 @@
   "max_depth": 3,
   "learning_rate": 0.05,
   "threads": 2,
+  "oof_folds": 5,
   "nb_ridge": 0.01,
   "severity_C": 1.0,
   "feature_labels": {
