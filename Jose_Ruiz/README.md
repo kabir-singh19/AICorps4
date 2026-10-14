@@ -106,13 +106,3 @@ These are integration needs, not confirmed database columns or implemented conne
 - Leave unavailable costs and effect estimates unknown. Add benefit/cost calculations only with sourced costs and agreed assumptions.
 - Keep rules, evidence versions, and calculations reproducible. Draft memos must trace their claims to reviewed inputs and sources.
 
-## Responsibilities
-
-| Owner | Responsibility |
-| --- | --- |
-| Kabir / S1 | Source ingestion, network construction, crash matching, site features, and database schema. |
-| Param / S2 | Risk modeling, EB correction, severity modeling, rankings, SHAP explanations, and risk-model backtesting. |
-| Jose / S3 | Countermeasure library, applicability rules, candidate recommendations, and future draft memos. |
-| Juan / S4 | REST endpoints, website, deployment, and user-facing exports. |
-
-S3's current local prototype uses synthetic fixtures. Production subsystem exchange is planned through IF-09 after the contract is agreed. Recommendations remain draft decision support pending engineering review.
