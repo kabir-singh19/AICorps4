@@ -1,0 +1,9 @@
+..........................s.................s....... [ 71%]
+.....................                                                    [100%]
+=========================== short test summary info ============================
+SKIPPED [1] work/AICorps4/Param_Shelar/tests/test_backtest.py:3: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] work/AICorps4/Param_Shelar/tests/test_preprocessing.py:4: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] work/AICorps4/Param_Shelar/tests/test_reproducibility.py:3: could not import 'pandas': No module named 'pandas'
+SKIPPED [1] work/AICorps4/Param_Shelar/tests/test_database_contract.py:13: could not import 'psycopg': No module named 'psycopg'
+SKIPPED [1] work/AICorps4/Param_Shelar/tests/test_models.py:77: could not import 'xgboost': No module named 'xgboost'
+71 passed, 5 skipped, 20 subtests passed in 0.42s

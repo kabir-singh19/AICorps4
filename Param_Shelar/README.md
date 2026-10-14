@@ -1,41 +1,86 @@
 # S2 - Risk Model and Backtest
-Owner: Param Shelar | AI Corps Team 4 | AI Traffic-Safety Consultant
 
-**Status: early implementation.** [empirical_bayes.ipynb](empirical_bayes.ipynb) is implemented and checked on synthetic data, with tables and charts (`pip install -r requirements.txt`, then `jupyter nbconvert --to notebook --execute empirical_bayes.ipynb`; any failed check stops the run). [ranking.py](ranking.py) (F&SI rate, ranking, length-based flagging, capture rate) is implemented with pytest tests in `tests/test_ranking.py`. The other modules and tests are still empty. No models have been fitted to real data, and no verification results are included.
+Owner: Param Shelar. Source of scope: supplied Team 4 ConOps/FSR/ICD/EVP, October 2026.
 
-## Scope and sources
-S2 compares (A) the published consultant High-Injury Network, (B) a negative binomial SPF with Empirical Bayes, and (C) a Poisson gradient-boosted model with overdispersion, EB, and a severity model. It supplies per-site expected fatal/serious-injury (F&SI) rates, rankings, flags, SHAP factors, backtest results, and reproducible artifacts.
+The former placeholders now implement NB-SPF, CPU Poisson boosting with an exposure offset,
+Empirical Bayes, crash-weighted severity, length flagging, exact TreeSHAP, paired bootstrap,
+sensitivity scoring, immutable artifacts and exact replay. No real City model was trained.
+See [validation.md](docs/validation.md) for measured checks and their limits.
 
-The source baseline is the supplied **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, ConOps Revision C dated 1 October 2026 and its accompanying FSR, ICD, and Execution and Validation Plan. Read alongside [AITRAFFIC.md](../Initial_Research/AITRAFFIC.md), [DATASOURCES.md](../Initial_Research/DATASOURCES.md), and the existing [S1 README](../Kabir_Singh/README.md) and [schema](../Kabir_Singh/sql/init/01_schema.sql). The PDF supplies the current named ownership and requirements; older repository brainstorming does not expand this subsystem's scope.
+## Install and test
 
-## Planned files
-| File | Intended responsibility |
-|---|---|
-| [database.py](database.py) | Read validated S1 inputs and persist S2 results through IF-09. |
-| [leakage.py](leakage.py) | Validate input provenance, dates, and separation of training and evaluation data. |
-| [hin_baseline.py](hin_baseline.py) | Represent the published consultant HIN as method A. |
-| [nb_spf.py](nb_spf.py) | Fit the negative binomial safety performance function for method B. |
-| [ml_risk.py](ml_risk.py) | Fit the Poisson gradient-boosted crash-count model for method C. |
-| [empirical_bayes.ipynb](empirical_bayes.ipynb) | Estimate overdispersion and apply the EB blend for methods B and C. |
-| [severity.py](severity.py) | Estimate and calibrate fatal/serious-injury probability using pre-cutoff crashes. |
-| [ranking.py](ranking.py) | Calculate F&SI rates, rank all sites, and flag by cumulative network length. |
-| [explanations.py](explanations.py) | Produce the five largest SHAP contributions for each flagged site. |
-| [train.py](train.py) | Coordinate a frozen, reproducible training run. |
-| [backtest.py](backtest.py) | Score A/B/C with paired bootstrap intervals and sensitivity comparisons. |
-| [artifacts.py](artifacts.py) | Export and reload model files, feature tables, predictions, and run metadata. |
-| [requirements.txt](requirements.txt) | Dependency list, to be selected and pinned during implementation. |
+From the repository root:
 
-## Planning documents
-- [Requirements and verification](docs/requirements.md)
-- [Database interfaces and current gaps](docs/interfaces.md)
-- [Frozen backtest protocol](docs/backtest_protocol.md)
-- [Implementation sequence](docs/implementation_plan.md)
-- [Model card template](docs/model_card.md)
-- [Configuration plan](config/README.md)
-- [Generated output policy](outputs/README.md)
-- [Planned tests](tests/README.md)
+```bash
+cd Param_Shelar
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m pytest --cov=. --cov-report=term-missing --cov-fail-under=70
+python cli.py bit
+```
 
-## Boundaries
-Kabir owns source ingestion, network construction, crash matching, feature production, and database schema. S2 exchanges data through IF-09; it does not read another owner's working files. Jose owns countermeasure tools and memos; Juan owns REST endpoints, website, deployment, and user-facing exports. Local artifact exports here support S2 reproducibility and independent model review.
+Python 3.11+ is required. Preserve `python -m pip freeze` with a validated production environment.
+Each run records exact model-library versions; replay requires those versions and the original
+source fingerprint. Fitting uses at most two CPU threads. Reference-host memory and four-hour
+performance remain unmeasured. A test skip means its dependency is missing; install the full
+requirements and run the entire suite before using a production result.
 
-Before implementation, agree with S1 on stable network/site IDs, intersection exposure and length, HIN mapping, historical provenance, and result-table migrations. Details are in the interface document. No shared files or database migrations are changed by this setup.
+## Train it yourself
+
+Synthetic smoke run, independent of unfinished S1 interfaces:
+
+```bash
+python make_demo.py --output demo_snapshot.json
+python cli.py train --run-id demo-001 --config config/default.json --snapshot demo_snapshot.json
+python cli.py train --run-id demo-001 --replay
+python cli.py backtest --run-id demo-001
+```
+
+The fixture is labeled synthetic; its rates and HIN are not City results. The existing EB notebook
+is retained as an exploratory reference. Production imports `empirical_bayes.py`.
+
+For real data, supply an approved frozen IF-09 snapshot matching [interfaces.md](docs/interfaces.md):
+
+```bash
+python cli.py train --run-id backtest-001 --config config/default.json --snapshot /path/to/frozen_snapshot.json
+```
+
+For a database run, copy `config/database.example.json` to `config/local.json`, replace its explicit
+placeholders, set `DATABASE_URL` in the environment, and run after S1 provides the required views:
+
+```bash
+python cli.py train --run-id backtest-001 --config config/local.json
+```
+
+A new run ID is required for changed inputs. `--replay` refits stored inputs and checks exact
+prediction/ranking and backtest equality; it never overwrites a stored run. Training fits on
+2015-2022 by default, consistent with the FSR; 2023-2025 labels are used only for scoring.
+
+## Results and handoff
+
+Each successful `outputs/<run-id>/` contains a checksum manifest, frozen snapshot/config,
+native XGBoost model, JSON NB/severity/encoder state, feature table, B/C predictions as CSV/JSON,
+SHAP factors, A/B/C backtest, paired differences, 5%/11%/20% and equal-HIN-share sensitivity,
+calibration JSON/SVG, generated model card and BIT records. Completion requires successful
+model reload and identical predictions. Failure leaves completed runs untouched.
+
+`mu` and `n_eb` are history-window total crashes. `annual_total` and `annual_fsi` are site counts
+per year. `fsi_rate` is K/A crashes per mile per year. S3 should use annual counts for benefit
+calculations. TreeSHAP explains the ML log-count component before EB/severity; it is not causal.
+
+```bash
+python export_payload.py --run-id backtest-001 --output /path/to/s2_result_payload.json
+```
+
+The payload is for an agreed S1 transactional importer. S3/S4 must read the shared database,
+not S2 working files. S1 owns migrations, import and permissions. S4 owns REST, publication,
+CSV/GeoJSON delivery and the shared `atsc` command. `cli.py` supplies the S2 command handlers.
+
+## Upstream dependencies
+
+Real runs require the full College Station public-road network, all-in-area held-out crashes,
+approved intersection risk exposure and disjoint network-length allocation, stable site IDs,
+historical feature provenance and published HIN membership. Missing HIN permits an explicitly
+labeled B/C diagnostic. Partial HIN mapping, leakage, unknown provenance and corridor-only scope
+block the run. No other subsystem files or database tables were modified.

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+demo_snapshot.json
+config/local*.json
+outputs/*/
+outputs/*.json
+outputs/*.csv
+outputs/*.svg
+outputs/*.ubj
+!outputs/README.md

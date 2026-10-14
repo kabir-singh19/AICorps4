@@ -1,14 +1,14 @@
-# Planned S2 tests
-[test_ranking.py](test_ranking.py) has 28 pytest tests for `ranking.py` (run `pytest tests/test_ranking.py` from `Param_Shelar/`). The EB checks (FSR 3.2.1.7 hand-checked example, weight bounds, input checks, recovery of a known k) live as asserts in [empirical_bayes.ipynb](../empirical_bayes.ipynb). The other test files are empty. All of these run on synthetic data and are not milestone verification evidence.
+# Verification
 
-| File | Planned checks |
-|---|---|
-| [test_database_contract.py](test_database_contract.py) | IF-09 fields, joins, version isolation, and zero-crash site coverage. |
-| [test_leakage.py](test_leakage.py) | Reject post-cutoff or undated inputs; exclude HIN and test labels from training. |
-| [test_models.py](test_models.py) | A/B/C use the same frozen network; severity calibration evidence. |
-| [test_ranking.py](test_ranking.py) | Complete coverage, valid rates, deterministic ties, and 11% length tolerance. |
-| [test_backtest.py](test_backtest.py) | Capture denominator, paired bootstrap, equal-length comparison, sensitivity cases. |
-| [test_reproducibility.py](test_reproducibility.py) | The same frozen run inputs reproduce an identical ranking. |
-| [test_artifacts.py](test_artifacts.py) | Model/feature/prediction export and reload round trip. |
+Run `python -m pytest --cov=. --cov-report=term-missing --cov-fail-under=70` after installing
+requirements. The stdlib core suite also runs automatically before each model run:
+`python -m unittest discover -s tests/core -v`. Output invariants run before saving results.
 
-Create minimal local fixtures when writing tests; never use withheld 2023-2025 data for model selection. Integration checks need a validated S1/PostGIS snapshot. Reference-host timing and calibration reports are milestone evidence rather than placeholder unit tests.
+Tests cover historical provenance, scope, duplicate/invalid records, EB hand calculations,
+NB dispersion/offset, crash-weighted severity, calibration, ranking, paired bootstrap,
+checksums, atomic failure isolation, preprocessing, ML offset/SHAP and exact full replay.
+Core contract tests inject 20 S2 faults and check 20 valid synthetic inputs.
+
+Missing pandas/XGBoost/psycopg causes explicit skips in development. A production validation
+record must resolve skips and record complete coverage and integration evidence. CI for every
+repository change remains a shared/root integration task outside this subsystem's edit scope.

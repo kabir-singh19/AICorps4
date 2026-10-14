@@ -1,12 +1,20 @@
-# Planned implementation sequence
-Status: not started; this setup creates files only.
+# Implementation and remaining handoff
 
-1. **Agree the S1 contract.** Close interface decisions, verify source provenance and matching, and agree result-table migrations/permissions. Freeze network and feature versions.
-2. **Build database access and leakage gates.** Construct complete site/year panels, including zero-crash rows. Separate historical fitting inputs from 2023-2025 scoring labels.
-3. **Build baselines and EB.** Represent published HIN, fit NB-SPF, hand-check EB, and establish comparable F&SI targets.
-4. **Build ML and severity.** Fit the Poisson gradient-boosted model and overdispersion, apply EB, calibrate severity, and produce rate/rank/flag fields.
-5. **Reach M2.** Run A/B/C end to end on identical frozen inputs; record coverage and length-budget evidence plus an honest go/no-go finding.
-6. **Complete M4 evidence.** Add SHAP, paired bootstrap and sensitivity reports, model card, artifacts/reload, exact ranking replay, and reference-host timing.
-7. **Integrate.** Supply agreed IF-09 outputs to S3/S4 and contribute S2 fault cases to team BIT validation.
+Implemented: frozen-contract validation and provenance gates; read-only IF-09 adapter;
+complete zero-filled historical panels; NB2 SPF, Poisson boosting, site-total dispersion and EB;
+crash-weighted severity with held-out-site calibration; risk ranking and approved length budgets;
+exact source-feature TreeSHAP; paired 1,000-resample backtest, fairness and sensitivity;
+JSON/native model artifacts, atomic run completion, reload checks and exact replay commands;
+S2 BIT, structured logs, result-payload export, configuration and synthetic fixtures.
 
-Python/dependency choices and pinned versions are intentionally deferred. Keep S2 CPU-only and within the shared worker limits. Add meaningful tests as implementation is introduced; the current empty tests are not validation evidence.
+The owner runs training. Before real-data use:
+
+1. S1 supplies full City scope, stable IDs, approved lengths, historical provenance and complete features.
+2. S1/S2 agree HIN mapping, including intersections, and all-in-area test membership.
+3. Install requirements and run the full suite with coverage; resolve every skip/failure.
+4. Run the frozen model and record all results, including outcomes favoring HIN.
+5. Measure full-run timing/resources on the reference host.
+6. S1 implements agreed result storage/import; S4 delegates CLI handlers, publishes results and adds
+   repository-wide CI. A root GitHub workflow was not added because this task is scoped to S2.
+
+No real backtest, DB integration, reference-host result or team-level BIT claim is made.

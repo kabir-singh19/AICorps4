@@ -1,0 +1,23 @@
+{
+  "seed": 42,
+  "features": ["speed_limit", "num_lanes", "aadt", "func_class", "median_type"],
+  "database": {
+    "network_version": "REPLACE_WITH_FROZEN_CITY_NETWORK_VERSION",
+    "feature_set": "backtest_2022",
+    "site_scope_view": "tasc.s2_site_scope",
+    "crash_scope_view": "tasc.s2_crash_scope",
+    "source_registry_view": "tasc.s2_source_registry",
+    "hin_view": "tasc.s2_hin_site",
+    "metadata": {
+      "analysis_scope": "college_station_public_roads",
+      "as_of_date": "2022-12-31",
+      "length_policy": "REPLACE_WITH_APPROVED_EXPOSURE_AND_DISJOINT_LENGTH_ACCOUNTING",
+      "data_versions": {"cris": "REPLACE", "boundary": "REPLACE", "inventory": "REPLACE", "osm": "REPLACE", "hin": "REPLACE"},
+      "history_years_loaded": [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022],
+      "test_years_loaded": [2023, 2024, 2025],
+      "hin_version": "REPLACE_WITH_PUBLISHED_HIN_VERSION",
+      "hin_source": "REPLACE_WITH_REGISTERED_HIN_SOURCE",
+      "hin_as_of_date": "2022-12-31"
+    }
+  }
+}

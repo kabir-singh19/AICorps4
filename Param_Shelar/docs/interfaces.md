@@ -1,40 +1,70 @@
-# IF-09 integration plan
-**Documentation only.** S1 owns the database schema; no SQL migrations or result tables are implemented here. Snapshot reviewed: repository commit 829356486b259042d13aaea4e481ac4477c958b1.
+# IF-09 implementation contract
 
-## Existing S1 inputs
-The current implementation uses schema `tasc` and singular table names, unlike the conceptual plural names in ICD Table 12.
+`database.py` reads existing singular `tasc.site`, `tasc.site_feature`, `tasc.crash` and
+`tasc.crash_match` tables in a repeatable-read, read-only transaction. No S1 SQL was changed.
+These proposed integration views do not exist yet; S1 owns their approval and implementation:
 
-| Existing object | S2 use / constraint |
+| View | Required columns | Purpose |
+|---|---|---|
+| tasc.s2_site_scope | site_id, network_version, in_analysis_area (bool), risk_length_mi (double), network_length_mi (double), road_name | Frozen full city membership and approved lengths; one row/site/version |
+| tasc.s2_crash_scope | crash_id, in_analysis_area (bool) | Every crash classified once, including unmatched/no-coordinate records |
+| tasc.s2_source_registry | network_version, feature_set, source, version, as_of_date, available_as_of, role | Historical provenance; one row/source in the selected snapshot |
+| tasc.s2_hin_site | site_id, network_version, hin_version, in_hin (bool) | Full published HIN mapping |
+
+View names are configurable and quoted as identifiers. Missing HIN is explicit: omit hin_view
+for a B/C-only diagnostic. Segment membership follows the ICD's >=50% overlap rule;
+intersection HIN membership requires team agreement. Sources have role predictor, history,
+evaluation or baseline. A modern source relabeled 2022 does not prove historical availability;
+the registry needs archival evidence. Test sources may be dated after 2022 and never feed fitting.
+
+`risk_length_mi` is positive for every segment/intersection and sets exposure and rate units.
+`network_length_mi` is a nonnegative allocation of unique road length, used only for flagging.
+The team must agree intersection exposure and disjoint length allocation; S2 never guesses
+that a 250-ft influence zone contributes a particular additional network length.
+
+## Frozen snapshot
+
+`make_demo.py` produces a complete executable, synthetic example. Top-level fields:
+
+| Field | Contract |
 |---|---|
-| tasc.site | site_id, site_type, geometry, length_m, legs, road_id, network_version, as_of_date. Select a frozen network_version. |
-| tasc.road | Road attributes joined by road_id; geometry is EPSG:32614 and distance is meters. Check road and AADT provenance. |
-| tasc.crash | crash_id/date/year, KABCO severity, is_fsi, crash_type. Retain all in-area test F&SI crashes for the capture denominator. |
-| tasc.crash_match | Crash-to-site assignment for a network_version; status/reason log unmatched records. Each crash must count once. |
-| tasc.site_crash_year | Matched per-site/year crash and F&SI counts. It omits zero-crash site-years; explicitly fill those combinations in the future training panel. |
-| tasc.site_feature | Long-form values keyed by site_id, feature_set, feature_name, with as_of_date and source. Planned frozen feature set: backtest_2022. |
-| tasc.feature_set | backtest_2022 has cutoff 2022-12-31; current has no cutoff and must not silently feed the historical backtest. |
+| metadata | network_version, feature_set=backtest_2022, analysis_scope=college_station_public_roads, as_of_date, length_policy, nonempty data_versions, sources, history_years_loaded, test_years_loaded |
+| sites | site_id, site_type, risk_length_mi, network_length_mi, as_of_date; road_name optional; complete boolean in_hin or entirely unavailable |
+| features | site_id, feature_name, value, as_of_date, source; one row/site/selected feature; null means explicitly missing |
+| history | site_id, year, crashes, known_crashes, fsi_crashes; unique site/year in selected history window |
+| test_crashes | unique crash_id, crash_date in 2023-2025, severity K/A/B/C/O/U, explicit in_analysis_area boolean, site_id or null |
 
-Read data through the shared database, not Kabir's CSVs or source modules. S1 currently plans a read-only role; S2 additionally needs limited write permissions on agreed result tables. Database credentials belong in the runtime environment and must not be committed.
+Source registry entries require source, version, as_of_date, available_as_of and role.
+Predictor/history sources must be knowable by 2022-12-31. HIN metadata requires hin_version,
+hin_source and hin_as_of_date: the consultant's crash-history cutoff, no later than 2022-12-31.
+HIN publication can be later; it is a baseline and is excluded from model features.
 
-## Planned S2 outputs from ICD Table 12
-These tables are **absent** from the current S1 schema and require agreement/migrations owned by S1.
+Missing site/year combinations in an explicitly loaded year are zero-filled; missing years
+are rejected. Known severity excludes U; F&SI is K/A. All in-area test crashes stay in the
+denominator when site_id is null. The adapter checks that crash scope classifies every test
+record; S1 must establish area membership from public location fields where coordinates are absent.
 
-| Conceptual table | Required fields |
+Every selected feature needs a provenance record for every site, including explicit nulls.
+S1 currently emits only available type-specific attributes; it needs a complete approved
+snapshot before full-network training. Features are a static historical snapshot; target counts
+and crash-history lags are not predictors. A recorded 2017-2022 history sensitivity is supported,
+while the FSR's 2015-2022 history remains the default.
+
+## Output contract
+
+`result_payload` prepares run metadata, B/C predictions, C explanations, primary A/B/C backtest,
+full sensitivity/paired intervals and calibration. It does not write nonexistent tables. S1
+must agree result schemas and atomic import. Ingest run IDs remain distinct from model run IDs.
+
+| Field | Units |
 |---|---|
-| runs | run_id, created, code_version, data_versions, as_of_date, seed, hyperparameters, published |
-| predictions | run_id, site_id, mu, k, eb_weight, n_eb, p_fsi, fsi_rate, rank, flagged |
-| explanations | run_id, site_id, feature, shap_value, rank |
-| backtest | run_id, method, capture, ci_low, ci_high, n_test_fsi, flagged_miles |
+| mu, n_eb | Total crashes over n_history_years |
+| k, eb_weight | Site-total NB2 dispersion and EB blend weight |
+| p_fsi | P(K/A given known-severity crash) |
+| annual_total, annual_fsi | Expected crashes/site/year |
+| fsi_rate | Expected K/A crashes/mile/year |
+| rank, flagged | Lexical site-ID tie break; top 11% +/-0.5% by allocated network length |
+| method | B or C; C supplies the primary map |
 
-Use the shared run_id and stable site_id to let S3 read risk context and S4 serve site/map/backtest pages. `ingest_run.run_id` identifies an ingest attempt and is not the model run identifier. Keep the meaning/time scale of mu and n_eb explicit. Agree storage for method-specific B/C predictions, paired differences, calibration, sensitivity outputs, provenance hashes, and artifact locations; ICD Table 12 alone does not specify all of these.
-
-## Decisions to resolve before code
-1. **Intersections and length:** current intersection length_m is null; 250 ft is a crash-assignment zone, not an agreed per-mile exposure. Segment geometry also runs through intersection zones. Agree the intersection rate denominator and treatment in cumulative network length without double counting.
-2. **Frozen network:** the current build deletes/replaces a version and allocates new serial site IDs. Agree immutable versioning or stable IDs before claiming reproducible rankings.
-3. **Analysis area:** ingestion is Brazos County, whereas FSR 3.2.1.1 defines the network inside College Station. Agree the city boundary, frozen network membership, and all-in-area test-crash denominator.
-4. **HIN:** no HIN table or overlap mapping exists. Agree the published geometry/version, overlap rule, length accounting, and reconstruction labeling if GIS is unavailable. Do not treat HIN membership as a training feature.
-5. **Historical provenance:** date stamps alone do not prove old information was available. Confirm dated road inventory, AADT, OSM/context features, source versions, and earlier-year lag construction.
-6. **Readiness:** S1's README says feature production, HIN loading, and PostGIS-dependent integration are unfinished/unverified. Confirm match-rate quality and CRIS severity mapping before S2 uses real inputs.
-7. **API boundary:** S4 owns REST routes and CSV/GeoJSON delivery. S2 provides stored values, not a competing web API or publication command.
-
-ICD operator commands planned for later integration are `atsc train --run-id <id>` and `atsc backtest --run-id <id>`. The shared CLI does not exist yet; the empty files in this folder do not supply these commands.
+SHAP records include source feature, value, rank, plain-language description, log-count
+contribution and a noncausal label. S4 owns display, exports, publication and rollback.

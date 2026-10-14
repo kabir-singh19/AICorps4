@@ -59,7 +59,7 @@ def rank_sites(site_id: ArrayLike, score: ArrayLike) -> np.ndarray:
 
 
 def flag_by_length(rank: ArrayLike, length_mi: ArrayLike, share: float = FLAG_SHARE,
-                   tolerance: float | None = FLAG_TOLERANCE) -> np.ndarray:
+                   tolerance: float | None = FLAG_TOLERANCE, *, allow_zero_lengths=False) -> np.ndarray:
     """Flag the top-ranked sites whose combined length is closest to `share` of the network.
 
     Sites are taken strictly in rank order, never skipped, so the flagged set is always the top
@@ -72,8 +72,10 @@ def flag_by_length(rank: ArrayLike, length_mi: ArrayLike, share: float = FLAG_SH
         raise ValueError(f"rank has shape {r.shape} but length_mi has shape {length.shape}")
     if not np.array_equal(np.sort(r), np.arange(1, r.size + 1)):
         raise ValueError("rank must run 1, 2, ..., n with no gaps or repeats")
-    if np.any(length <= 0):
-        raise ValueError("length_mi must be greater than 0 for every site")
+    if not r.size or np.any(length < 0) or (not allow_zero_lengths and np.any(length == 0)) or length.sum() <= 0:
+        raise ValueError("network lengths must be positive, or explicitly approved nonnegative allocations")
+    if tolerance is not None and (not np.isfinite(tolerance) or tolerance < 0):
+        raise ValueError("tolerance must be finite and nonnegative")
     if not 0 < share <= 1:
         raise ValueError("share must be greater than 0 and at most 1")
 
@@ -98,6 +100,8 @@ def flagged_share(flagged: ArrayLike, length_mi: ArrayLike) -> float:
     """Share of total network length covered by the flagged sites."""
     mask = np.asarray(flagged, dtype=bool)
     length = _array(length_mi, "length_mi")
+    if mask.shape != length.shape or length.ndim != 1 or np.any(length < 0) or length.sum() <= 0:
+        raise ValueError("flags and nonnegative network lengths must be aligned with positive total length")
     return float(length[mask].sum() / length.sum())
 
 
@@ -112,6 +116,8 @@ def capture_rate(crash_site_ids: Iterable, flagged_site_ids: Iterable) -> float:
     if not crashes:
         raise ValueError("no test-window crashes to score")
     flagged = set(flagged_site_ids)
+    if None in flagged:
+        raise ValueError("unmatched crashes cannot be flagged")
     return sum(site in flagged for site in crashes) / len(crashes)
 
 
