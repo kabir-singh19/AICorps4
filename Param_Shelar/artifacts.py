@@ -156,6 +156,11 @@ def write_model_card(path, run_id, snapshot, config, backtest, calibration, diag
             rows.append(f"| {method} | {result['flagged_miles']:.4f} | {result['capture']:.4f} | [{result['ci_low']:.4f}, {result['ci_high']:.4f}] |")
         else:
             rows.append(f"| {method} | - | unavailable/undefined | - |")
+    charged = next((r for r in backtest.get("sensitivity", []) if r.get("length_basis") == "zero_length_sites_charged_risk_length"
+                    and r["target"] == "fsi" and r["status"] == "ok"), None)
+    if charged:
+        rows.append("\nZero-length sites charged their risk length against the 11% budget (sensitivity): "
+                    + ", ".join(f"{m} {r['capture']:.4f} [{r['ci_low']:.4f}, {r['ci_high']:.4f}]" for m, r in sorted(charged["methods"].items())) + ".")
     scope = snapshot["metadata"].get("analysis_scope", "unknown")
     scope_line = ("Scope: full College Station public-road network (FSR 3.2.1.1)." if scope == "college_station_public_roads"
                   else f"Scope: {scope}. DIAGNOSTIC ONLY: this is not the FSR 3.2.1.1 network, "

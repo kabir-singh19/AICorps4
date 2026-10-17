@@ -64,20 +64,34 @@ def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_onl
 
 
 def evaluate(predictions, test_crashes, hin_ids, resamples=1000, seed=42):
+    methods = {m: frame for m, frame in predictions.items()}
+    ids = list(methods["C"]["site_id"].astype(str))
+    lengths = methods["C"]["network_length_mi"].to_numpy()
+    if any(list(frame.site_id.astype(str)) != ids for frame in methods.values()):
+        raise ValueError("ranking methods must use identical sites in identical order")
+    hin_share = None if hin_ids is None else sum(lengths[i] for i, sid in enumerate(ids) if sid in hin_ids)/lengths.sum()
+    shares = [0.05, 0.11, 0.20]
+    if hin_share is not None and hin_share not in shares:
+        shares.append(float(hin_share))
+    reports = _score_shares(methods, lengths, ids, shares, test_crashes, hin_ids, resamples, seed, "network_length")
+    if (lengths == 0).any():
+        # Zero-length sites (intersections under the proposed policy) cost nothing against the
+        # flagging budget. Charging them their exposure length shows how much capture that buys.
+        charged = np.where(lengths > 0, lengths, methods["C"]["risk_length_mi"].to_numpy())
+        reports += _score_shares(methods, charged, ids, [0.11], test_crashes, hin_ids, resamples, seed,
+                                 "zero_length_sites_charged_risk_length")
+    return {"primary": next(r for r in reports if r["requested_share"] == .11 and r["target"] == "fsi"),
+            "sensitivity": reports, "hin_share": hin_share,
+            "fairness_note": "A stays the published HIN at all thresholds; B/C use closest whole-site prefixes."}
+
+
+def _score_shares(methods, lengths, ids, shares, test_crashes, hin_ids, resamples, seed, basis):
     try:
         from .ranking import flag_by_length
     except ImportError:
         from ranking import flag_by_length
-    methods = {m: frame for m, frame in predictions.items()}
-    ids = list(methods["C"]["site_id"].astype(str))
-    lengths = methods["C"]["network_length_mi"].to_numpy()
     total_length = float(lengths.sum())
-    if any(list(frame.site_id.astype(str)) != ids for frame in methods.values()):
-        raise ValueError("ranking methods must use identical sites in identical order")
     hin_share = None if hin_ids is None else sum(lengths[i] for i, sid in enumerate(ids) if sid in hin_ids)/total_length
-    shares = [0.05, 0.11, 0.20]
-    if hin_share is not None and hin_share not in shares:
-        shares.append(float(hin_share))
     reports = []
     for share in shares:
         flagged, length_details = {}, {}
@@ -95,6 +109,7 @@ def evaluate(predictions, test_crashes, hin_ids, resamples=1000, seed=42):
         for target in ("fsi", "total"):
             report = bootstrap_capture(test_crashes, flagged, resamples, seed, fsi_only=target == "fsi")
             report["requested_share"] = share
+            report["length_basis"] = basis
             report["length_details"] = length_details
             report["hin_available"] = hin_ids is not None
             if hin_ids is None:
@@ -103,9 +118,7 @@ def evaluate(predictions, test_crashes, hin_ids, resamples=1000, seed=42):
                 if m in report["methods"]:
                     report["methods"][m].update(detail)
             reports.append(report)
-    return {"primary": next(r for r in reports if r["requested_share"] == .11 and r["target"] == "fsi"),
-            "sensitivity": reports, "hin_share": hin_share,
-            "fairness_note": "A stays the published HIN at all thresholds; B/C use closest whole-site prefixes."}
+    return reports
 
 
 def main(argv=None):

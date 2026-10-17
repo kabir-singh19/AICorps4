@@ -22,6 +22,8 @@ configurable subsets are recorded.
    for methods and compute paired B-A/C-A differences. Report percentile 95% intervals.
 7. Report 5% and 20% network shares, total-crash capture, and the actual HIN share for equal-length
    comparisons. A does not acquire an invented ranking at other shares. Record discrete rounding.
+   If any site has zero network length (intersections under the proposed policy), also report 11%
+   with those sites charged their risk length: otherwise B/C flag them free against the budget.
 8. Store every result, artifact, calibration/explanation and BIT record. Exact replay verifies
    scores, ranks and backtest with frozen source/library versions. No superiority condition is used.
 
