@@ -1,0 +1,1377 @@
+[
+  {
+    "site_id": "SYN001_PEDESTRIAN_SIGNAL",
+    "synthetic": true,
+    "input": {
+      "site_id": "SYN001_PEDESTRIAN_SIGNAL",
+      "site_type": "signalized intersection",
+      "crash_patterns": [
+        "pedestrian"
+      ],
+      "area_type": "urban",
+      "severity_scope": "All",
+      "synthetic": true
+    },
+    "candidates": [
+      {
+        "cm_id": "CM001",
+        "treatment": "Install high-visibility crosswalk markings",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: pedestrian."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Three- or four-leg intersections; longitudinal white thermoplastic stripes. Study included signalized and unsignalized intersections.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.6,
+          "cmf_id": "4123",
+          "crash_types": "Vehicle/pedestrian",
+          "severity_scope": "All",
+          "star_rating": 2,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=4123",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Simple before-after NYC study. Comparison group also had an 18% pedestrian-crash reduction. Do not attribute this CMF to lighting or the whole visibility-enhancement category."
+        }
+      },
+      {
+        "cm_id": "CM002",
+        "treatment": "Implement leading pedestrian interval",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: pedestrian."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing signal without LPI. LPI added at all crossings or only crossings across the minor road.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.87,
+          "cmf_id": "9918",
+          "crash_types": "Vehicle/pedestrian",
+          "severity_scope": "All",
+          "star_rating": 5,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=9918",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after; 105 sites in Chicago, NYC and Charlotte. Applies to pedestrian crashes, not all turning crashes."
+        }
+      },
+      {
+        "cm_id": "CM013",
+        "treatment": "Add 3-inch yellow retroreflective sheeting to signal backplates",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Urban signalized roadway intersections; treatment is retroreflective border on signal backplates.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.85,
+          "cmf_id": "1410",
+          "crash_types": "All",
+          "severity_scope": "All",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=1410",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after; 17 after-treatment sites. Source notes missing after-crash counts in rating. Do not substitute a CMF for a larger visibility-improvement package."
+        }
+      },
+      {
+        "cm_id": "CM015",
+        "treatment": "Provide left-turn lane on one major-road approach",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=All; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg urban signalized intersection; major-road ADT 4600-40300; minor-road ADT 100-13700.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.72,
+          "cmf_id": "267",
+          "crash_types": "All",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=267",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Adjusted SE is 0.06. This record supports one added left-turn lane, not right-turn lanes or a protected left-turn signal. KABC is not KA only."
+        }
+      },
+      {
+        "cm_id": "CM016",
+        "treatment": "Convert conventional signalized intersection to Type B median U-turn",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=All; study=A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg signalized intersection on divided roadway; major AADT 19267-72074; minor AADT 1204-58591. Match Type B layout in study Figure 2.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.7029,
+          "cmf_id": "10867",
+          "crash_types": "All",
+          "severity_scope": "A;B;C",
+          "star_rating": 5,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10867",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "ABC scope excludes fatalities in the Clearinghouse record. Do not apply to KA predictions or all reduced-left-turn-conflict designs."
+        }
+      },
+      {
+        "cm_id": "CM017",
+        "treatment": "Convert signalized intersection to modern roundabout",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=All; study=A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing signalized roadway intersection; record lists 1-2 lanes. Traffic volume limits and geometry not specified.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.22,
+          "cmf_id": "226",
+          "crash_types": "All",
+          "severity_scope": "A;B;C",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=226",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Adjusted SE is 0.07. Record labels severity ABC, not KA or KABC; preserve this distinction even when general summaries describe fatal/injury reductions. Not a stop-control conversion CMF."
+        }
+      },
+      {
+        "cm_id": "CM019",
+        "treatment": "Modify change plus clearance intervals to studied ITE 1985 practice",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: signalized intersection.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Area setting needs review: study=Not specified.",
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg signalized roadway intersections. Study evaluates change AND clearance interval retiming.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.92,
+          "cmf_id": "380",
+          "crash_types": "All",
+          "severity_scope": "All",
+          "star_rating": 2,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=380",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Adjusted SE is 0.10. HSM flags use with caution; interval includes 1.0. Historic treatment definition is not a current signal-timing design prescription or isolated yellow-only effect."
+        }
+      }
+    ],
+    "excluded": [
+      {
+        "cm_id": "CM003",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM004",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM005",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM006",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM007",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM008",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM009",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM010",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM011",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM012",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM014",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM018",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM020",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM021",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM022",
+        "reason": "Process entry without a selected treatment CMF."
+      },
+      {
+        "cm_id": "CM023",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM024",
+        "reason": "Process entry without a selected treatment CMF."
+      }
+    ],
+    "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library."
+  },
+  {
+    "site_id": "SYN002_ANGLE_UNSIGNALED",
+    "synthetic": true,
+    "input": {
+      "site_id": "SYN002_ANGLE_UNSIGNALED",
+      "site_type": "unsignalized intersection",
+      "crash_patterns": [
+        "angle"
+      ],
+      "area_type": "urban",
+      "severity_scope": "K;A",
+      "synthetic": true
+    },
+    "candidates": [
+      {
+        "cm_id": "CM018",
+        "treatment": "Apply systemic signing and marking improvement package",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: unsignalized intersection.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=K;A; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Three-/four-leg stop-controlled intersections; 2-4 lanes; major AADT 641-41731; minor AADT 102-8436. Package includes paired warning/STOP signs, reflective posts, and renewed stop/yield bars and other markings.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.899,
+          "cmf_id": "8867",
+          "crash_types": "All",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=8867",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, South Carolina; 434 sites. Applies to the package, not one sign or marking by itself."
+        }
+      }
+    ],
+    "excluded": [
+      {
+        "cm_id": "CM001",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM002",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM003",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM004",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM005",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM006",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM007",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM008",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM009",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM010",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM011",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM012",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM013",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM014",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM015",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM016",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM017",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM019",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM020",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM021",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM022",
+        "reason": "Process entry without a selected treatment CMF."
+      },
+      {
+        "cm_id": "CM023",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM024",
+        "reason": "Process entry without a selected treatment CMF."
+      }
+    ],
+    "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library."
+  },
+  {
+    "site_id": "SYN003_RURAL_DEPARTURE",
+    "synthetic": true,
+    "input": {
+      "site_id": "SYN003_RURAL_DEPARTURE",
+      "site_type": "segment",
+      "crash_patterns": [
+        "run_off_road"
+      ],
+      "area_type": "rural",
+      "severity_scope": "K;A",
+      "intersection_related": false,
+      "animal_related": false,
+      "interchange_related": false,
+      "winter_month": false,
+      "synthetic": true
+    },
+    "candidates": [
+      {
+        "cm_id": "CM007",
+        "treatment": "Install chevron signs on horizontal curves",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: run_off_road."
+        ],
+        "review_needed": [
+          "Severity scope is unknown or differs: requested=K;A; study=All. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Two-lane undivided road; no signs before treatment; AADT 261-14790. Record describes tight curves with limited sight distance and insufficient superelevation for operating/design speed.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.94,
+          "cmf_id": "2437",
+          "crash_types": "Head on;Non-intersection;Run off road;Sideswipe",
+          "severity_scope": "All",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=2437",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, Washington. Applies to chevrons, not every delineation treatment. Normal-approximation 95% interval includes 1.0."
+        }
+      },
+      {
+        "cm_id": "CM010",
+        "treatment": "Improve curve sideslope rating from 5 to 1",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: run_off_road."
+        ],
+        "review_needed": [
+          "Severity scope is unknown or differs: requested=K;A; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Two-lane undivided horizontal curves; ADT exactly 3500 in reported estimate; study rating changes from severe steep terrain (5) to nearly level recoverable terrain (1).",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.1,
+          "cmf_id": "4130",
+          "crash_types": "Run off road;Single vehicle",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=4130",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Texas cross-sectional study. Very narrow modeled contrast; not a general 90% benefit for roadside improvements. Review original rating definitions before using."
+        }
+      },
+      {
+        "cm_id": "CM011",
+        "treatment": "Install SafetyEdge with pavement resurfacing",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study exclusion conditions match the supplied flags."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=K;A; study=K;A;B. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Two-lane rural principal arterials with pavement-edge drop-offs; AADT 724-8000.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.842,
+          "cmf_id": "9200",
+          "crash_types": "All except intersection-related and animal-related crashes",
+          "severity_scope": "K;A;B",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=9200",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, Iowa. Includes minor injury but excludes possible injury and PDO in this severity scope. Normal-approximation 95% interval includes 1.0."
+        }
+      },
+      {
+        "cm_id": "CM012",
+        "treatment": "Widen edgelines from 4 inches to 6 inches",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study exclusion conditions match the supplied flags."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=K;A; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Rural two-lane highways with 4-inch edgelines before treatment. Kansas data, 2001-2007.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.635,
+          "cmf_id": "4737",
+          "crash_types": "All except intersection/interchange and winter-month crashes",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=4737",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after. This factor is for KABC crashes and excludes winter-month and intersection/interchange crashes."
+        }
+      },
+      {
+        "cm_id": "CM021",
+        "treatment": "Install high-friction surface treatment on curves",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Area setting needs review: study=Not specified.",
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=K;A; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Curves without HFST; Pennsylvania study; mean AADT 8089; record supplies no speed or traffic-volume range.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.49,
+          "cmf_id": "10319",
+          "crash_types": "All",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 5,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10319",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, 84 sites. Represents curve HFST, not all pavement-friction management or a wet-crash-only factor."
+        }
+      },
+      {
+        "cm_id": "CM023",
+        "treatment": "Convert four-lane undivided road to two through lanes plus center turn lane",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=K;A; study=All. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing four-lane undivided two-way road; AADT 3390-22500; Rhode Island study, 2011-2019.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.71,
+          "cmf_id": "11230",
+          "crash_types": "All",
+          "severity_scope": "All",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=11230",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "All crash types and severities. Not a pedestrian-specific or KA-only factor. Check traffic operations and site geometry separately."
+        }
+      }
+    ],
+    "excluded": [
+      {
+        "cm_id": "CM001",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM002",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM003",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM004",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM005",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM006",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM008",
+        "reason": "No overlap with CMF-supported crash types: Head on;Sideswipe."
+      },
+      {
+        "cm_id": "CM009",
+        "reason": "No overlap with CMF-supported crash types: Cross median."
+      },
+      {
+        "cm_id": "CM013",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM014",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM015",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM016",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM017",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM018",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM019",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM020",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM022",
+        "reason": "Process entry without a selected treatment CMF."
+      },
+      {
+        "cm_id": "CM024",
+        "reason": "Process entry without a selected treatment CMF."
+      }
+    ],
+    "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library."
+  },
+  {
+    "site_id": "SYN004_NIGHT_REAR_END",
+    "synthetic": true,
+    "input": {
+      "site_id": "SYN004_NIGHT_REAR_END",
+      "site_type": "segment",
+      "crash_patterns": [
+        "rear_end"
+      ],
+      "area_type": "urban",
+      "severity_scope": "All",
+      "time_of_day": "night",
+      "synthetic": true
+    },
+    "candidates": [
+      {
+        "cm_id": "CM014",
+        "treatment": "Replace two-way left-turn lane with raised median",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: rear_end."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing TWLTL; urban roadway; speed 30-45 mph; AADT 4883-96080.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.77,
+          "cmf_id": "2514",
+          "crash_types": "Angle;Fixed object;Head on;Rear end;Run off road;Sideswipe;Single vehicle",
+          "severity_scope": "All",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=2514",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Cross-sectional estimate. Represents this median conversion, not all access-management actions or driveway consolidation."
+        }
+      },
+      {
+        "cm_id": "CM020",
+        "treatment": "Increase roadway lighting illuminance",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Nighttime condition matches; study covers all nighttime crashes."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Roadway segment average illumination increases from 0-0.5 foot-candles to greater than 0.5 through 1.0 foot-candles; nighttime only.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.679,
+          "cmf_id": "11026",
+          "crash_types": "All nighttime crashes",
+          "severity_scope": "All",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=11026",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Tampa, Florida. Does not apply to daytime crashes or automatically represent intersection/pedestrian-specific lighting."
+        }
+      },
+      {
+        "cm_id": "CM021",
+        "treatment": "Install high-friction surface treatment on curves",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Area setting needs review: study=Not specified.",
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=All; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Curves without HFST; Pennsylvania study; mean AADT 8089; record supplies no speed or traffic-volume range.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.49,
+          "cmf_id": "10319",
+          "crash_types": "All",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 5,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10319",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, 84 sites. Represents curve HFST, not all pavement-friction management or a wet-crash-only factor."
+        }
+      },
+      {
+        "cm_id": "CM023",
+        "treatment": "Convert four-lane undivided road to two through lanes plus center turn lane",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing four-lane undivided two-way road; AADT 3390-22500; Rhode Island study, 2011-2019.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.71,
+          "cmf_id": "11230",
+          "crash_types": "All",
+          "severity_scope": "All",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=11230",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "All crash types and severities. Not a pedestrian-specific or KA-only factor. Check traffic operations and site geometry separately."
+        }
+      }
+    ],
+    "excluded": [
+      {
+        "cm_id": "CM001",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM002",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM003",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM004",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM005",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM006",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM007",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM008",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM009",
+        "reason": "No overlap with CMF-supported crash types: Cross median."
+      },
+      {
+        "cm_id": "CM010",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM011",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM012",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM013",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM015",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM016",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM017",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM018",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM019",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM022",
+        "reason": "Process entry without a selected treatment CMF."
+      },
+      {
+        "cm_id": "CM024",
+        "reason": "Process entry without a selected treatment CMF."
+      }
+    ],
+    "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library."
+  },
+  {
+    "site_id": "SYN005_DAY_REAR_END",
+    "synthetic": true,
+    "input": {
+      "site_id": "SYN005_DAY_REAR_END",
+      "site_type": "segment",
+      "crash_patterns": [
+        "rear_end"
+      ],
+      "area_type": "urban",
+      "severity_scope": "All",
+      "time_of_day": "day",
+      "synthetic": true
+    },
+    "candidates": [
+      {
+        "cm_id": "CM014",
+        "treatment": "Replace two-way left-turn lane with raised median",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: rear_end."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing TWLTL; urban roadway; speed 30-45 mph; AADT 4883-96080.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.77,
+          "cmf_id": "2514",
+          "crash_types": "Angle;Fixed object;Head on;Rear end;Run off road;Sideswipe;Single vehicle",
+          "severity_scope": "All",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=2514",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Cross-sectional estimate. Represents this median conversion, not all access-management actions or driveway consolidation."
+        }
+      },
+      {
+        "cm_id": "CM021",
+        "treatment": "Install high-friction surface treatment on curves",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Area setting needs review: study=Not specified.",
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=All; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Curves without HFST; Pennsylvania study; mean AADT 8089; record supplies no speed or traffic-volume range.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.49,
+          "cmf_id": "10319",
+          "crash_types": "All",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 5,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10319",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, 84 sites. Represents curve HFST, not all pavement-friction management or a wet-crash-only factor."
+        }
+      },
+      {
+        "cm_id": "CM023",
+        "treatment": "Convert four-lane undivided road to two through lanes plus center turn lane",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing four-lane undivided two-way road; AADT 3390-22500; Rhode Island study, 2011-2019.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.71,
+          "cmf_id": "11230",
+          "crash_types": "All",
+          "severity_scope": "All",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=11230",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "All crash types and severities. Not a pedestrian-specific or KA-only factor. Check traffic operations and site geometry separately."
+        }
+      }
+    ],
+    "excluded": [
+      {
+        "cm_id": "CM001",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM002",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM003",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM004",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM005",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM006",
+        "reason": "No overlap with CMF-supported crash types: Vehicle/pedestrian."
+      },
+      {
+        "cm_id": "CM007",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM008",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM009",
+        "reason": "No overlap with CMF-supported crash types: Cross median."
+      },
+      {
+        "cm_id": "CM010",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM011",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM012",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM013",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM015",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM016",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM017",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM018",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM019",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM020",
+        "reason": "Nighttime-only study conflicts with daytime input."
+      },
+      {
+        "cm_id": "CM022",
+        "reason": "Process entry without a selected treatment CMF."
+      },
+      {
+        "cm_id": "CM024",
+        "reason": "Process entry without a selected treatment CMF."
+      }
+    ],
+    "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library."
+  },
+  {
+    "site_id": "SYN006_SIDEWALK",
+    "synthetic": true,
+    "input": {
+      "site_id": "SYN006_SIDEWALK",
+      "site_type": "segment",
+      "crash_patterns": [
+        "pedestrian"
+      ],
+      "area_type": "urban",
+      "severity_scope": "All",
+      "synthetic": true
+    },
+    "candidates": [
+      {
+        "cm_id": "CM003",
+        "treatment": "Install raised median at uncontrolled pedestrian crossing",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: pedestrian."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: No median before treatment; 2-8 lanes; minor arterials; AADT 1245-46000. Study combined intersection and midblock locations.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.685,
+          "cmf_id": "8799",
+          "crash_types": "Vehicle/pedestrian",
+          "severity_scope": "All",
+          "star_rating": 4,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=8799",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Combined before-after and cross-sectional estimates. Not an angle-crash CMF. Published point estimate has substantial uncertainty."
+        }
+      },
+      {
+        "cm_id": "CM004",
+        "treatment": "Install pedestrian hybrid beacon (PHB/HAWK)",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: pedestrian."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Previously no PHB; uncontrolled crossings at intersection or midblock locations; minor arterials; 2-8 lanes; AADT 6634-48791.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.453,
+          "cmf_id": "9020",
+          "crash_types": "Vehicle/pedestrian",
+          "severity_scope": "All",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=9020",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Record lists regression cross-section; comments describe combined EB and cross-sectional estimation. Rating follows current posted score, not older FHWA toolbox rating."
+        }
+      },
+      {
+        "cm_id": "CM005",
+        "treatment": "Install rectangular rapid flashing beacon",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "CMF-supported crash pattern matches: pedestrian."
+        ],
+        "review_needed": [
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Previously no RRFB; uncontrolled pedestrian crossings; minor arterials; 2-8 lanes; AADT 533-49402.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.526,
+          "cmf_id": "9024",
+          "crash_types": "Vehicle/pedestrian",
+          "severity_scope": "All",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=9024",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Cross-sectional estimate; large standard error. Normal-approximation 95% interval includes 1.0. Do not present the point estimate as a guaranteed reduction."
+        }
+      },
+      {
+        "cm_id": "CM006",
+        "treatment": "Install sidewalk to avoid walking along roadway",
+        "status": "candidate_needs_review",
+        "match_kind": "specific_crash_type",
+        "reasons": [
+          "Location type matches: segment.",
+          "CMF-supported crash pattern matches: pedestrian."
+        ],
+        "review_needed": [
+          "Area setting needs review: study=Not specified.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Targets pedestrians walking along the road. Area, speed, lanes and volume limits are not supplied in this record.",
+          "Complete source verification; current status: evidence_checked_unrated",
+          "Research quality is officially unrated."
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.26,
+          "cmf_id": "1333",
+          "crash_types": "Vehicle/pedestrian",
+          "severity_scope": "All",
+          "star_rating": null,
+          "rating_status": "Cannot Be Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=1333",
+          "verification_status": "evidence_checked_unrated",
+          "limitations": "Clearinghouse says Cannot Be Rated. Compiles factors used by several states. Retain as an unrated reference; suitability and research quality remain unresolved."
+        }
+      },
+      {
+        "cm_id": "CM021",
+        "treatment": "Install high-friction surface treatment on curves",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Area setting needs review: study=Not specified.",
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Severity scope is unknown or differs: requested=All; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Curves without HFST; Pennsylvania study; mean AADT 8089; record supplies no speed or traffic-volume range.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": false,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.49,
+          "cmf_id": "10319",
+          "crash_types": "All",
+          "severity_scope": "K;A;B;C",
+          "star_rating": 5,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10319",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "Empirical Bayes before-after, 84 sites. Represents curve HFST, not all pavement-friction management or a wet-crash-only factor."
+        }
+      },
+      {
+        "cm_id": "CM023",
+        "treatment": "Convert four-lane undivided road to two through lanes plus center turn lane",
+        "status": "candidate_needs_review",
+        "match_kind": "aggregate_crash_scope",
+        "reasons": [
+          "Location type matches: segment.",
+          "Area setting is compatible with the recorded study setting.",
+          "Study covers all crash types combined."
+        ],
+        "review_needed": [
+          "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+          "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing four-lane undivided two-way road; AADT 3390-22500; Rhode Island study, 2011-2019.",
+          "Complete source verification; current status: evidence_checked_indexed"
+        ],
+        "severity_scope_matches": true,
+        "eligible_for_benefit_calculation": false,
+        "evidence": {
+          "cmf": 0.71,
+          "cmf_id": "11230",
+          "crash_types": "All",
+          "severity_scope": "All",
+          "star_rating": 3,
+          "rating_status": "Rated",
+          "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=11230",
+          "verification_status": "evidence_checked_indexed",
+          "limitations": "All crash types and severities. Not a pedestrian-specific or KA-only factor. Check traffic operations and site geometry separately."
+        }
+      }
+    ],
+    "excluded": [
+      {
+        "cm_id": "CM001",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM002",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM007",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM008",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM009",
+        "reason": "No overlap with CMF-supported crash types: Cross median."
+      },
+      {
+        "cm_id": "CM010",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM011",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM012",
+        "reason": "Known area type conflicts with the study setting."
+      },
+      {
+        "cm_id": "CM013",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM014",
+        "reason": "No overlap with CMF-supported crash types: Angle;Fixed object;Head on;Rear end;Run off road;Sideswipe;Single vehicle."
+      },
+      {
+        "cm_id": "CM015",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM016",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM017",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM018",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM019",
+        "reason": "Location type does not match the library entry."
+      },
+      {
+        "cm_id": "CM020",
+        "reason": "Nighttime status must be supplied for this CMF."
+      },
+      {
+        "cm_id": "CM022",
+        "reason": "Process entry without a selected treatment CMF."
+      },
+      {
+        "cm_id": "CM024",
+        "reason": "Process entry without a selected treatment CMF."
+      }
+    ],
+    "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library."
+  }
+]
