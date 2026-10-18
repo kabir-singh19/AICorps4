@@ -20,7 +20,9 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median; intersection legs), each value dated | Feature tables with as-of dates (due 11/3) |
 | `tests/test_validate.py` | 10 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
-| `tests/test_database.py` | 4 leakage tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
+| `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 (M2, 23 Oct) |
+| `dumps/tasc_v0_2019.sql.gz` | Database copy (schema `tasc`, network v0_2019) for teammates; see "For S2" below | IF-09 to S2 |
+| `tests/test_database.py` | 4 leakage tests + 5 S2-view contract tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
 
 ## Quickstart (the run recorded below)
 
@@ -60,9 +62,74 @@ docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v fea
 # 5. Progress figures (figures/*.png), every number queried from the database
 .venv/bin/python make_figures.py
 
+# 6. S2 interface: views, provenance and the read-only role (password from your environment)
+docker compose exec -T db psql -U tasc -d tasc -v s2_password="$S2_PASSWORD" < sql/05_s2_interface.sql
+
+# 7. Database copy for teammates
+docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --no-owner --no-privileges | gzip -9 > dumps/tasc_v0_2019.sql.gz
+
 # Optional: corridor-only CSVs
 .venv/bin/python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
 ```
+
+## For S2 (Param): getting and reading the database
+
+**Option 1, restore the copy (recommended, about 2 minutes).** Works the same on Windows, macOS
+and Linux; run from `Kabir_Singh/` after `git pull`. Docker Desktop must be running.
+
+```bash
+docker compose up -d
+# wait until the first start has finished creating the schema:
+docker compose logs db          # look for "PostgreSQL init process complete"
+docker compose cp dumps/tasc_v0_2019.sql.gz db:/tmp/tasc_v0_2019.sql.gz
+docker compose exec db sh -c "gunzip -c /tmp/tasc_v0_2019.sql.gz | psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc"
+docker compose cp sql/05_s2_interface.sql db:/tmp/05_s2_interface.sql
+docker compose exec db psql -U tasc -d tasc -v s2_password=CHOOSE_A_PASSWORD -f /tmp/05_s2_interface.sql
+```
+
+The dump replaces everything in schema `tasc`; the last command recreates the `s2_reader` role
+(roles are not in a dump) with the password you choose. Then connect S2 as the read-only role:
+`DATABASE_URL=postgresql://s2_reader:<that password>@localhost:5432/tasc` (PowerShell:
+`$env:DATABASE_URL = "..."`). Keep the password out of files you commit.
+
+**Option 2, rebuild from source.** Follow the Quickstart above. CRIS files come from CRIS Query
+(https://cris.dot.state.tx.us/public/Query): filters County = BRAZOS, City = COLLEGE STATION, one
+Crash Year per file (2016–2025), CSV, columns Crash ID, Crash Date, Crash Severity, Latitude,
+Longitude, Light Condition, Manner of Collision, Street Name; save as `raw/data_YYYY.csv`. Roads
+come from `fetch_roads.py 2019`. CRIS revises records over time, so a later download may differ
+slightly from the dump; the dump is the frozen copy used for M2.
+
+**What S2 reads** (all `SELECT` only for `s2_reader`): views `s2_site_scope`, `s2_crash_scope`,
+`s2_source_registry`, and tables `site`, `site_feature`, `crash`, `crash_match`. Write attempts
+are refused (checked: `permission denied for table crash`).
+
+**Agreed with S2 (18 Oct 2026):**
+- **Length policy:** S2's proposal. Segments keep their own length for exposure and flagging.
+  Intersections get 250 ft (0.0473 mi) exposure for their rate and 0 mi toward the 11% flagging
+  total, because segments already run through them. Flagging total: 18.07 mi.
+- **Analysis area (corridor diagnostic):** a crash is in the area if CRIS recorded it on a
+  corridor street (`corridor_street`), the `03_map_match.sql` rule. Test window 2023–2025: 59 F&SI
+  in the area, 54 on a site, 5 without coordinates (they stay in the denominator).
+- **Intersection road names:** the corridors that meet there, e.g. "University Dr & Wellborn Rd".
+
+**Source provenance** (`s2_source_availability`; the `evidence` column has the full text):
+
+| source | role | as of | available | evidence |
+|---|---|---|---|---|
+| `roadway_inventory_2019` | predictor | 2019-12-31 | 2021-08-06 | TxDOT ArcGIS item 9466b4e7c8c94af08d508078ec9e1742 created 2021-08-06; layer `dataLastEditDate` 2021-08-06 (item metadata edited 2025-02-25, data unchanged) |
+| `network v0_2019` | predictor | 2019-12-31 | 2021-08-06 | Built only from the 2019 snapshot, so it carries that date |
+| `cris_history` | history | 2022-12-31 | 2022-12-31 | Crash facts dated on or before the cutoff; CRIS may add late reports after it |
+| `cris_test` | evaluation | 2025-12-31 | 2026-10-07 | Download date of the 2023–2025 files; never used for fitting |
+
+**Checked end to end (18 Oct 2026):** S2's own `database.load_snapshot` with
+`config/corridor_diagnostic.example.json`, connected as `s2_reader`, loaded 187 sites, 935 feature
+records, 818 history rows (102 F&SI in 2016–2022) and 4,869 test crashes, and
+`leakage.validate_snapshot` passed. The dump was restored into a scratch database with the
+commands above; every table count, the 98.11% match rate and the 18.07 flagging miles matched,
+and the leakage trigger still refused a 2024 feature.
+
+**Not provided yet:** `s2_hin_site`. No HIN layer has been loaded into S1, so until it is, S2 runs
+methods B and C only.
 
 ## What has and has not been run
 

@@ -62,5 +62,54 @@ class LeakageTests(unittest.TestCase):
         self.assertEqual(self.cur.fetchone()[0], 0)
 
 
+@unittest.skipUnless(DB_UP, "database not reachable")
+class S2InterfaceTests(unittest.TestCase):
+    """The views S2 reads (sql/05_s2_interface.sql) keep their contract."""
+
+    def setUp(self):
+        self.conn = ingest.connect()
+        self.cur = self.conn.cursor()
+        self.cur.execute("SELECT to_regclass('tasc.s2_site_scope')")
+        if self.cur.fetchone()[0] is None:
+            self.skipTest("S2 views not created yet (run sql/05_s2_interface.sql)")
+
+    def tearDown(self):
+        self.conn.rollback()
+        self.conn.close()
+
+    def one(self, sql):
+        self.cur.execute(sql)
+        return self.cur.fetchone()
+
+    def test_every_site_once_with_positive_exposure(self):
+        sites, scoped, distinct, bad = self.one("""
+            SELECT (SELECT count(*) FROM tasc.site), count(*), count(DISTINCT (site_id, network_version)),
+                   count(*) FILTER (WHERE risk_length_mi <= 0 OR network_length_mi < 0)
+            FROM tasc.s2_site_scope""")
+        self.assertEqual((scoped, distinct, bad), (sites, sites, 0))
+
+    def test_intersections_add_no_flagging_length(self):
+        self.assertEqual(self.one("""
+            SELECT count(*) FROM tasc.s2_site_scope v JOIN tasc.site s USING (site_id, network_version)
+            WHERE s.site_type = 'intersection' AND v.network_length_mi <> 0""")[0], 0)
+
+    def test_every_crash_classified_once(self):
+        crashes, scoped, distinct = self.one("""
+            SELECT (SELECT count(*) FROM tasc.crash), count(*), count(DISTINCT crash_id) FROM tasc.s2_crash_scope""")
+        self.assertEqual((scoped, distinct), (crashes, crashes))
+
+    def test_predictor_and_history_sources_available_by_cutoff(self):
+        self.assertEqual(self.one("""
+            SELECT count(*) FROM tasc.s2_source_availability
+            WHERE role IN ('predictor', 'history')
+              AND (as_of_date > DATE '2022-12-31' OR available_as_of > DATE '2022-12-31')""")[0], 0)
+
+    def test_every_feature_source_is_registered(self):
+        self.assertEqual(self.one("""
+            SELECT count(DISTINCT f.source) FROM tasc.site_feature f
+            WHERE NOT EXISTS (SELECT FROM tasc.s2_source_availability a
+                              WHERE a.source = f.source AND a.role = 'predictor')""")[0], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
