@@ -4,8 +4,30 @@ Owner: Param Shelar. Source of scope: supplied Team 4 ConOps/FSR/ICD/EVP, Octobe
 
 The former placeholders now implement NB-SPF, CPU Poisson boosting with an exposure offset,
 Empirical Bayes, crash-weighted severity, length flagging, exact TreeSHAP, paired bootstrap,
-sensitivity scoring, immutable artifacts and exact replay. No real City model was trained.
-See [validation.md](docs/validation.md) for measured checks and their limits.
+sensitivity scoring, immutable artifacts and exact replay. Methods B and C have been trained and
+backtested on S1's corridor database (run `m2-corridor-001`, below); the full-city run and method A
+are still pending. See [validation.md](docs/validation.md) for measured checks and their limits.
+
+## M2 corridor diagnostic (run `m2-corridor-001`, 20 Oct 2026)
+
+Input: `Kabir_Singh/dumps/tasc_v0_2019.sql.gz` (network v0_2019, 185 segments + 2 intersections,
+18.07 flagging miles) read as `s2_reader`; config `config/corridor_diagnostic.example.json`.
+Scope `corridor_diagnostic`: three corridors, not the FSR 3.2.1.1 network, not the City backtest.
+Code: commit 1e495a1 (fingerprint `db5e49dd…`); replay and backtest reproduced exactly.
+
+Held-out 2023-2025: 59 in-area F&SI crashes (54 on a site, 5 without coordinates).
+
+| Flagged share | B capture [95% CI] | C capture [95% CI] | B - C [95% CI] |
+|---|---|---|---|
+| 5% | 23.7% [13.6, 33.9] | 22.0% [11.9, 33.9] | +1.7 pp [-3.4, +6.8] |
+| 11% | 47.5% [33.9, 59.3] | 47.5% [33.9, 59.3] | 0 (same 22 sites) |
+| 20% | 55.9% [42.4, 67.8] | 55.9% [42.4, 67.8] | 0 (same sites) |
+
+B and C are not distinguishable on this network: EB weights are 0.01-0.06, so both rankings
+follow observed 2016-2022 history (Spearman 0.999 between them). Method A is unavailable until S1
+loads the MPO HIN layer ([proposal](docs/s1_hin_view_proposal.sql); config template
+`config/corridor_diagnostic_hin.example.json`). Charts and a summary are in
+[docs/m2/m2-corridor-001/](docs/m2/m2-corridor-001/), made by `reports/m2_report.py`.
 
 ## Install and test
 
@@ -47,9 +69,9 @@ python cli.py train --run-id backtest-001 --config config/default.json --snapsho
 ```
 
 For a database run, copy `config/database.example.json` to `config/local.json`, replace its explicit
-placeholders, set `DATABASE_URL` in the environment, and run after S1 provides the required views
-(draft: [s1_views_proposal.sql](docs/s1_views_proposal.sql)). For the M2 diagnostic on the S1
-corridor network, start from `config/corridor_diagnostic.example.json` instead:
+placeholders, set `DATABASE_URL` in the environment, and run against S1's views
+(`Kabir_Singh/sql/05_s2_interface.sql`). For the M2 diagnostic on the S1 corridor network, start
+from `config/corridor_diagnostic.example.json` instead:
 
 ```bash
 python cli.py train --run-id backtest-001 --config config/local.json
