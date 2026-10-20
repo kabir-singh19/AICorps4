@@ -10,7 +10,7 @@
     "metadata": {
       "analysis_scope": "corridor_diagnostic",
       "as_of_date": "2022-12-31",
-      "length_policy": "PROPOSED, needs S1 agreement: segments use their own length for exposure and flagging; intersections use 250 ft (0.0473 mi) exposure and 0 flagging length because segments already run through them",
+      "length_policy": "Agreed with S1 on 18 Oct 2026: segments use their own length for exposure and flagging; intersections use 250 ft (0.0473 mi) exposure and 0 flagging length because segments already run through them",
       "data_versions": {
         "cris": "CRIS Query exports, College Station, 2016-2025, downloaded 2026-10-07",
         "inventory": "TxDOT roadway inventory 2019 snapshot",
