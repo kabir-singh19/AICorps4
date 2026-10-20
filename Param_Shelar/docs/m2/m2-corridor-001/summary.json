@@ -1,0 +1,559 @@
+{
+  "run_id": "m2-corridor-001",
+  "created": "2026-10-20T21:37:21.566483+00:00",
+  "code_version": "db5e49dd771f0e3f818b683fe19b5885cc9971a37bc62426368f8baa57d7df92",
+  "analysis_scope": "corridor_diagnostic",
+  "scope_note": "corridor diagnostic; not the FSR 3.2.1.1 network, not the City backtest",
+  "method_A": "unavailable: published HIN membership required",
+  "n_test_fsi": 59,
+  "unmatched_test_fsi": 5,
+  "fsi_capture": {
+    "0.05": {
+      "B": {
+        "capture": 0.23728813559322035,
+        "ci_low": 0.13516949152542376,
+        "ci_high": 0.3389830508474576,
+        "captured_crashes": 14,
+        "flagged_miles": 0.8814102919004159,
+        "flagged_share": 0.04877276298589289
+      },
+      "C": {
+        "capture": 0.22033898305084745,
+        "ci_low": 0.11864406779661017,
+        "ci_high": 0.3389830508474576,
+        "captured_crashes": 13,
+        "flagged_miles": 0.8826468510338916,
+        "flagged_share": 0.04884118787959934
+      }
+    },
+    "0.11": {
+      "B": {
+        "capture": 0.4745762711864407,
+        "ci_low": 0.3389830508474576,
+        "ci_high": 0.5932203389830508,
+        "captured_crashes": 28,
+        "flagged_miles": 1.9586546809978393,
+        "flagged_share": 0.10838198896174268
+      },
+      "C": {
+        "capture": 0.4745762711864407,
+        "ci_low": 0.3389830508474576,
+        "ci_high": 0.5932203389830508,
+        "captured_crashes": 28,
+        "flagged_miles": 1.9586546809978393,
+        "flagged_share": 0.10838198896174268
+      }
+    },
+    "0.2": {
+      "B": {
+        "capture": 0.559322033898305,
+        "ci_low": 0.423728813559322,
+        "ci_high": 0.6779661016949152,
+        "captured_crashes": 33,
+        "flagged_miles": 3.6195987600968804,
+        "flagged_share": 0.20029018727430817
+      },
+      "C": {
+        "capture": 0.559322033898305,
+        "ci_low": 0.423728813559322,
+        "ci_high": 0.6779661016949152,
+        "captured_crashes": 33,
+        "flagged_miles": 3.6195987600968804,
+        "flagged_share": 0.20029018727430817
+      }
+    },
+    "0.11_charged": {
+      "B": {
+        "capture": 0.4745762711864407,
+        "ci_low": 0.3389830508474576,
+        "ci_high": 0.5932203389830508,
+        "captured_crashes": 28,
+        "flagged_miles": 1.95571261280072,
+        "flagged_share": 0.10765507204926003
+      },
+      "C": {
+        "capture": 0.4406779661016949,
+        "ci_low": 0.3220338983050847,
+        "ci_high": 0.559322033898305,
+        "captured_crashes": 26,
+        "flagged_miles": 1.9557126128005637,
+        "flagged_share": 0.10765507204925143
+      }
+    }
+  },
+  "paired_B_minus_C": {
+    "0.05": {
+      "difference": 0.01694915254237289,
+      "ci_low": -0.03389830508474578,
+      "ci_high": 0.06779661016949154,
+      "sites_only_in_B": 1,
+      "sites_only_in_C": 1
+    },
+    "0.11": {
+      "difference": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "sites_only_in_B": 0,
+      "sites_only_in_C": 0
+    },
+    "0.2": {
+      "difference": 0.0,
+      "ci_low": 0.0,
+      "ci_high": 0.0,
+      "sites_only_in_B": 0,
+      "sites_only_in_C": 0
+    }
+  },
+  "prediction_check": {
+    "B": {
+      "bins": [
+        {
+          "bin": 0,
+          "sites": 38,
+          "exp_total": 24.997771830512193,
+          "obs_total": 23.0,
+          "exp_fsi": 1.6449219747015076,
+          "obs_fsi": 0.0
+        },
+        {
+          "bin": 1,
+          "sites": 37,
+          "exp_total": 68.15133794780955,
+          "obs_total": 66.0,
+          "exp_fsi": 3.5266068423661507,
+          "obs_fsi": 4.0
+        },
+        {
+          "bin": 2,
+          "sites": 37,
+          "exp_total": 152.94096506720516,
+          "obs_total": 168.0,
+          "exp_fsi": 4.726227009817598,
+          "obs_fsi": 6.0
+        },
+        {
+          "bin": 3,
+          "sites": 37,
+          "exp_total": 344.67307602989837,
+          "obs_total": 355.0,
+          "exp_fsi": 9.681760658346011,
+          "obs_fsi": 12.0
+        },
+        {
+          "bin": 4,
+          "sites": 38,
+          "exp_total": 985.0939429516371,
+          "obs_total": 878.0,
+          "exp_fsi": 24.447462221733478,
+          "obs_fsi": 32.0
+        }
+      ],
+      "sum_expected_total": 1575.8570938270623,
+      "sum_observed_total": 1490.0,
+      "sum_expected_fsi": 44.02697870696474,
+      "sum_observed_fsi": 54.0,
+      "spearman_expected_vs_observed_total": 0.8821735714781448
+    },
+    "C": {
+      "bins": [
+        {
+          "bin": 0,
+          "sites": 38,
+          "exp_total": 22.605942465704246,
+          "obs_total": 28.0,
+          "exp_fsi": 1.4788367082215457,
+          "obs_fsi": 0.0
+        },
+        {
+          "bin": 1,
+          "sites": 37,
+          "exp_total": 66.569652853239,
+          "obs_total": 62.0,
+          "exp_fsi": 3.4613191582112037,
+          "obs_fsi": 4.0
+        },
+        {
+          "bin": 2,
+          "sites": 37,
+          "exp_total": 152.0922873523789,
+          "obs_total": 167.0,
+          "exp_fsi": 4.80601799432315,
+          "obs_fsi": 6.0
+        },
+        {
+          "bin": 3,
+          "sites": 37,
+          "exp_total": 345.47983574632826,
+          "obs_total": 355.0,
+          "exp_fsi": 9.794001857318243,
+          "obs_fsi": 12.0
+        },
+        {
+          "bin": 4,
+          "sites": 38,
+          "exp_total": 991.2873237323648,
+          "obs_total": 878.0,
+          "exp_fsi": 24.636207415246773,
+          "obs_fsi": 32.0
+        }
+      ],
+      "sum_expected_total": 1578.0350421500152,
+      "sum_observed_total": 1490.0,
+      "sum_expected_fsi": 44.17638313332091,
+      "sum_observed_fsi": 54.0,
+      "spearman_expected_vs_observed_total": 0.8801326269202351
+    }
+  },
+  "severity_calibration": {
+    "bins": [
+      {
+        "bin": 0,
+        "known_crashes": 1072,
+        "mean_prediction": 0.022756473139896483,
+        "observed_fsi_fraction": 0.03171641791044776
+      },
+      {
+        "bin": 1,
+        "known_crashes": 1,
+        "mean_prediction": 0.11894786144880208,
+        "observed_fsi_fraction": 0.0
+      }
+    ],
+    "brier_score": 0.03068349133809931,
+    "evaluation": "20% held-out sites in the historical period; final severity model refit on all history",
+    "known_crashes": 1073,
+    "status": "ok"
+  },
+  "top_sites_C": [
+    {
+      "rank_C": 1,
+      "rank_B": 1,
+      "site_id": "2",
+      "site_type": "intersection",
+      "road_name": "Texas Ave & University Dr",
+      "fsi_rate": 6.256915893393499,
+      "flagged": true,
+      "history_crashes": 129,
+      "history_fsi": 2,
+      "test_fsi": 0,
+      "test_crashes": 56,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": null,
+          "shap": 2.16233229637146,
+          "description": "daily traffic unavailable (historical imputation used)"
+        },
+        {
+          "feature": "speed_limit",
+          "value": null,
+          "shap": 0.13650034368038177,
+          "description": "posted speed unavailable (historical imputation used)"
+        },
+        {
+          "feature": "num_lanes",
+          "value": null,
+          "shap": -0.11922838538885117,
+          "description": "traffic lanes unavailable (historical imputation used)"
+        }
+      ]
+    },
+    {
+      "rank_C": 2,
+      "rank_B": 2,
+      "site_id": "76",
+      "site_type": "segment",
+      "road_name": "Wellborn Rd",
+      "fsi_rate": 5.040105866391934,
+      "flagged": true,
+      "history_crashes": 104,
+      "history_fsi": 4,
+      "test_fsi": 0,
+      "test_crashes": 5,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 44358.0,
+          "shap": 0.19730418920516968,
+          "description": "44358.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.053375788033008575,
+          "description": "3 road functional class code"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 55.0,
+          "shap": 0.043708447366952896,
+          "description": "55.0 mph posted speed"
+        }
+      ]
+    },
+    {
+      "rank_C": 3,
+      "rank_B": 3,
+      "site_id": "69",
+      "site_type": "segment",
+      "road_name": "Wellborn Rd",
+      "fsi_rate": 4.943966161165627,
+      "flagged": true,
+      "history_crashes": 102,
+      "history_fsi": 6,
+      "test_fsi": 3,
+      "test_crashes": 50,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 44358.0,
+          "shap": 0.19730418920516968,
+          "description": "44358.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.053375788033008575,
+          "description": "3 road functional class code"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 55.0,
+          "shap": 0.043708447366952896,
+          "description": "55.0 mph posted speed"
+        }
+      ]
+    },
+    {
+      "rank_C": 4,
+      "rank_B": 4,
+      "site_id": "84",
+      "site_type": "segment",
+      "road_name": "Wellborn Rd",
+      "fsi_rate": 4.3671279297699375,
+      "flagged": true,
+      "history_crashes": 90,
+      "history_fsi": 2,
+      "test_fsi": 3,
+      "test_crashes": 33,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 44358.0,
+          "shap": 0.19730418920516968,
+          "description": "44358.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.053375788033008575,
+          "description": "3 road functional class code"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 55.0,
+          "shap": 0.043708447366952896,
+          "description": "55.0 mph posted speed"
+        }
+      ]
+    },
+    {
+      "rank_C": 5,
+      "rank_B": 5,
+      "site_id": "137",
+      "site_type": "segment",
+      "road_name": "Texas Ave",
+      "fsi_rate": 3.487306686825643,
+      "flagged": true,
+      "history_crashes": 108,
+      "history_fsi": 0,
+      "test_fsi": 0,
+      "test_crashes": 17,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 46184.0,
+          "shap": 0.5267983675003052,
+          "description": "46184.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 40.0,
+          "shap": 0.15149033069610596,
+          "description": "40.0 mph posted speed"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.0505191832780838,
+          "description": "3 road functional class code"
+        }
+      ]
+    },
+    {
+      "rank_C": 6,
+      "rank_B": 6,
+      "site_id": "157",
+      "site_type": "segment",
+      "road_name": "Texas Ave",
+      "fsi_rate": 3.408442672103331,
+      "flagged": true,
+      "history_crashes": 117,
+      "history_fsi": 3,
+      "test_fsi": 2,
+      "test_crashes": 51,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 52460.0,
+          "shap": 0.44802549481391907,
+          "description": "52460.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 40.0,
+          "shap": 0.15149033069610596,
+          "description": "40.0 mph posted speed"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.0505191832780838,
+          "description": "3 road functional class code"
+        }
+      ]
+    },
+    {
+      "rank_C": 7,
+      "rank_B": 7,
+      "site_id": "151",
+      "site_type": "segment",
+      "road_name": "Texas Ave",
+      "fsi_rate": 3.1481449843987694,
+      "flagged": true,
+      "history_crashes": 108,
+      "history_fsi": 5,
+      "test_fsi": 4,
+      "test_crashes": 60,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 52460.0,
+          "shap": 0.44802549481391907,
+          "description": "52460.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 40.0,
+          "shap": 0.15149033069610596,
+          "description": "40.0 mph posted speed"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.0505191832780838,
+          "description": "3 road functional class code"
+        }
+      ]
+    },
+    {
+      "rank_C": 8,
+      "rank_B": 8,
+      "site_id": "114",
+      "site_type": "segment",
+      "road_name": "University Dr",
+      "fsi_rate": 3.126236283449238,
+      "flagged": true,
+      "history_crashes": 68,
+      "history_fsi": 1,
+      "test_fsi": 0,
+      "test_crashes": 27,
+      "factors": [
+        {
+          "feature": "speed_limit",
+          "value": 45.0,
+          "shap": 0.1498488485813141,
+          "description": "45.0 mph posted speed"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.05637061595916748,
+          "description": "3 road functional class code"
+        },
+        {
+          "feature": "aadt",
+          "value": 31713.0,
+          "shap": -0.008689289912581444,
+          "description": "31713.0 vehicles/day daily traffic"
+        }
+      ]
+    },
+    {
+      "rank_C": 9,
+      "rank_B": 9,
+      "site_id": "112",
+      "site_type": "segment",
+      "road_name": "University Dr",
+      "fsi_rate": 3.126236283447983,
+      "flagged": true,
+      "history_crashes": 68,
+      "history_fsi": 1,
+      "test_fsi": 0,
+      "test_crashes": 25,
+      "factors": [
+        {
+          "feature": "speed_limit",
+          "value": 45.0,
+          "shap": 0.1498488485813141,
+          "description": "45.0 mph posted speed"
+        },
+        {
+          "feature": "func_class",
+          "value": "3",
+          "shap": 0.05637061595916748,
+          "description": "3 road functional class code"
+        },
+        {
+          "feature": "aadt",
+          "value": 31713.0,
+          "shap": -0.008689289912581444,
+          "description": "31713.0 vehicles/day daily traffic"
+        }
+      ]
+    },
+    {
+      "rank_C": 10,
+      "rank_B": 11,
+      "site_id": "18",
+      "site_type": "segment",
+      "road_name": "University Dr",
+      "fsi_rate": 2.969300972056893,
+      "flagged": true,
+      "history_crashes": 84,
+      "history_fsi": 4,
+      "test_fsi": 1,
+      "test_crashes": 12,
+      "factors": [
+        {
+          "feature": "aadt",
+          "value": 22462.0,
+          "shap": 0.3726764917373657,
+          "description": "22462.0 vehicles/day daily traffic"
+        },
+        {
+          "feature": "speed_limit",
+          "value": 45.0,
+          "shap": 0.2306915819644928,
+          "description": "45.0 mph posted speed"
+        },
+        {
+          "feature": "num_lanes",
+          "value": 4.0,
+          "shap": -0.1807907074689865,
+          "description": "4.0 traffic lanes"
+        }
+      ]
+    }
+  ]
+}
