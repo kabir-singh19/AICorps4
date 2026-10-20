@@ -1,0 +1,58 @@
+# 2026-10-20, branch s2-m2-training, DATABASE_URL set (s2_reader on restored tasc_v0_2019 dump)
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.7.0
+rootdir: /home/param-shelar/Desktop/AICorps4/Param_Shelar
+configfile: pytest.ini
+testpaths: tests
+plugins: cov-7.1.0, platformdirs-4.13.5, anyio-4.15.1
+collected 87 items
+
+tests/core/test_bootstrap_artifacts.py .............                     [ 14%]
+tests/core/test_contract.py ...........                                  [ 27%]
+tests/test_artifacts.py ...                                              [ 31%]
+tests/test_backtest.py ...                                               [ 34%]
+tests/test_database_contract.py .......                                  [ 42%]
+tests/test_leakage.py ...                                                [ 45%]
+tests/test_models.py ................                                    [ 64%]
+tests/test_preprocessing.py ..                                           [ 66%]
+tests/test_ranking.py ............................                       [ 98%]
+tests/test_reproducibility.py .                                          [100%]
+
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.12.3-final-0 ________________
+
+Name                                     Stmts   Miss  Cover   Missing
+----------------------------------------------------------------------
+__init__.py                                  0      0   100%
+artifacts.py                               131     14    89%   41-43, 54, 103, 117-121, 131-133, 162
+backtest.py                                123     33    73%   71, 125-155, 159
+bit.py                                      73     32    56%   12-26, 38, 42, 44, 48, 50, 52, 54, 57, 59, 68, 71, 74, 79-85, 89
+cli.py                                      17     17     0%   2-23
+database.py                                 76     10    87%   42, 45, 54, 75, 97, 112-113, 144-146
+empirical_bayes.py                          50      5    90%   38, 48, 62, 66, 69
+explanations.py                             26      3    88%   15, 29-30
+export_payload.py                           20     20     0%   2-26
+hin_baseline.py                             13      0   100%
+leakage.py                                 144     19    87%   20-21, 45, 60, 67, 69, 75, 77, 83, 90, 99, 108, 118, 121, 123, 131, 154, 156, 164
+make_demo.py                                41      5    88%   63-66, 70
+ml_risk.py                                  56      5    91%   18, 28, 34, 47, 65
+nb_spf.py                                   56      4    93%   21, 27, 51, 60
+preprocessing.py                            48      3    94%   11, 34, 41
+ranking.py                                  76      4    95%   72, 78, 104, 120
+severity.py                                 71      6    92%   17, 25, 44, 51, 74, 76
+tests/conftest.py                            3      0   100%
+tests/core/test_bootstrap_artifacts.py      78      1    99%   100
+tests/core/test_contract.py                 56      1    98%   94
+tests/test_artifacts.py                     40      0   100%
+tests/test_backtest.py                      26      0   100%
+tests/test_database_contract.py             81      0   100%
+tests/test_leakage.py                       17      0   100%
+tests/test_models.py                        77      0   100%
+tests/test_preprocessing.py                 15      0   100%
+tests/test_ranking.py                       78      0   100%
+tests/test_reproducibility.py               20      0   100%
+train.py                                   222     87    61%   13-14, 32-40, 77, 85, 106, 126, 129-135, 175, 203-271, 275
+----------------------------------------------------------------------
+TOTAL                                     1734    269    84%
+Required test coverage of 70% reached. Total coverage: 84.49%
+============================== 87 passed in 3.12s ==============================
