@@ -71,7 +71,7 @@ def validate_site(site):
 
 def match_site(site, rows):
     patterns = validate_site(site)
-    candidates, excluded = [], []
+    candidates, engineering_review, excluded = [], [], []
     for row in rows:
         reasons, review = [], []
         rejected = None
@@ -93,6 +93,7 @@ def match_site(site, rows):
             review.append('Area setting needs review: study=' + row['area_type'] + '.')
         else:
             reasons.append('Area setting is compatible with the recorded study setting.')
+        matched_patterns = []
         match_kind = 'specific_crash_type'
         if scope == 'All nighttime crashes':
             if site.get('time_of_day') == 'day':
@@ -121,6 +122,7 @@ def match_site(site, rows):
             if not overlap:
                 rejected = 'No overlap with CMF-supported crash types: ' + scope + '.'
             else:
+                matched_patterns = sorted(overlap)
                 reasons.append('CMF-supported crash pattern matches: ' + ', '.join(sorted(overlap)) + '.')
                 if patterns - supported:
                     review.append('This study does not cover every requested crash pattern.')
@@ -139,9 +141,24 @@ def match_site(site, rows):
         ])
         if row['rating_status'] == 'Cannot Be Rated':
             review.append('Research quality is officially unrated.')
-        candidates.append({
+        # Aggregate evidence is never presented as subtype-specific support.
+        # Partial matches name the supported subset explicitly.
+        if match_kind == 'aggregate_crash_scope':
+            category = 'broader_evidence'
+            category_reason = 'Aggregate crash evidence requires engineering review.'
+        elif patterns - set(matched_patterns):
+            category = 'partial_crash_type_support'
+            category_reason = 'Evidence supports only part of the requested crash pattern list.'
+        else:
+            category = 'direct_crash_type_support'
+            category_reason = 'Recorded CMF crash types explicitly cover all requested patterns.'
+        destination = candidates if category == 'direct_crash_type_support' else engineering_review
+        destination.append({
             'cm_id': row['cm_id'], 'treatment': row['specific_treatment'],
-            'status': 'candidate_needs_review', 'match_kind': match_kind,
+            'status': 'candidate_needs_review' if destination is candidates else 'engineering_review_only',
+            'category': category, 'category_reason': category_reason,
+            'matched_crash_patterns': matched_patterns,
+            'match_kind': match_kind,
             'reasons': reasons, 'review_needed': review,
             'severity_scope_matches': severity_match,
             'eligible_for_benefit_calculation': False,
@@ -150,12 +167,17 @@ def match_site(site, rows):
                          'star_rating': int(row['star_rating']) if row['star_rating'] else None,
                          'rating_status': row['rating_status'], 'source_url': row['source_url'],
                          'verification_status': row['verification_status'],
+                         'record_check_status': row.get('record_check_status', 'unknown'),
+                         'original_study_review_status': row.get('original_study_review_status', 'unknown'),
+                         'review_date': row.get('review_date', ''),
+                         'study_reference': row.get('study_reference', ''),
                          'limitations': row['limitations']},
         })
     # Stable ID order is deliberate: the prototype does not rank effectiveness.
     return {'site_id': site['site_id'], 'synthetic': site.get('synthetic', False),
-            'input': site, 'candidates': candidates, 'excluded': excluded,
-            'notice': 'Preliminary screening only. No crash reductions or benefit rankings are calculated. No candidates means no supported match in this small library.'}
+            'input': site, 'candidates': candidates,
+            'engineering_review': engineering_review, 'excluded': excluded,
+            'notice': 'Preliminary screening only. No crash reductions or benefit rankings are calculated. Direct means crash-type support only, not verified site suitability. Broader/partial evidence is listed separately for engineering review.'}
 
 
 def main():
@@ -175,13 +197,22 @@ def main():
         for result in results:
             print('\n' + result['site_id'] + ' (synthetic=' + str(result['synthetic']) + ')')
             print(result['notice'])
-            for candidate in result['candidates']:
-                print('  ' + candidate['cm_id'] + ': ' + candidate['treatment'])
-                for reason in candidate['reasons']:
-                    print('    MATCH: ' + reason)
-                for item in candidate['review_needed']:
-                    print('    REVIEW: ' + item)
-            print('Candidates:', len(result['candidates']))
+            for key, heading in (
+                ('candidates', 'DIRECT CRASH-TYPE MATCHES (still need site review)'),
+                ('engineering_review', 'ENGINEERING REVIEW ONLY (broader or partial evidence)'),
+            ):
+                print('  ' + heading)
+                if not result[key]:
+                    print('    None.')
+                for candidate in result[key]:
+                    print('    ' + candidate['cm_id'] + ': ' + candidate['treatment'])
+                    print('      CATEGORY: ' + candidate['category_reason'])
+                    for reason in candidate['reasons']:
+                        print('      MATCH: ' + reason)
+                    for item in candidate['review_needed']:
+                        print('      REVIEW: ' + item)
+            print('Direct matches:', len(result['candidates']),
+                  '| Engineering review only:', len(result['engineering_review']))
     except (ValueError, OSError) as error:
         parser.error(str(error))
 
