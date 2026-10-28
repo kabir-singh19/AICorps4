@@ -126,6 +126,32 @@ class ValidateTests(unittest.TestCase):
         finally:
             os.unlink(f.name)
 
+    def test_crash_details_parse_and_reject(self):
+        header = ["Crash ID", "Crash Death Count", "Intersection Related", "Median Width plus Both Inside Shoulders",
+                  "Number of Lanes", "Roadway Type", "Speed Limit", "Surface Condition", "Weather Condition"]
+        rows = [
+            [1, "1", "INTERSECTION", "16", "6", "4 OR MORE LANES, DIVIDED", "45", "2 - WET", "3 - RAIN"],
+            [2, "0", "NON INTERSECTION", "No Data", "No Data", "No Data", "-1", "1 - DRY", "1 - CLEAR"],
+            [2, "0", "NON INTERSECTION", "0", "4", "x", "40", "1 - DRY", "1 - CLEAR"],     # duplicate
+            [3, "0", "NON INTERSECTION", "wide", "4", "x", "40", "1 - DRY", "1 - CLEAR"],  # bad number
+            [99, "0", "NON INTERSECTION", "0", "4", "x", "40", "1 - DRY", "1 - CLEAR"],    # not loaded
+        ]
+        f = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="")
+        w = csv.writer(f)
+        w.writerow(["Query Result Counts:"])
+        w.writerow(header)
+        w.writerows(rows)
+        f.close()
+        try:
+            good, rejects, total = ingest.validate_detail_file(f.name, known_ids={1, 2, 3})
+        finally:
+            os.unlink(f.name)
+        self.assertEqual((len(good), len(rejects), total), (2, 3, 5))
+        self.assertEqual(good[0]["death_count"], 1)
+        self.assertEqual(good[0]["weather_condition"], "3 - RAIN")
+        self.assertIsNone(good[1]["median_width_ft_reported"])     # No Data -> NULL
+        self.assertIsNone(good[1]["speed_limit_reported"])         # -1 -> NULL
+
     def test_missing_required_column_is_reported(self):
         with self.assertRaises(ValueError):
             ingest.resolve_columns(["Crash ID", "Latitude", "Longitude"])

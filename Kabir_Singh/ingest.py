@@ -4,6 +4,7 @@
     python ingest.py crashes data/cris_2022.csv               # validate, then load
     python ingest.py roads   data/roadway_brazos.geojson --as-of 2022-12-31
     python ingest.py corridors                                # study-corridor street spellings
+    python ingest.py crash-details data/new_features_2022.csv # extra crash columns (weather, ...)
 
 A crash file with more than 2% bad records is rejected whole: nothing is loaded, the run is
 logged as 'rejected', and the script exits with code 2 so a pipeline stops there.
@@ -195,6 +196,76 @@ def validate_crash_file(path):
     return good, rejects, total
 
 
+# Extra per-crash columns from a second CRIS Query export, added to crashes already loaded.
+# (database column, CRIS header, kind). Road Base Type and Surface Type are not here: they were
+# "No Data" for every 2016-2025 College Station crash. The four *_reported road columns are what
+# the officer recorded; road attributes for every segment come from the TxDOT inventory instead.
+CRASH_DETAIL_COLUMNS = [
+    ("death_count",          "Crash Death Count",                       "int"),
+    ("intersection_related", "Intersection Related",                    "text"),
+    ("weather_condition",    "Weather Condition",                       "text"),
+    ("surface_condition",    "Surface Condition",                       "text"),
+    ("speed_limit_reported", "Speed Limit",                             "int"),
+    ("num_lanes_reported",   "Number of Lanes",                         "int"),
+    ("median_width_ft_reported", "Median Width plus Both Inside Shoulders", "int"),
+    ("roadway_type_reported", "Roadway Type",                           "text"),
+]
+
+
+def validate_detail_file(path, known_ids):
+    """Read a CRIS export of extra crash columns. Returns (good, rejects, total).
+
+    A row is bad if its Crash ID is missing, repeated, or not already in the crash table, or if
+    a number column holds something other than a number or a missing marker. Missing markers
+    ('No Data', blank) and the CRIS speed limit -1 become NULL.
+    """
+    good, rejects, seen = [], [], set()
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        skip_preamble(f)
+        reader = csv.DictReader(f)
+        by_norm = {_norm(h): h for h in reader.fieldnames or []}
+        cols = {"crash_id": by_norm.get(_norm("Crash ID"))}
+        for db_col, header, _ in CRASH_DETAIL_COLUMNS:
+            cols[db_col] = by_norm.get(_norm(header))
+        missing = [h for (c, h, _) in CRASH_DETAIL_COLUMNS if cols[c] is None]
+        if cols["crash_id"] is None or missing:
+            raise ValueError(f"Could not find column(s) {missing or ['Crash ID']}. Header: {reader.fieldnames}")
+        total = 0
+        for total, row in enumerate(reader, start=1):
+            raw_id = (row[cols["crash_id"]] or "").strip()
+            if not raw_id.isdigit():
+                rejects.append((total, "crash_id missing or not a number", row))
+                continue
+            crash_id = int(raw_id)
+            if crash_id in seen:
+                rejects.append((total, "duplicate crash_id in file", row))
+                continue
+            if crash_id not in known_ids:
+                rejects.append((total, "crash_id not loaded yet (run ingest.py crashes first)", row))
+                continue
+            record, reason = {"crash_id": crash_id}, None
+            for db_col, _, kind in CRASH_DETAIL_COLUMNS:
+                value = (row[cols[db_col]] or "").strip()
+                if value.upper() in MISSING_VALUES:
+                    record[db_col] = None
+                elif kind == "int":
+                    try:
+                        record[db_col] = int(value)
+                    except ValueError:
+                        reason = f"{db_col} not a number: {value!r}"
+                        break
+                    if db_col == "speed_limit_reported" and record[db_col] < 0:
+                        record[db_col] = None      # CRIS writes -1 for "not recorded"
+                else:
+                    record[db_col] = value
+            if reason:
+                rejects.append((total, reason, row))
+                continue
+            seen.add(crash_id)
+            good.append(record)
+    return good, rejects, total
+
+
 def exceeds_limit(n_bad, n_total):
     """FSR 3.2.3.1.2: stop if MORE than 2% fail. Exactly 2% passes. An empty file also stops."""
     return n_total == 0 or n_bad / n_total > BAD_RECORD_LIMIT
@@ -311,6 +382,35 @@ def cmd_roads(args):
     return 0
 
 
+def cmd_crash_details(args):
+    """Add the CRASH_DETAIL_COLUMNS to crashes already in tasc.crash, matched by Crash ID."""
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("SELECT crash_id FROM tasc.crash")
+        known = {r[0] for r in cur.fetchall()}
+        good, rejects, total = validate_detail_file(args.file, known)
+        n_bad = len(rejects)
+        pct = 100.0 * n_bad / total if total else 100.0
+        stop = exceeds_limit(n_bad, total)
+        print(f"{args.file}: {total} rows, {n_bad} bad ({pct:.2f}%), limit {BAD_RECORD_LIMIT:.0%}")
+        for reason in sorted({r for _, r, _ in rejects}):
+            print(f"  {sum(1 for _, r, _ in rejects if r == reason):6d}  {reason}")
+        if stop:
+            print("REJECTED: bad-record limit reached. Nothing loaded.")
+        if args.dry_run:
+            conn.rollback()
+            return 2 if stop else 0
+        run_id = log_run(cur, "cris_details", args.file, total, n_bad, "rejected" if stop else "loaded")
+        cur.executemany(
+            "INSERT INTO tasc.ingest_reject (run_id, row_number, reason, raw) VALUES (%s, %s, %s, %s)",
+            [(run_id, n, reason, json.dumps(raw)) for n, reason, raw in rejects],
+        )
+        if not stop:
+            sets = ", ".join(f"{c} = %({c})s" for c, _, _ in CRASH_DETAIL_COLUMNS)
+            cur.executemany(f"UPDATE tasc.crash SET {sets} WHERE crash_id = %(crash_id)s", good)
+            print(f"Updated {len(good)} crashes (run_id {run_id}).")
+    return 2 if stop else 0
+
+
 def cmd_corridors(args):
     """Replace tasc.corridor_street with the spellings in corridors.py."""
     from corridors import CORRIDORS
@@ -338,6 +438,11 @@ def main(argv=None):
     r.add_argument("--as-of", required=True, help="date the data describes, YYYY-MM-DD")
     r.add_argument("--source", default="roadway_inventory")
     r.set_defaults(func=cmd_roads)
+
+    d = sub.add_parser("crash-details", help="add extra CRIS crash columns to crashes already loaded")
+    d.add_argument("file")
+    d.add_argument("--dry-run", action="store_true", help="validate only; change nothing")
+    d.set_defaults(func=cmd_crash_details)
 
     k = sub.add_parser("corridors", help="load the study-corridor street spellings from corridors.py")
     k.set_defaults(func=cmd_corridors)

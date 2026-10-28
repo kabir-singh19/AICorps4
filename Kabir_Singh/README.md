@@ -11,6 +11,7 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `sql/init/01_schema.sql` | Tables, views, and the leakage trigger. Runs on first start. | "owns the database schema" |
 | `ingest.py crashes` | Validates a CRIS CSV, rejects the whole file at more than 2% bad records, loads the rest | 2% bad-record stop (FSR 3.2.3.1.2) |
 | `ingest.py roads` | Loads TxDOT roadway inventory GeoJSON into UTM 14N | IF-02 |
+| `ingest.py crash-details` | Adds weather, surface, deaths and officer-recorded road columns to loaded crashes | IF-01 crash attributes |
 | `ingest.py corridors` | Loads the study-corridor street spellings from `corridors.py` | Corridor scope |
 | `fetch_roads.py` | Downloads Brazos County roadway inventory snapshots from TxDOT | IF-02 |
 | `corridors.py` | The three corridors: TxDOT route code + every CRIS street spelling | Corridor scope |
@@ -44,6 +45,9 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 # 1. Crashes: check, then load (one file per year)
 .venv/bin/python ingest.py crashes ../../raw/data_2022.csv --dry-run
 for f in ../../raw/data_20*.csv; do .venv/bin/python ingest.py crashes "$f"; done
+
+# 1b. Extra crash columns (second CRIS export: weather, surface, deaths, reported road)
+for f in "../../new features for database"/new_features_20*.csv; do .venv/bin/python ingest.py crash-details "$f"; done
 
 # 2. Roads (2019 snapshot for the backtest) and the corridor spellings
 .venv/bin/python fetch_roads.py 2019 --out ../../raw/roads
@@ -159,6 +163,15 @@ methods B and C only.
   intersections, all dated 2019-12-31. Ranges: speed 35–70 mph, AADT 5,900–55,742.
   `tests/test_database.py`: a seeded 2024 feature is refused from `backtest_2022` and accepted into
   `current`; a feature dated exactly 2022-12-31 is accepted; 14/14 tests pass.
+- **Crash details (28 Oct 2026):** a second CRIS Query export per year (same filters, files
+  `new_features_YYYY.csv`, same 16,539 Crash IDs) loaded with `ingest.py crash-details`, 0% bad.
+  Eight columns added to `crash`: `death_count`, `intersection_related`, `weather_condition`,
+  `surface_condition`, and the officer-recorded `speed_limit_reported`, `num_lanes_reported`,
+  `median_width_ft_reported`, `roadway_type_reported`. Road Base Type and Surface Type were
+  "No Data" for every crash and are not stored. These describe each crash, not the road, so they
+  are not `site_feature` values: the reported road columns only exist where a crash happened.
+  Checks: deaths sum to 44, one or more on each of the 44 K crashes. Reported speed equals the
+  TxDOT 2019 speed on 58.4% of 4,819 matched segment crashes (84% within 5 mph).
 - **Not yet run:** OSM, streetlights, HIN. `func_class` and `median_type` are TxDOT codes, not yet
   translated to plain language.
 

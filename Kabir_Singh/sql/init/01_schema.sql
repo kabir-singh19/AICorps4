@@ -41,6 +41,18 @@ CREATE TABLE crash (
     crash_type      text,
     light_condition text,
     street_name     text,                          -- CRIS "Street Name", as written in the file
+    -- Added by `ingest.py crash-details` from a second CRIS export (NULL until then).
+    -- Conditions at the time of the crash: describe the crash, not the road; not site features.
+    death_count          integer,
+    intersection_related text,                     -- INTERSECTION / INTERSECTION RELATED / ...
+    weather_condition    text,                     -- e.g. '3 - RAIN'
+    surface_condition    text,                     -- e.g. '2 - WET'
+    -- Road as the officer recorded it. Only exists where a crash happened, so a cross-check on
+    -- the TxDOT inventory, not a predictor (a crash-free segment would look like missing data).
+    speed_limit_reported     integer,              -- mph; CRIS -1 stored as NULL
+    num_lanes_reported       integer,
+    median_width_ft_reported integer,              -- median plus both inside shoulders, ft
+    roadway_type_reported    text,                 -- e.g. '4 OR MORE LANES, DIVIDED'
     lat             double precision,
     lon             double precision,
     geom            geometry(Point, 32614),        -- NULL when CRIS has no coordinates
