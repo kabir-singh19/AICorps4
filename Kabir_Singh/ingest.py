@@ -18,11 +18,13 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import date, datetime
 
 BAD_RECORD_LIMIT = 0.02            # FSR: more than 2% bad records stops the pipeline
-YEAR_RANGE = (2015, 2025)          # crash years the project uses
-TEXAS_BBOX = (25.8, 36.6, -106.7, -93.5)   # lat_min, lat_max, lon_min, lon_max
+YEAR_RANGE = (2015, date.today().year)     # crash years accepted: 2015 through the current year
+# Brazos County (crash ingest covers the county): extent of the TxDOT roads with CO = 21,
+# lat 30.361-30.974, lon -96.585 to -96.106, plus about 2 km. A crash outside it was mis-geocoded.
+BRAZOS_BBOX = (30.34, 30.99, -96.61, -96.08)   # lat_min, lat_max, lon_min, lon_max
 # Text CRIS uses for "no value". A coordinate with one of these means "not geocoded", not bad.
 MISSING_VALUES = {"", "NO DATA", "NA", "N/A", "NULL", "NONE"}
 DEFAULT_DB = "postgresql://tasc:tasc@localhost:5432/tasc"
@@ -108,11 +110,12 @@ def parse_date(value):
     return None
 
 
-def validate_row(row, cols, seen_ids):
+def validate_row(row, cols, seen_ids, file_year=None):
     """Return (record, None) for a good row or (None, reason) for a bad one.
 
     A crash with no coordinates (blank, 0,0, or text like 'No Data') is NOT a bad record: it is
     loaded without a location and logged later by the map-matching step as 'no_coordinates'.
+    file_year, when the export says which Crash Year it was filtered to, must match the crash date.
     """
     raw_id = (row.get(cols["crash_id"]) or "").strip()
     if not raw_id.isdigit():
@@ -126,6 +129,8 @@ def validate_row(row, cols, seen_ids):
         return None, "crash_date missing or unreadable"
     if not YEAR_RANGE[0] <= crash_date.year <= YEAR_RANGE[1]:
         return None, f"crash_date outside {YEAR_RANGE[0]}-{YEAR_RANGE[1]}"
+    if file_year is not None and crash_date.year != file_year:
+        return None, "crash_date year differs from the file's Crash Year filter"
 
     severity = parse_severity(row.get(cols["severity"]) or "")
     if severity is None:
@@ -145,8 +150,8 @@ def validate_row(row, cols, seen_ids):
             return None, "latitude/longitude not numeric"
         if lat == 0 and lon == 0:
             lat = lon = None                      # 0,0 means "not geocoded"
-        elif not (TEXAS_BBOX[0] <= lat <= TEXAS_BBOX[1] and TEXAS_BBOX[2] <= lon <= TEXAS_BBOX[3]):
-            return None, "coordinates outside Texas"
+        elif not (BRAZOS_BBOX[0] <= lat <= BRAZOS_BBOX[1] and BRAZOS_BBOX[2] <= lon <= BRAZOS_BBOX[3]):
+            return None, "coordinates outside Brazos County"
 
     seen_ids.add(crash_id)
     return {
@@ -167,7 +172,9 @@ def skip_preamble(f):
     CRIS Query exports start with a disclaimer, result counts and the filters used, and put the
     column names on about line 12. Search for the row whose first cell is 'Crash ID' rather than
     skipping a fixed number of lines, so a longer or missing preamble still works.
+    Returns the preamble lines (empty when the file starts with the header).
     """
+    preamble = []
     while True:
         pos = f.tell()
         line = f.readline()
@@ -176,19 +183,29 @@ def skip_preamble(f):
         first_cell = next(csv.reader([line]), [""])
         if first_cell and _norm(first_cell[0]) == _norm(CRIS_COLUMNS["crash_id"][0]):
             f.seek(pos)
-            return
+            return preamble
+        preamble.append(line)
+
+
+def preamble_year(preamble):
+    """The year from a CRIS Query filter line 'Crash Year Is Equal To 2018', or None."""
+    for line in preamble:
+        m = re.search(r"Crash Year Is Equal To (\d{4})", line, re.IGNORECASE)
+        if m:
+            return int(m.group(1))
+    return None
 
 
 def validate_crash_file(path):
     """Read a CRIS CSV. Returns (good_records, rejects, total) where rejects = [(row_number, reason, raw_row)]."""
     good, rejects, seen = [], [], set()
     with open(path, newline="", encoding="utf-8-sig") as f:
-        skip_preamble(f)
+        file_year = preamble_year(skip_preamble(f))
         reader = csv.DictReader(f)
         cols = resolve_columns(reader.fieldnames or [])
         total = 0
         for total, row in enumerate(reader, start=1):
-            record, reason = validate_row(row, cols, seen)
+            record, reason = validate_row(row, cols, seen, file_year)
             if record:
                 good.append(record)
             else:
@@ -296,12 +313,26 @@ def log_run(cur, source, path, total, n_bad, status, note=None):
     return cur.fetchone()[0]
 
 
-def cmd_crashes(args):
-    good, rejects, total = validate_crash_file(args.file)
+def cross_file_duplicates(cur, good, path):
+    """Split good records into (kept, rejects): a crash already loaded from a DIFFERENT file is a
+    duplicate across files (e.g. the same crash in two years' exports). Reloading the same file
+    name is allowed and updates the crash."""
+    rownum = {r["crash_id"]: i for i, r in enumerate(good, start=1)}
+    cur.execute("""SELECT c.crash_id, r.file_name FROM tasc.crash c JOIN tasc.ingest_run r USING (run_id)
+                   WHERE c.crash_id = ANY(%s) AND r.file_name <> %s""",
+                (list(rownum), os.path.basename(path)))
+    clash = dict(cur.fetchall())
+    kept = [r for r in good if r["crash_id"] not in clash]
+    rejects = [(rownum[r["crash_id"]], f"crash_id already loaded from {clash[r['crash_id']]}",
+                {k: str(v) for k, v in r.items()}) for r in good if r["crash_id"] in clash]
+    return kept, rejects
+
+
+def report(path, total, rejects):
     n_bad = len(rejects)
     pct = 100.0 * n_bad / total if total else 100.0
     stop = exceeds_limit(n_bad, total)
-    print(f"{args.file}: {total} rows, {n_bad} bad ({pct:.2f}%), limit {BAD_RECORD_LIMIT:.0%}")
+    print(f"{path}: {total} rows, {n_bad} bad ({pct:.2f}%), limit {BAD_RECORD_LIMIT:.0%}")
     reasons = {}
     for _, reason, _ in rejects:
         reasons[reason] = reasons.get(reason, 0) + 1
@@ -309,9 +340,21 @@ def cmd_crashes(args):
         print(f"  {n:6d}  {reason}")
     if stop:
         print("REJECTED: bad-record limit reached. Nothing loaded.")
+    return stop
 
-    if not args.dry_run:
+
+def cmd_crashes(args):
+    good, rejects, total = validate_crash_file(args.file)
+
+    if args.dry_run:
+        stop = report(args.file, total, rejects)
+        print("  (dry run: duplicates against crashes already in the database were not checked)")
+    else:
         with connect() as conn, conn.cursor() as cur:
+            good, dup_rejects = cross_file_duplicates(cur, good, args.file)
+            rejects = sorted(rejects + dup_rejects, key=lambda r: r[0])
+            n_bad = len(rejects)
+            stop = report(args.file, total, rejects)
             run_id = log_run(cur, "cris", args.file, total, n_bad, "rejected" if stop else "loaded")
             cur.executemany(
                 "INSERT INTO tasc.ingest_reject (run_id, row_number, reason, raw) VALUES (%s, %s, %s, %s)",
@@ -368,8 +411,21 @@ def cmd_roads(args):
         })
     skipped = len(features) - len(rows)
     with connect() as conn, conn.cursor() as cur:
+        # Reloading a source replaces it rather than adding a second copy of every road. If a
+        # built network still uses those roads, stop: delete or rebuild that network version first.
+        cur.execute("""SELECT count(*), string_agg(DISTINCT s.network_version, ', ')
+                       FROM tasc.site s JOIN tasc.road r USING (road_id) WHERE r.source = %s""", (args.source,))
+        used, versions = cur.fetchone()
+        if used:
+            print(f"STOPPED: network {versions} is built from source {args.source!r} ({used} sites). "
+                  f"Delete it first (DELETE FROM tasc.site WHERE network_version = ...), reload, then rebuild it. "
+                  f"Nothing changed.")
+            return 2
+        cur.execute("DELETE FROM tasc.road WHERE source = %s", (args.source,))
+        replaced = cur.rowcount
         run_id = log_run(cur, args.source, args.file, len(features), skipped, "loaded",
-                         note="rows_bad = features with no geometry")
+                         note="rows_bad = features with no geometry"
+                              + (f"; replaced {replaced} earlier rows of this source" if replaced else ""))
         cur.executemany(
             """INSERT INTO tasc.road (geom, route_name, roadbed, city_code, func_class, num_lanes, speed_limit,
                                       median_type, aadt, aadt_year, source, as_of_date, run_id)
@@ -378,7 +434,8 @@ def cmd_roads(args):
                       %(aadt)s, %(aadt_year)s, %(source)s, %(as_of)s::date, %(run_id)s""",
             [dict(r, run_id=run_id) for r in rows],
         )
-    print(f"Loaded {len(rows)} road features ({skipped} skipped, no geometry). run_id {run_id}")
+    print(f"Loaded {len(rows)} road features ({skipped} skipped, no geometry"
+          + (f"; replaced {replaced} earlier rows" if replaced else "") + f"). run_id {run_id}")
     return 0
 
 

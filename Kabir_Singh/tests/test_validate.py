@@ -126,6 +126,45 @@ class ValidateTests(unittest.TestCase):
         finally:
             os.unlink(f.name)
 
+    def test_current_year_is_accepted(self):
+        # Guardrail: new years must load without editing the code (YEAR_RANGE ends at today's year).
+        this_year = ingest.date.today().year
+        good, rejects, _ = self.run_file([[1, f"03/14/{this_year}", "2", "30.6280", "-96.3344", "1"]])
+        self.assertEqual((len(good), len(rejects)), (1, 0))
+
+    def test_crash_outside_brazos_county_is_bad(self):
+        # Guardrail: a crash geocoded to Houston is in Texas but not in Brazos County.
+        good, rejects, _ = self.run_file([[1, "03/14/2021", "2", "29.7604", "-95.3698", "1"]])
+        self.assertEqual(len(good), 0)
+        self.assertEqual(rejects[0][1], "coordinates outside Brazos County")
+
+    def write_cris_export(self, year, rows):
+        """A file shaped like a CRIS Query export, with its Crash Year filter in the preamble."""
+        f = tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False, newline="")
+        w = csv.writer(f)
+        w.writerows([["All crash data available using this tool ..."], [], ["Filters Applied to current Query:"],
+                     [f"Crash Year Is Equal To {year}"], ["County Is Equal To BRAZOS"], []])
+        w.writerow(["Crash ID", "Crash Date", "Crash Severity", "Latitude", "Longitude"])
+        w.writerows(rows)
+        f.close()
+        return f.name
+
+    def test_date_outside_the_files_year_is_bad(self):
+        # Guardrail: a 2017 crash inside the 2018 export (a shifted date) is caught.
+        path = self.write_cris_export(2018, [[1, "2018-05-01", "B - SUSPECTED MINOR INJURY", "30.6", "-96.3"],
+                                             [2, "2017-05-01", "B - SUSPECTED MINOR INJURY", "30.6", "-96.3"]])
+        try:
+            good, rejects, _ = ingest.validate_crash_file(path)
+        finally:
+            os.unlink(path)
+        self.assertEqual([r["crash_id"] for r in good], [1])
+        self.assertEqual(rejects[0][1], "crash_date year differs from the file's Crash Year filter")
+
+    def test_file_without_year_filter_skips_the_year_check(self):
+        good, rejects, _ = self.run_file([[1, "03/14/2017", "2", "30.6", "-96.3", "1"],
+                                          [2, "03/14/2021", "2", "30.6", "-96.3", "1"]])
+        self.assertEqual((len(good), len(rejects)), (2, 0))
+
     def test_crash_details_parse_and_reject(self):
         header = ["Crash ID", "Crash Death Count", "Intersection Related", "Median Width plus Both Inside Shoulders",
                   "Number of Lanes", "Roadway Type", "Speed Limit", "Surface Condition", "Weather Condition"]

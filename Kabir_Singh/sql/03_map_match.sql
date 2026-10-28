@@ -16,6 +16,15 @@
 SET search_path = tasc, public;
 BEGIN;
 
+-- Guard: without the corridor spellings every crash would quietly become 'off_corridor' and the
+-- match rate would come back empty, so stop with a clear message instead.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM tasc.corridor_street) THEN
+        RAISE EXCEPTION 'tasc.corridor_street is empty: run "python ingest.py corridors" first. Nothing was matched.';
+    END IF;
+END $$;
+
 DELETE FROM crash_match WHERE network_version = :'network_version';
 
 INSERT INTO crash_match (crash_id, network_version, site_id, nearest_site_id, distance_m, tolerance_m, status, reason)

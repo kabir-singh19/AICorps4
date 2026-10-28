@@ -5,8 +5,13 @@
 
 Every test runs inside a transaction that is rolled back, so the database is left unchanged.
 """
+import contextlib
+import io
+import json
 import os
+import re
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -111,6 +116,86 @@ class S2InterfaceTests(unittest.TestCase):
             SELECT count(DISTINCT f.source) FROM tasc.site_feature f
             WHERE NOT EXISTS (SELECT FROM tasc.s2_source_availability a
                               WHERE a.source = f.source AND a.role = 'predictor')""")[0], 0)
+
+
+@unittest.skipUnless(DB_UP, "database not reachable")
+class GuardrailTests(unittest.TestCase):
+    """Rerun and missing-step mistakes are stopped instead of silently corrupting data."""
+
+    def tmp(self, suffix, text):
+        f = tempfile.NamedTemporaryFile("w", suffix=suffix, delete=False, newline="", dir=tempfile.gettempdir(),
+                                        prefix="tasc_guardrail_")
+        f.write(text)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def sql(self, statement, params=None):
+        with ingest.connect() as conn, conn.cursor() as cur:
+            cur.execute(statement, params)
+            return cur.fetchall() if cur.description else None
+
+    def test_reloading_roads_replaces_instead_of_duplicating(self):
+        source = "test_guardrail_roads"
+        geojson = json.dumps({"type": "FeatureCollection", "features": [
+            {"type": "Feature", "properties": {"HWY": "TEST1"},
+             "geometry": {"type": "LineString", "coordinates": [[-96.30, 30.60], [-96.31, 30.61]]}},
+            {"type": "Feature", "properties": {"HWY": "TEST2"},
+             "geometry": {"type": "LineString", "coordinates": [[-96.32, 30.62], [-96.33, 30.63]]}}]})
+        path = self.tmp(".geojson", geojson)
+
+        def cleanup():
+            self.sql("DELETE FROM tasc.road WHERE source = %s", (source,))
+            self.sql("DELETE FROM tasc.ingest_run WHERE source = %s", (source,))
+        self.addCleanup(cleanup)
+        for _ in range(2):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(ingest.main(["roads", path, "--as-of", "2019-12-31", "--source", source]), 0)
+        self.assertEqual(self.sql("SELECT count(*) FROM tasc.road WHERE source = %s", (source,))[0][0], 2)
+
+    def test_reloading_roads_used_by_a_network_is_refused(self):
+        used = self.sql("""SELECT r.source FROM tasc.road r JOIN tasc.site s USING (road_id) LIMIT 1""")
+        if not used:
+            self.skipTest("no network built")
+        source = used[0][0]
+        before = self.sql("SELECT count(*) FROM tasc.road WHERE source = %s", (source,))[0][0]
+        path = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": []}))
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(ingest.main(["roads", path, "--as-of", "2019-12-31", "--source", source]), 2)
+        self.assertIn("STOPPED", out.getvalue())
+        self.assertEqual(self.sql("SELECT count(*) FROM tasc.road WHERE source = %s", (source,))[0][0], before)
+
+    def test_crash_already_loaded_from_another_file_is_rejected(self):
+        row = self.sql("SELECT crash_id, crash_date FROM tasc.crash LIMIT 1")
+        if not row:
+            self.skipTest("no crashes loaded")
+        crash_id, crash_date = row[0]
+        path = self.tmp(".csv", "Crash ID,Crash Date,Crash Severity,Latitude,Longitude\n"
+                                f"{crash_id},{crash_date.isoformat()},N - NOT INJURED,30.6,-96.3\n")
+        self.addCleanup(lambda: self.sql("DELETE FROM tasc.ingest_run WHERE file_name = %s",
+                                         (os.path.basename(path),)))
+        before = self.sql("SELECT run_id FROM tasc.crash WHERE crash_id = %s", (crash_id,))[0][0]
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(ingest.main(["crashes", path]), 2)       # 1 of 1 bad -> file rejected
+        reasons = self.sql("""SELECT j.reason FROM tasc.ingest_reject j JOIN tasc.ingest_run r USING (run_id)
+                              WHERE r.file_name = %s""", (os.path.basename(path),))
+        self.assertTrue(reasons and reasons[0][0].startswith("crash_id already loaded from"))
+        self.assertEqual(self.sql("SELECT run_id FROM tasc.crash WHERE crash_id = %s", (crash_id,))[0][0], before)
+
+    def test_matching_stops_when_corridor_list_is_empty(self):
+        with open(os.path.join(os.path.dirname(__file__), "..", "sql", "03_map_match.sql")) as f:
+            guard = re.search(r"DO \$\$.*?END \$\$;", f.read(), re.S).group(0)
+        conn = ingest.connect()
+        try:
+            cur = conn.cursor()
+            cur.execute("DELETE FROM tasc.corridor_street")      # rolled back below
+            with self.assertRaises(psycopg.errors.RaiseException) as ctx:
+                cur.execute(guard)
+            self.assertIn("ingest.py corridors", str(ctx.exception))
+        finally:
+            conn.rollback()
+            conn.close()
 
 
 if __name__ == "__main__":

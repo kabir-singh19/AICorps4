@@ -22,12 +22,12 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections | Network build (due 10/20) |
 | `sql/03_map_match.sql` | Matches corridor crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
 | `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median; intersection legs), each value dated | Feature tables with as-of dates (due 11/3) |
-| `tests/test_validate.py` | 10 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
+| `tests/test_validate.py` | 15 tests for the crash validator (incl. guardrails), no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
 | `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 (M2, 23 Oct) |
 | `dumps/tasc_v0_2019_2026-10-28.sql.gz` | Current database copy (schema `tasc`): adds crash details and OSM features; see "For S2" | IF-09 to S2 |
 | `dumps/tasc_v0_2019.sql.gz` | Frozen 18 Oct 2026 copy used for S2's M2 run `m2-corridor-001`; kept unchanged | IF-09 to S2 |
-| `tests/test_database.py` | 4 leakage tests + 5 S2-view contract tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
+| `tests/test_database.py` | 4 leakage + 5 S2-view contract + 4 guardrail tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
 
 ## Quickstart (the run recorded below)
 
@@ -206,6 +206,15 @@ methods B and C only.
   within 200 m). The registry lists it under `current`, never `backtest_2022`.
   **Caveat:** OSM near the corridors grew a lot from 2022 to 2026 (crossings 415 → 801, sidewalk
   lines 398 → 621, bus stops 9 → 114), so a 2022 zero often means "not mapped yet", not "absent".
+- **Guardrails (28 Oct 2026):** checks that stop mistakes instead of letting them through silently.
+  (1) `ingest.py roads` replaces a source's earlier rows on reload, and refuses if a built network
+  still uses them. (2) Crash years are accepted through the current year (`YEAR_RANGE`), so 2026
+  loads without a code change. (3) Bad data now rejected: a crash dated outside its export's
+  "Crash Year Is Equal To" filter (shifted date); coordinates outside Brazos County
+  (`BRAZOS_BBOX`, from the TxDOT county road extent, replacing the all-Texas box); a Crash ID
+  already loaded from a different file (duplicate across files; checked on load, not in a dry
+  run). (4) `03_map_match.sql` stops with a message if `corridor_street` is empty. All 10 real
+  files still dry-run at 0% bad; 28/28 tests pass.
 - **Not yet run:** streetlights (City GIS), HIN. `func_class` and `median_type` are TxDOT codes, not yet
   translated to plain language.
 
