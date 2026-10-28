@@ -1,0 +1,199 @@
+[
+  {
+    "site_id": "SYN001_PEDESTRIAN_SIGNAL",
+    "site_type": "signalized intersection",
+    "crash_patterns": [
+      "pedestrian"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN002_ANGLE_UNSIGNALED",
+    "site_type": "unsignalized intersection",
+    "crash_patterns": [
+      "angle"
+    ],
+    "area_type": "urban",
+    "severity_scope": "K;A",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN003_RURAL_DEPARTURE",
+    "site_type": "segment",
+    "crash_patterns": [
+      "run_off_road"
+    ],
+    "area_type": "rural",
+    "severity_scope": "K;A",
+    "intersection_related": false,
+    "animal_related": false,
+    "interchange_related": false,
+    "winter_month": false,
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN004_NIGHT_REAR_END",
+    "site_type": "segment",
+    "crash_patterns": [
+      "rear_end"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "time_of_day": "night",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN005_DAY_REAR_END",
+    "site_type": "segment",
+    "crash_patterns": [
+      "rear_end"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "time_of_day": "day",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN006_SIDEWALK",
+    "site_type": "segment",
+    "crash_patterns": [
+      "pedestrian"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN007_RURAL_SHOULDER_KABC",
+    "site_type": "segment",
+    "crash_patterns": [
+      "run_off_road"
+    ],
+    "area_type": "rural",
+    "severity_scope": "K;A;B;C",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN008_URBAN_DEPARTURE_CONTROL",
+    "site_type": "segment",
+    "crash_patterns": [
+      "run_off_road"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN009_COUNTDOWN_PEDESTRIAN",
+    "site_type": "signalized intersection",
+    "crash_patterns": [
+      "pedestrian"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN010_RURAL_STOP_ANGLE",
+    "site_type": "unsignalized intersection",
+    "crash_patterns": [
+      "angle"
+    ],
+    "area_type": "rural",
+    "severity_scope": "K;A;B;C",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN011_RURAL_STOP_ALL",
+    "site_type": "unsignalized intersection",
+    "crash_patterns": [
+      "all"
+    ],
+    "area_type": "rural",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN012_URBAN_STOP_REAR_END",
+    "site_type": "unsignalized intersection",
+    "crash_patterns": [
+      "rear_end"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN013_PEDESTRIAN_REAR_END_MIX",
+    "site_type": "signalized intersection",
+    "crash_patterns": [
+      "pedestrian",
+      "rear_end"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN014_RURAL_SIGNAL_CONTROL",
+    "site_type": "signalized intersection",
+    "crash_patterns": [
+      "angle"
+    ],
+    "area_type": "rural",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN015_LOCAL_HUMPS_ABC",
+    "site_type": "segment",
+    "crash_patterns": [
+      "all"
+    ],
+    "area_type": "suburban",
+    "severity_scope": "A;B;C",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN016_RURAL_CURVE_FEEDBACK",
+    "site_type": "segment",
+    "crash_patterns": [
+      "run_off_road"
+    ],
+    "area_type": "rural",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN017_RURAL_CONFLICT_WARNING",
+    "site_type": "unsignalized intersection",
+    "crash_patterns": [
+      "angle"
+    ],
+    "area_type": "rural",
+    "severity_scope": "All",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN018_FREEWAY_MARKINGS_KABC",
+    "site_type": "segment",
+    "crash_patterns": [
+      "all"
+    ],
+    "area_type": "urban",
+    "severity_scope": "K;A;B;C",
+    "synthetic": true
+  },
+  {
+    "site_id": "SYN019_SIGNAL_HEAD_ANGLE",
+    "site_type": "signalized intersection",
+    "crash_patterns": [
+      "angle"
+    ],
+    "area_type": "urban",
+    "severity_scope": "All",
+    "synthetic": true
+  }
+]
