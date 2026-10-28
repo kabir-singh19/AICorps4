@@ -12,6 +12,9 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `ingest.py crashes` | Validates a CRIS CSV, rejects the whole file at more than 2% bad records, loads the rest | 2% bad-record stop (FSR 3.2.3.1.2) |
 | `ingest.py roads` | Loads TxDOT roadway inventory GeoJSON into UTM 14N | IF-02 |
 | `ingest.py crash-details` | Adds weather, surface, deaths and officer-recorded road columns to loaded crashes | IF-01 crash attributes |
+| `fetch_osm.py` | Downloads OpenStreetMap near the network as of a date (ohsome API history) | IF-03 |
+| `ingest.py osm` | Loads a `fetch_osm.py` snapshot into `osm_feature` | IF-03 |
+| `sql/06_osm_features.sql` | OSM site features (crossings, signalized intersections, sidewalks, schools, bars, restaurants), dated | IF-03 features |
 | `ingest.py corridors` | Loads the study-corridor street spellings from `corridors.py` | Corridor scope |
 | `fetch_roads.py` | Downloads Brazos County roadway inventory snapshots from TxDOT | IF-02 |
 | `corridors.py` | The three corridors: TxDOT route code + every CRIS street spelling | Corridor scope |
@@ -22,7 +25,8 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `tests/test_validate.py` | 10 tests for the crash validator, no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
 | `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 (M2, 23 Oct) |
-| `dumps/tasc_v0_2019.sql.gz` | Database copy (schema `tasc`, network v0_2019) for teammates; see "For S2" below | IF-09 to S2 |
+| `dumps/tasc_v0_2019_2026-10-28.sql.gz` | Current database copy (schema `tasc`): adds crash details and OSM features; see "For S2" | IF-09 to S2 |
+| `dumps/tasc_v0_2019.sql.gz` | Frozen 18 Oct 2026 copy used for S2's M2 run `m2-corridor-001`; kept unchanged | IF-09 to S2 |
 | `tests/test_database.py` | 4 leakage tests + 5 S2-view contract tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
 
 ## Quickstart (the run recorded below)
@@ -49,6 +53,12 @@ for f in ../../raw/data_20*.csv; do .venv/bin/python ingest.py crashes "$f"; don
 # 1b. Extra crash columns (second CRIS export: weather, surface, deaths, reported road)
 for f in "../../new features for database"/new_features_20*.csv; do .venv/bin/python ingest.py crash-details "$f"; done
 
+# 1c. OpenStreetMap as of 2022-12-31 near the network (after step 3 builds it), then its features
+.venv/bin/python fetch_osm.py --date 2022-12-31 --out ../../raw/osm
+.venv/bin/python ingest.py osm ../../raw/osm/osm_v0_2019_600m_2022-12-31.json
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v feature_set=backtest_2022 \
+    -v osm_source=osm_2022-12-31 < sql/06_osm_features.sql
+
 # 2. Roads (2019 snapshot for the backtest) and the corridor spellings
 .venv/bin/python fetch_roads.py 2019 --out ../../raw/roads
 .venv/bin/python ingest.py roads ../../raw/roads/roadway_brazos_2019.geojson --as-of 2019-12-31 --source roadway_inventory_2019
@@ -70,7 +80,7 @@ docker compose exec -T db psql -U tasc -d tasc -v network_version=v0_2019 -v fea
 docker compose exec -T db psql -U tasc -d tasc -v s2_password="$S2_PASSWORD" < sql/05_s2_interface.sql
 
 # 7. Database copy for teammates
-docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --no-owner --no-privileges | gzip -9 > dumps/tasc_v0_2019.sql.gz
+docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --no-owner --no-privileges | gzip -9 > dumps/tasc_v0_2019_$(date +%F).sql.gz
 
 # Optional: corridor-only CSVs
 .venv/bin/python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
@@ -78,15 +88,17 @@ docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --
 
 ## For S2 (Param): getting and reading the database
 
-**Option 1, restore the copy (recommended, about 2 minutes).** Works the same on Windows, macOS
+**Option 1, restore the copy (recommended, about 2 minutes).** Use the newest dump,
+`dumps/tasc_v0_2019_2026-10-28.sql.gz` (crash details, OSM features, both feature sets). The
+18 Oct dump `tasc_v0_2019.sql.gz` stays as the exact input of M2 run `m2-corridor-001`. Works the same on Windows, macOS
 and Linux; run from `Kabir_Singh/` after `git pull`. Docker Desktop must be running.
 
 ```bash
 docker compose up -d
 # wait until the first start has finished creating the schema:
 docker compose logs db          # look for "PostgreSQL init process complete"
-docker compose cp dumps/tasc_v0_2019.sql.gz db:/tmp/tasc_v0_2019.sql.gz
-docker compose exec db sh -c "gunzip -c /tmp/tasc_v0_2019.sql.gz | psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc"
+docker compose cp dumps/tasc_v0_2019_2026-10-28.sql.gz db:/tmp/tasc.sql.gz
+docker compose exec db sh -c "gunzip -c /tmp/tasc.sql.gz | psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc"
 docker compose cp sql/05_s2_interface.sql db:/tmp/05_s2_interface.sql
 docker compose exec db psql -U tasc -d tasc -v s2_password=CHOOSE_A_PASSWORD -f /tmp/05_s2_interface.sql
 ```
@@ -172,7 +184,29 @@ methods B and C only.
   are not `site_feature` values: the reported road columns only exist where a crash happened.
   Checks: deaths sum to 44, one or more on each of the 44 K crashes. Reported speed equals the
   TxDOT 2019 speed on 58.4% of 4,819 matched segment crashes (84% within 5 mph).
-- **Not yet run:** OSM, streetlights, HIN. `func_class` and `median_type` are TxDOT codes, not yet
+- **OSM features (28 Oct 2026):** `fetch_osm.py` downloads OpenStreetMap history from the ohsome API
+  (HeiGIT); the public Overpass servers were too overloaded to answer, and ohsome's plain geometry
+  endpoint is blocked (403), so it uses `elementsFullHistory/geometry` and keeps the versions valid
+  at the snapshot time. Area: 600 m around network v0_2019 (36 km²). The 2022-12-31 snapshot has
+  1,606 features (9 bus stops, 6 schools, 12 bars, 127 restaurants/cafés, 415 crossings,
+  126 signals, 64 street lamps, 398 sidewalk lines, 449 major-road ways); a bus-stop count in a
+  test box (14) agreed between Overpass, ohsome count and ohsome full history.
+  `ingest.py osm` loads it into `osm_feature`; `06_osm_features.sql` writes 6 `backtest_2022`
+  features dated 2022-12-31: `osm_bars_200m`, `osm_crossings_30m`, `osm_restaurants_100m`,
+  `osm_schools_400m`, `osm_signalized_intersections_30m` (all sites) and `osm_sidewalk_share`
+  (segments). Signalized intersections merge OSM traffic-signal points within 50 m first: OSM often
+  draws one point per approach, so 126 points in 2022 are 58 intersections (162 → 61 in 2026).
+  `osm_bus_stops_200m` (200 m, because mapped stops sit on side streets and campus loops, the
+  nearest 67 m from a corridor) was 0 at every site in 2022, so the script's no-variation rule drops
+  it from `backtest_2022`. Not built: lighting (no corridor road had a `lit` tag in 2022) and
+  street-lamp counts (one lamp near one site). Registered as source `osm_2022-12-31`; S2's
+  `load_snapshot` + `validate_snapshot` passed with all 11 features as `s2_reader`.
+  **Latest snapshot:** ohsome's newest data (2026-07-27), 2,804 features, loaded as source
+  `osm_latest` into feature set `current` only (7 features, including bus stops: 31 sites have one
+  within 200 m). The registry lists it under `current`, never `backtest_2022`.
+  **Caveat:** OSM near the corridors grew a lot from 2022 to 2026 (crossings 415 → 801, sidewalk
+  lines 398 → 621, bus stops 9 → 114), so a 2022 zero often means "not mapped yet", not "absent".
+- **Not yet run:** streetlights (City GIS), HIN. `func_class` and `median_type` are TxDOT codes, not yet
   translated to plain language.
 
 ## Check these first

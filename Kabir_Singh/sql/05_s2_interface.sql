@@ -75,16 +75,31 @@ INSERT INTO s2_source_availability (source, version, role, as_of_date, available
    '2026-10-06/07; CRIS may revise or add late reports after the cutoff, which this export would include.'),
   ('cris_test', 'CRIS Query 2023-2025, College Station', 'evaluation', '2025-12-31', '2026-10-07',
    'CRIS Query exports downloaded 2026-10-07 (Brazos County, City of College Station, one file per year). '
-   'Held out: never used for fitting.')
+   'Held out: never used for fitting.'),
+  ('osm_2022-12-31', 'OpenStreetMap as of 2022-12-31T23:59:59Z', 'predictor', '2022-12-31', '2022-12-31',
+   'OSM history via the ohsome API (api.ohsome.org/v1/elementsFullHistory/geometry, HeiGIT), keeping only '
+   'element versions valid at 2022-12-31T23:59:59Z, within 600 m of network v0_2019; fetch_osm.py, '
+   'downloaded 2026-10-28. Those versions were live on openstreetmap.org at that moment, so the data was '
+   'public by the cutoff. Counts reflect OSM completeness in 2022 (far sparser than today).'),
+  ('osm_latest', 'OpenStreetMap as of 2026-07-27T09:00Z (newest ohsome data)', 'predictor', '2026-07-27', '2026-07-27',
+   'Same method as osm_2022-12-31 at ohsome''s newest time, downloaded 2026-10-28. For the live '
+   '"current" feature set only; after the backtest cutoff, so never listed under backtest_2022.')
 ON CONFLICT (source) DO UPDATE SET
     version = EXCLUDED.version, role = EXCLUDED.role, as_of_date = EXCLUDED.as_of_date,
     available_as_of = EXCLUDED.available_as_of, evidence = EXCLUDED.evidence;
 
+-- One row per source per (network, feature set). A predictor source is listed only under the
+-- feature sets that actually use it, so a newer source registered for the live 'current' set
+-- (e.g. osm_latest) never appears in the backtest set's registry.
 CREATE OR REPLACE VIEW s2_source_registry AS
+WITH used AS (SELECT DISTINCT s.network_version, f.feature_set, f.source
+              FROM site s JOIN site_feature f USING (site_id))
 SELECT n.network_version, n.feature_set, a.source, a.version, a.as_of_date, a.available_as_of, a.role
-FROM (SELECT DISTINCT s.network_version, f.feature_set
-      FROM site s JOIN site_feature f USING (site_id)) n
-CROSS JOIN s2_source_availability a;
+FROM (SELECT DISTINCT network_version, feature_set FROM used) n
+JOIN s2_source_availability a
+  ON a.role <> 'predictor'
+  OR EXISTS (SELECT FROM used u WHERE u.network_version = n.network_version
+                                  AND u.feature_set = n.feature_set AND u.source = a.source);
 
 -- 4. HIN membership (s2_hin_site) waits for the MPO layer. Until then S2 leaves hin_view out of
 --    its config: methods B and C run, and method A is reported as unavailable.

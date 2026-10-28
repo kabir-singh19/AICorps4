@@ -98,10 +98,12 @@ class S2InterfaceTests(unittest.TestCase):
             SELECT (SELECT count(*) FROM tasc.crash), count(*), count(DISTINCT crash_id) FROM tasc.s2_crash_scope""")
         self.assertEqual((scoped, distinct), (crashes, crashes))
 
-    def test_predictor_and_history_sources_available_by_cutoff(self):
+    def test_backtest_sources_available_by_cutoff(self):
+        # Later sources (e.g. osm_latest for the live 'current' set) may exist, but the backtest
+        # registry must list only predictor and history sources dated and available by the cutoff.
         self.assertEqual(self.one("""
-            SELECT count(*) FROM tasc.s2_source_availability
-            WHERE role IN ('predictor', 'history')
+            SELECT count(*) FROM tasc.s2_source_registry
+            WHERE feature_set = 'backtest_2022' AND role IN ('predictor', 'history')
               AND (as_of_date > DATE '2022-12-31' OR available_as_of > DATE '2022-12-31')""")[0], 0)
 
     def test_every_feature_source_is_registered(self):

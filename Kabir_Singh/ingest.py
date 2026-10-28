@@ -411,6 +411,42 @@ def cmd_crash_details(args):
     return 2 if stop else 0
 
 
+def cmd_osm(args):
+    """Load a fetch_osm.py file into tasc.osm_feature, replacing that source's earlier rows."""
+    with open(args.file, encoding="utf-8") as f:
+        snap = json.load(f)
+    snapshot_date = snap["snapshot_time"][:10]
+    source = args.source or ("osm_latest" if snap.get("requested") == "latest" else f"osm_{snapshot_date}")
+    rows, skipped = [], 0
+    for grp, block in snap["groups"].items():
+        for feat in block["features"]:
+            if not feat.get("geometry"):
+                skipped += 1
+                continue
+            props = feat.get("properties") or {}
+            rows.append({
+                "source": source, "snapshot_date": snapshot_date, "grp": grp,
+                "osm_id": props.get("@osmId"),
+                "tags": json.dumps({k: v for k, v in props.items() if not k.startswith("@")}),
+                "geojson": json.dumps(feat["geometry"]),
+            })
+    total = len(rows) + skipped
+    with connect() as conn, conn.cursor() as cur:
+        run_id = log_run(cur, source, args.file, total, skipped, "loaded",
+                         note=f"OSM as of {snap['snapshot_time']} via {snap['endpoint']}; rows_bad = no geometry")
+        cur.execute("DELETE FROM tasc.osm_feature WHERE source = %s", (source,))
+        cur.executemany(
+            """INSERT INTO tasc.osm_feature (source, snapshot_date, grp, osm_id, tags, geom, run_id)
+               VALUES (%(source)s, %(snapshot_date)s, %(grp)s, %(osm_id)s, %(tags)s::jsonb,
+                       ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%(geojson)s), 4326), 32614), %(run_id)s)
+               ON CONFLICT (source, grp, osm_id) DO NOTHING""",
+            [dict(r, run_id=run_id) for r in rows],
+        )
+    print(f"Loaded {len(rows)} OSM features as source {source!r} (as of {snapshot_date}; "
+          f"{skipped} without geometry skipped). run_id {run_id}")
+    return 0
+
+
 def cmd_corridors(args):
     """Replace tasc.corridor_street with the spellings in corridors.py."""
     from corridors import CORRIDORS
@@ -443,6 +479,11 @@ def main(argv=None):
     d.add_argument("file")
     d.add_argument("--dry-run", action="store_true", help="validate only; change nothing")
     d.set_defaults(func=cmd_crash_details)
+
+    o = sub.add_parser("osm", help="load a fetch_osm.py snapshot into tasc.osm_feature")
+    o.add_argument("file")
+    o.add_argument("--source", help="source name (default osm_<date> or osm_latest)")
+    o.set_defaults(func=cmd_osm)
 
     k = sub.add_parser("corridors", help="load the study-corridor street spellings from corridors.py")
     k.set_defaults(func=cmd_corridors)

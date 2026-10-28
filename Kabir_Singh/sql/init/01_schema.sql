@@ -94,6 +94,22 @@ CREATE TABLE road (
 CREATE INDEX road_geom_gix ON road USING gist (geom);
 
 -- ---------------------------------------------------------------------------
+-- OpenStreetMap features (IF-03), one row per feature per snapshot, from fetch_osm.py files.
+-- snapshot_date is the date OSM is shown as of; it becomes the as_of_date of OSM site features.
+-- ---------------------------------------------------------------------------
+CREATE TABLE osm_feature (
+    source        text   NOT NULL,                 -- e.g. 'osm_2022-12-31', 'osm_latest'
+    snapshot_date date   NOT NULL,
+    grp           text   NOT NULL,                 -- fetch_osm.py group: bus_stop, school, sidewalk, ...
+    osm_id        text   NOT NULL,                 -- e.g. 'node/123', 'way/456'
+    tags          jsonb  NOT NULL,
+    geom          geometry(Geometry, 32614) NOT NULL,
+    run_id        bigint REFERENCES ingest_run,
+    PRIMARY KEY (source, grp, osm_id)
+);
+CREATE INDEX osm_feature_geom_gix ON osm_feature USING gist (geom);
+
+-- ---------------------------------------------------------------------------
 -- Sites: the unit every other subsystem ranks, explains and maps.
 --   segment      = LineString, at most 0.1 mi (160.934 m)
 --   intersection = Point where 3+ legs meet; crashes within 250 ft (76.2 m) belong to it
