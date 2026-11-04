@@ -7,6 +7,8 @@
     python ingest.py road-names data/roadway_brazos.geojson --source roadway_inventory_2019
     python ingest.py street-keys                              # name keys for city-wide matching
     python ingest.py boundary ../../raw/boundary/college_station_2022.geojson   # city limits
+    python ingest.py osm-roads ../../raw/osm/osm_college_station_100m_2022-12-31_road.json \
+        --campus ../../raw/osm/osm_college_station_100m_2022-12-31_campus.json   # streets TxDOT lacks
     python ingest.py crash-details data/new_features_2022.csv # extra crash columns (weather, ...)
 
 A crash file with more than 2% bad records is rejected whole: nothing is loaded, the run is
@@ -394,6 +396,24 @@ def _street_name(p):
     return name or None
 
 
+def _replace_road_source(cur, source):
+    """Delete a road source's earlier rows before reloading it; returns how many, or None to stop.
+
+    Reloading a source replaces it rather than adding a second copy of every road. If a built
+    network still uses those roads, stop: delete or rebuild that network version first.
+    """
+    cur.execute("""SELECT count(*), string_agg(DISTINCT s.network_version, ', ')
+                   FROM tasc.site s JOIN tasc.road r USING (road_id) WHERE r.source = %s""", (source,))
+    used, versions = cur.fetchone()
+    if used:
+        print(f"STOPPED: network {versions} is built from source {source!r} ({used} sites). "
+              f"Delete it first (DELETE FROM tasc.site WHERE network_version = ...), reload, then rebuild it. "
+              f"Nothing changed.")
+        return None
+    cur.execute("DELETE FROM tasc.road WHERE source = %s", (source,))
+    return cur.rowcount
+
+
 def cmd_roads(args):
     """Load a GeoJSON FeatureCollection of road lines (WGS84 lon/lat, as the TxDOT portal exports it)."""
     with open(args.file, encoding="utf-8") as f:
@@ -420,18 +440,9 @@ def cmd_roads(args):
         })
     skipped = len(features) - len(rows)
     with connect() as conn, conn.cursor() as cur:
-        # Reloading a source replaces it rather than adding a second copy of every road. If a
-        # built network still uses those roads, stop: delete or rebuild that network version first.
-        cur.execute("""SELECT count(*), string_agg(DISTINCT s.network_version, ', ')
-                       FROM tasc.site s JOIN tasc.road r USING (road_id) WHERE r.source = %s""", (args.source,))
-        used, versions = cur.fetchone()
-        if used:
-            print(f"STOPPED: network {versions} is built from source {args.source!r} ({used} sites). "
-                  f"Delete it first (DELETE FROM tasc.site WHERE network_version = ...), reload, then rebuild it. "
-                  f"Nothing changed.")
+        replaced = _replace_road_source(cur, args.source)
+        if replaced is None:
             return 2
-        cur.execute("DELETE FROM tasc.road WHERE source = %s", (args.source,))
-        replaced = cur.rowcount
         run_id = log_run(cur, args.source, args.file, len(features), skipped, "loaded",
                          note="rows_bad = features with no geometry"
                               + (f"; replaced {replaced} earlier rows of this source" if replaced else ""))
@@ -495,6 +506,126 @@ def cmd_road_names(args):
                 note=f"road-names: street_name filled on {updated} roads ({named} named)")
     print(f"Matched all {stored} roads in {args.source!r}; {named} have a street name "
           f"({stored - named} have none, mostly state routes).")
+    return 0
+
+
+# OSM highway=* to the nearest FHWA functional class TxDOT uses in F_SYSTEM (an approximation,
+# kept apart by road.source): 1 interstate, 2 freeway, 3 principal arterial, 4 minor arterial,
+# 5 major collector, 7 local.
+OSM_FUNC_CLASS = {"motorway": "1", "trunk": "2", "primary": "3", "secondary": "4", "tertiary": "5",
+                  "unclassified": "7", "residential": "7", "living_street": "7"}
+OSM_GAP_M = 15           # an OSM street closer than this to a TxDOT road is that road, already loaded
+OSM_BESIDE_M = 40        # a one-way OSM street mostly this close to TxDOT is the other half of a divided road
+OSM_MIN_PIECE_M = 30     # leftover pieces shorter than this are slivers at TxDOT roads, not streets
+OSM_CONNECT_M = 20       # an end this close to a TxDOT centerline is joined to it, so intersections form
+
+
+def _osm_mph(value):
+    """OSM maxspeed: '35 mph' -> 35. A bare number is km/h in OSM; anything else is unknown."""
+    m = re.fullmatch(r"\s*(\d+)\s*(mph)?\s*", value or "")
+    if not m:
+        return None
+    return int(m.group(1)) if m.group(2) else round(int(m.group(1)) / 1.609344)
+
+
+def cmd_osm_roads(args):
+    """Add the streets the TxDOT inventory is missing, from a fetch_osm.py `road` snapshot.
+
+    Keeps a piece of an OSM street only if it is named, not a ramp (*_link), inside the boundary,
+    more than OSM_GAP_M from every TxDOT road of --against, and not the other direction of a
+    divided TxDOT road. Ends within OSM_CONNECT_M of a TxDOT centerline are extended onto it.
+    Pieces inside a Texas A&M campus polygon (--campus file) get maintainer 'TAMU'.
+    """
+    with open(args.file, encoding="utf-8") as f:
+        snap = json.load(f)
+    as_of = snap["snapshot_time"][:10]
+    source = args.source or f"osm_roads_{as_of}"
+    ways = snap["groups"]["road"]["features"]
+    rows = []
+    for feat in ways:
+        p = feat.get("properties") or {}
+        name = (p.get("name") or "").strip()
+        if not feat.get("geometry") or not name or p.get("highway", "").endswith("_link"):
+            continue
+        rows.append((json.dumps(feat["geometry"]), name, p.get("highway"), p.get("oneway") == "yes",
+                     p.get("@osmId"), _to_int(p.get("lanes")), _osm_mph(p.get("maxspeed"))))
+    campus = []
+    if args.campus:
+        with open(args.campus, encoding="utf-8") as f:
+            campus = [json.dumps(feat["geometry"]) for feat in json.load(f)["groups"]["campus"]["features"]
+                      if (feat["properties"].get("name") or "").startswith("Texas A&M")]
+    with connect() as conn, conn.cursor() as cur:
+        # Databases created before these columns were added to sql/init/01_schema.sql.
+        cur.execute("ALTER TABLE tasc.road ADD COLUMN IF NOT EXISTS osm_id text, "
+                    "ADD COLUMN IF NOT EXISTS maintainer text")
+        cur.execute("SELECT count(*) FROM tasc.boundary WHERE name = %s", (args.boundary,))
+        if not cur.fetchone()[0]:
+            print(f"STOPPED: no boundary {args.boundary!r}; run 'ingest.py boundary' first. Nothing changed.")
+            return 2
+        cur.execute("SELECT count(*) FROM tasc.road WHERE source = %s AND roadbed = 'KG'", (args.against,))
+        if not cur.fetchone()[0]:
+            print(f"STOPPED: no TxDOT centerlines with source {args.against!r}. Nothing changed.")
+            return 2
+        replaced = _replace_road_source(cur, source)
+        if replaced is None:
+            return 2
+        cur.execute("""CREATE TEMP TABLE osm (geom geometry(LineString, 32614), name text, highway text,
+                                              oneway boolean, osm_id text, lanes int, mph int) ON COMMIT DROP""")
+        cur.executemany(
+            """INSERT INTO osm SELECT (ST_Dump(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), 32614))).geom,
+                                      %s, %s, %s, %s, %s, %s""", rows)
+        cur.execute("CREATE TEMP TABLE campus (geom geometry) ON COMMIT DROP")
+        cur.executemany("INSERT INTO campus SELECT ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), 32614)",
+                        [(g,) for g in campus])
+        cur.execute(
+            """CREATE TEMP TABLE txdot ON COMMIT DROP AS
+               SELECT r.geom, r.roadbed FROM tasc.road r, tasc.boundary b
+               WHERE r.source = %s AND b.name = %s AND ST_DWithin(r.geom, b.geom, 200)""",
+            (args.against, args.boundary))
+        cur.execute("CREATE INDEX ON txdot USING gist (geom)")
+        cur.execute(
+            """CREATE TEMP TABLE kept ON COMMIT DROP AS
+               SELECT row_number() OVER () AS id, o.name, o.highway, o.osm_id, o.lanes, o.mph, d.geom
+               FROM osm o
+               JOIN tasc.boundary b ON b.name = %(boundary)s AND ST_Intersects(o.geom, b.geom)
+               CROSS JOIN LATERAL (SELECT ST_Union(ST_Buffer(t.geom, %(gap)s)) AS near
+                                   FROM txdot t WHERE ST_DWithin(t.geom, o.geom, %(gap)s)) g
+               CROSS JOIN LATERAL ST_Dump(ST_Intersection(
+                   CASE WHEN g.near IS NULL THEN o.geom ELSE ST_Difference(o.geom, g.near) END, b.geom)) d
+               WHERE GeometryType(d.geom) = 'LINESTRING' AND ST_Length(d.geom) > %(min_piece)s
+                 AND NOT (o.oneway AND COALESCE(ST_Length(ST_Intersection(o.geom,
+                         (SELECT ST_Union(ST_Buffer(t.geom, %(beside)s)) FROM txdot t
+                          WHERE ST_DWithin(t.geom, o.geom, %(beside)s)))), 0) > 0.5 * ST_Length(o.geom))""",
+            {"boundary": args.boundary, "gap": OSM_GAP_M, "beside": OSM_BESIDE_M, "min_piece": OSM_MIN_PIECE_M})
+        # Join each end to the closest point of the nearest TxDOT centerline within OSM_CONNECT_M
+        # (position 0 = before the first point, -1 = after the last).
+        for end_fn, position in (("ST_StartPoint", 0), ("ST_EndPoint", -1)):
+            cur.execute(
+                f"""UPDATE kept SET geom = ST_AddPoint(kept.geom, c.pt, {position})
+                    FROM (SELECT k.id, (SELECT ST_ClosestPoint(t.geom, {end_fn}(k.geom)) FROM txdot t
+                                        WHERE t.roadbed = 'KG' AND ST_DWithin(t.geom, {end_fn}(k.geom), %s)
+                                        ORDER BY t.geom <-> {end_fn}(k.geom) LIMIT 1) AS pt
+                          FROM kept k) c
+                    WHERE kept.id = c.id AND c.pt IS NOT NULL AND NOT ST_Equals(c.pt, {end_fn}(kept.geom))""",
+                (OSM_CONNECT_M,))
+        run_id = log_run(cur, source, args.file, len(ways), 0, "loaded",
+                         note=f"OSM streets missing from {args.against}, as of {snap['snapshot_time']}; "
+                              f"{len(ways) - len(rows)} unnamed or ramp ways skipped"
+                              + (f"; replaced {replaced} earlier rows" if replaced else ""))
+        cur.execute(
+            """INSERT INTO tasc.road (geom, street_name, func_class, num_lanes, speed_limit, source,
+                                      as_of_date, run_id, osm_id, maintainer)
+               SELECT k.geom, k.name, %s::jsonb ->> k.highway, k.lanes, k.mph, %s, %s::date, %s, k.osm_id,
+                      CASE WHEN EXISTS (SELECT FROM campus WHERE ST_Length(ST_Intersection(k.geom, campus.geom))
+                                                                  > 0.5 * ST_Length(k.geom)) THEN 'TAMU' END
+               FROM kept k""",
+            (json.dumps(OSM_FUNC_CLASS), source, as_of, run_id))
+        added = cur.rowcount
+        cur.execute("""SELECT count(*) FILTER (WHERE maintainer = 'TAMU'), sum(ST_Length(geom)) / 1609.344,
+                              count(DISTINCT street_name) FROM tasc.road WHERE source = %s""", (source,))
+        tamu, miles, names = cur.fetchone()
+    print(f"Loaded {added} OSM street pieces as source {source!r}: {miles or 0:.1f} mi on {names} streets, "
+          f"{tamu} on the TAMU campus (as of {as_of}). run_id {run_id}")
     return 0
 
 
@@ -642,6 +773,14 @@ def main(argv=None):
     n.add_argument("file", help="the GeoJSON the roads were loaded from")
     n.add_argument("--source", required=True)
     n.set_defaults(func=cmd_road_names)
+
+    w = sub.add_parser("osm-roads", help="add streets missing from the TxDOT inventory, from a fetch_osm.py road file")
+    w.add_argument("file")
+    w.add_argument("--against", default="roadway_inventory_2019", help="TxDOT road source to fill gaps in")
+    w.add_argument("--boundary", default="College Station")
+    w.add_argument("--campus", help="fetch_osm.py campus file; streets inside Texas A&M get maintainer TAMU")
+    w.add_argument("--source", help="source name (default osm_roads_<snapshot date>)")
+    w.set_defaults(func=cmd_osm_roads)
 
     d = sub.add_parser("crash-details", help="add extra CRIS crash columns to crashes already loaded")
     d.add_argument("file")

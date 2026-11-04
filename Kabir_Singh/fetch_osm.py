@@ -47,6 +47,8 @@ GROUPS = {
     "road":            "type:way and highway in (motorway, trunk, primary, secondary, tertiary, unclassified, "
                        "residential, living_street, motorway_link, trunk_link, primary_link, secondary_link, "
                        "tertiary_link)",
+    # University campus outlines, to tag the streets on them (Texas A&M maintains its own).
+    "campus":          "amenity=university and geometry:polygon",
 }
 
 

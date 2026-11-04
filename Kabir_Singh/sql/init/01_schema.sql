@@ -106,9 +106,11 @@ CREATE TABLE road (
     median_type text,
     aadt        integer,
     aadt_year   integer,
-    source      text NOT NULL,
+    source      text NOT NULL,                     -- e.g. roadway_inventory_2019, osm_roads_2022-12-31
     as_of_date  date NOT NULL,                     -- date the source data describes
-    run_id      bigint REFERENCES ingest_run
+    run_id      bigint REFERENCES ingest_run,
+    osm_id      text,                              -- OSM roads only, e.g. way/123
+    maintainer  text                               -- 'TAMU' for Texas A&M campus streets; NULL = public/City
 );
 CREATE INDEX road_geom_gix ON road USING gist (geom);
 

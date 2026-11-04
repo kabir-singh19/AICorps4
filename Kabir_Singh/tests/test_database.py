@@ -221,6 +221,62 @@ class GuardrailTests(unittest.TestCase):
                            FROM tasc.boundary WHERE name = %s""", (name,))
         self.assertEqual([float(r[0]) for r in rows], [-96.395])        # one row, the second square
 
+    def test_osm_roads_add_only_missing_named_streets_and_connect_them(self):
+        # A made-up town: one TxDOT road running east-west along lat 30.61, inside a square boundary.
+        # 0.0001 degree of latitude is about 11 m.
+        txdot, osm, name = "test_guardrail_txdot", "test_guardrail_osm", "test_guardrail_town"
+
+        def line(coords, **props):
+            return {"type": "Feature", "properties": props, "geometry": {"type": "LineString", "coordinates": coords}}
+        square = [[[-96.30, 30.60], [-96.28, 30.60], [-96.28, 30.62], [-96.30, 30.62], [-96.30, 30.60]]]
+        boundary = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": [
+            {"type": "Feature", "properties": {"NAME": "Town", "GEOID": "0", "vintage": "2022-01-01"},
+             "geometry": {"type": "Polygon", "coordinates": square}}]}))
+        roads = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": [
+            line([[-96.30, 30.61], [-96.28, 30.61]], HWY="TEST", RDBD_ID="KG")]}))
+        ways = [
+            line([[-96.29, 30.605], [-96.29, 30.615]], name="Test Street", highway="residential"),   # crosses: kept
+            line([[-96.30, 30.61004], [-96.28, 30.61004]], name="Dup Rd", highway="primary"),       # 4 m off TxDOT
+            line([[-96.297, 30.613], [-96.295, 30.613]], highway="residential"),                    # no name
+            line([[-96.287, 30.605], [-96.286, 30.609]], name="Ramp", highway="primary_link"),
+            line([[-96.30, 30.610225], [-96.28, 30.610225]], name="Beside Blvd", highway="primary",
+                 oneway="yes"),                                                                     # other half, 25 m
+            line([[-96.297, 30.617], [-96.295, 30.617]], name="Lonely St", highway="tertiary",
+                 oneway="yes", maxspeed="25 mph", lanes="2"),                                        # one-way, far: kept
+        ]
+        for i, w in enumerate(ways):
+            w["properties"]["@osmId"] = f"way/{i}"
+        snapshot = self.tmp(".json", json.dumps({"snapshot_time": "2022-12-31T23:59:59Z",
+                                                 "groups": {"road": {"features": ways}}}))
+        campus = self.tmp(".json", json.dumps({"groups": {"campus": {"features": [
+            {"type": "Feature", "properties": {"name": "Texas A&M University"},
+             "geometry": {"type": "Polygon", "coordinates": [[[-96.298, 30.616], [-96.294, 30.616], [-96.294, 30.618],
+                                                              [-96.298, 30.618], [-96.298, 30.616]]]}}]}}}))
+
+        def cleanup():
+            self.sql("DELETE FROM tasc.road WHERE source IN (%s, %s)", (txdot, osm))
+            self.sql("DELETE FROM tasc.ingest_run WHERE source IN (%s, %s)", (txdot, osm))
+            self.sql("DELETE FROM tasc.boundary WHERE name = %s", (name,))
+            self.sql("DELETE FROM tasc.ingest_run WHERE source = 'boundary' AND file_name = %s",
+                     (os.path.basename(boundary),))
+        self.addCleanup(cleanup)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(ingest.main(["boundary", boundary, "--name", name]), 0)
+            self.assertEqual(ingest.main(["roads", roads, "--as-of", "2019-12-31", "--source", txdot]), 0)
+            for _ in range(2):                                             # a reload replaces
+                self.assertEqual(ingest.main(["osm-roads", snapshot, "--against", txdot, "--boundary", name,
+                                              "--campus", campus, "--source", osm]), 0)
+        kept = self.sql("""SELECT o.street_name, o.maintainer, o.speed_limit, o.num_lanes, o.func_class,
+                                  o.as_of_date::text, ST_Distance(ST_StartPoint(o.geom), t.geom) < 0.01
+                                                      OR ST_Distance(ST_EndPoint(o.geom), t.geom) < 0.01
+                           FROM tasc.road o, tasc.road t
+                           WHERE t.source = %s AND o.source = %s ORDER BY o.street_name, ST_YMin(o.geom)""",
+                        (txdot, osm))
+        self.assertEqual([r[0] for r in kept], ["Lonely St", "Test Street", "Test Street"])
+        self.assertEqual(kept[0][1:6], ("TAMU", 25, 2, "5", "2022-12-31"))
+        self.assertEqual([r[1] for r in kept[1:]], [None, None])           # off campus
+        self.assertEqual([r[6] for r in kept], [False, True, True])        # Test Street joined to TxDOT
+
     def test_crash_already_loaded_from_another_file_is_rejected(self):
         row = self.sql("SELECT crash_id, crash_date FROM tasc.crash LIMIT 1")
         if not row:
