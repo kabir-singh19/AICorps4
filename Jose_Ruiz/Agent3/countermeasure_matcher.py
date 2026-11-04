@@ -174,7 +174,7 @@ def match_site(site, rows):
                          'limitations': row['limitations']},
         })
     # Stable ID order is deliberate: the prototype does not rank effectiveness.
-    return {'site_id': site['site_id'], 'synthetic': site.get('synthetic', False),
+    return {'site_id': site['site_id'], 'example': site.get('example', False),
             'input': site, 'candidates': candidates,
             'engineering_review': engineering_review, 'excluded': excluded,
             'notice': 'Preliminary screening only. No crash reductions or benefit rankings are calculated. Direct means crash-type support only, not verified site suitability. Broader/partial evidence is listed separately for engineering review.'}
@@ -182,7 +182,7 @@ def match_site(site, rows):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--sites', type=Path, default=ROOT / 'synthetic_sites.json')
+    parser.add_argument('--sites', type=Path, default=ROOT / 'example_sites.json')
     parser.add_argument('--library', type=Path, default=ROOT / 'countermeasure_library.csv')
     parser.add_argument('--output', type=Path, help='Optional JSON output path')
     args = parser.parse_args()
@@ -195,7 +195,7 @@ def main():
         if args.output:
             args.output.write_text(json.dumps(results, indent=2) + '\n', encoding='utf-8')
         for result in results:
-            print('\n' + result['site_id'] + ' (synthetic=' + str(result['synthetic']) + ')')
+            print('\n' + result['site_id'] + ' (example=' + str(result['example']) + ')')
             print(result['notice'])
             for key, heading in (
                 ('candidates', 'DIRECT CRASH-TYPE MATCHES (still need site review)'),

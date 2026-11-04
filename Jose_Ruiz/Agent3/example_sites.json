@@ -7,7 +7,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN002_ANGLE_UNSIGNALED",
@@ -17,7 +17,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "K;A",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN003_RURAL_DEPARTURE",
@@ -31,7 +31,7 @@
     "animal_related": false,
     "interchange_related": false,
     "winter_month": false,
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN004_NIGHT_REAR_END",
@@ -42,7 +42,7 @@
     "area_type": "urban",
     "severity_scope": "All",
     "time_of_day": "night",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN005_DAY_REAR_END",
@@ -53,7 +53,7 @@
     "area_type": "urban",
     "severity_scope": "All",
     "time_of_day": "day",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN006_SIDEWALK",
@@ -63,7 +63,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN007_RURAL_SHOULDER_KABC",
@@ -73,7 +73,7 @@
     ],
     "area_type": "rural",
     "severity_scope": "K;A;B;C",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN008_URBAN_DEPARTURE_CONTROL",
@@ -83,7 +83,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN009_COUNTDOWN_PEDESTRIAN",
@@ -93,7 +93,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN010_RURAL_STOP_ANGLE",
@@ -103,7 +103,7 @@
     ],
     "area_type": "rural",
     "severity_scope": "K;A;B;C",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN011_RURAL_STOP_ALL",
@@ -113,7 +113,7 @@
     ],
     "area_type": "rural",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN012_URBAN_STOP_REAR_END",
@@ -123,7 +123,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN013_PEDESTRIAN_REAR_END_MIX",
@@ -134,7 +134,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN014_RURAL_SIGNAL_CONTROL",
@@ -144,7 +144,7 @@
     ],
     "area_type": "rural",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN015_LOCAL_HUMPS_ABC",
@@ -154,7 +154,7 @@
     ],
     "area_type": "suburban",
     "severity_scope": "A;B;C",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN016_RURAL_CURVE_FEEDBACK",
@@ -164,7 +164,7 @@
     ],
     "area_type": "rural",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN017_RURAL_CONFLICT_WARNING",
@@ -174,7 +174,7 @@
     ],
     "area_type": "rural",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN018_FREEWAY_MARKINGS_KABC",
@@ -184,7 +184,7 @@
     ],
     "area_type": "urban",
     "severity_scope": "K;A;B;C",
-    "synthetic": true
+    "example": true
   },
   {
     "site_id": "SYN019_SIGNAL_HEAD_ANGLE",
@@ -194,6 +194,6 @@
     ],
     "area_type": "urban",
     "severity_scope": "All",
-    "synthetic": true
+    "example": true
   }
 ]
