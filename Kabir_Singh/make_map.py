@@ -83,7 +83,8 @@ def build(cur, net):
         else:
             value = round(num, 2) if num is not None else text
         sites[index[sid]]["f"][fname] = value
-    cur.execute("""SELECT ST_AsGeoJSON(ST_Transform(ST_SimplifyPreserveTopology(geom, 5), 4326), 5)
+    # ST_Multi: simplifying a one-part MultiPolygon returns a Polygon, one nesting level less.
+    cur.execute("""SELECT ST_AsGeoJSON(ST_Transform(ST_Multi(ST_SimplifyPreserveTopology(geom, 5)), 4326), 5)
                    FROM tasc.boundary WHERE name = 'College Station'""")
     boundary = json.loads(cur.fetchone()[0])["coordinates"]
     cur.execute("SELECT fsi_geocoded, fsi_matched, fsi_match_pct FROM tasc.match_rate WHERE network_version = %s", (net,))

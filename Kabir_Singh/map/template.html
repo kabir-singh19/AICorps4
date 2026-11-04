@@ -276,9 +276,10 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
   const renderer = L.canvas({ padding: 0.4, tolerance: 6 });
   const ll = c => [c[1], c[0]];
   const boundary = L.polygon(D.boundary.map(poly => poly.map(ring => ring.map(ll))),
-    { renderer, interactive: false, weight: 1.2, dashArray: "5 4" }).addTo(map);
-  map.fitBounds(boundary.getBounds(), { padding: [12, 12] });
+    { renderer, interactive: false, weight: 1.2, dashArray: "5 4" });
+  map.fitBounds(boundary.getBounds(), { padding: [12, 12] });   // the map needs a view before any layer is added
   map.setMaxBounds(boundary.getBounds().pad(0.35));
+  boundary.addTo(map);
 
   const tip = document.getElementById("tip");
   const mapEl = document.getElementById("map");
@@ -311,6 +312,8 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
     if (!$("l-zero").checked && n === 0) return false;
     return true;
   }
+  // Dots grow as you zoom in, so at city scale they do not cover the roads.
+  function dotScale() { return Math.max(0.7, Math.min(2, 0.7 + (map.getZoom() - 12.5) * 0.4)); }
   function restyle() {
     boundary.setStyle({ color: C.edge, fillColor: C.city, fillOpacity: 1 });
     const cor = $("l-cor").checked, tamu = $("l-tamu").checked;
@@ -327,7 +330,7 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
         if (tamu && s.tamu) { color = col ? color : C.tamu; weight = Math.max(weight, 2.4); }
         layer.setStyle({ color: selected ? C.sel : color, weight: selected ? 6 : weight, opacity: 1 });
       } else {
-        const r = n <= 0 ? 2 : Math.min(3 + Math.sqrt(n) * 1.15, 14);
+        const r = (n <= 0 ? 1.5 : Math.min(2 + Math.sqrt(n) * 0.7, 9)) * dotScale();
         layer.setStyle({ radius: selected ? r + 3 : r, color: selected ? C.sel : (s.x ? C.sel : C.city),
                          weight: selected ? 2.5 : (s.x ? 1.6 : 0.8), fillColor: col || C.zero, fillOpacity: 1 });
       }
@@ -462,6 +465,7 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
   });
 
   function onTheme() { readColors(); restyle(); }
+  map.on("zoomend", restyle);
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", onTheme);
   new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
