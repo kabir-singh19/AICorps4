@@ -161,7 +161,8 @@ CREATE TABLE crash_match (
     distance_m      double precision,                           -- distance to nearest site
     tolerance_m     double precision NOT NULL,                  -- tolerance used for this run
     status          text NOT NULL CHECK (status IN ('matched', 'unmatched')),
-    reason          text,                                       -- 'off_corridor' | 'no_coordinates' | 'outside_tolerance'
+    reason          text,                                       -- 'off_corridor' | 'outside_city' | 'no_coordinates' |
+                                                                -- 'outside_tolerance' | 'name_not_found'
     matched_at      timestamptz NOT NULL DEFAULT now(),
     PRIMARY KEY (crash_id, network_version)
 );
@@ -232,5 +233,6 @@ SELECT m.network_version,
        count(*) FILTER (WHERE m.reason = 'outside_tolerance')                           AS outside_tolerance
 FROM crash_match m
 JOIN crash c USING (crash_id)
-WHERE m.reason IS DISTINCT FROM 'off_corridor'
+WHERE m.reason IS DISTINCT FROM 'off_corridor'          -- outside the analysis area: not a miss
+  AND m.reason IS DISTINCT FROM 'outside_city'
 GROUP BY m.network_version;

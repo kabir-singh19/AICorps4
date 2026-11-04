@@ -756,17 +756,159 @@ def fig_lineage(cur, net, out):
            "ohsome API. Network {net}.")
 
 
+# --- figures 12-14: the city-wide network -------------------------------------------------
+CITY_SOURCE = ("Source: TxDOT Roadway Inventory 2019; © OpenStreetMap contributors (ODbL), 2022-12-31, via ohsome; "
+               "Census 2022 city limits; TxDOT CRIS 2016–2025. TASC S1, network {net}.")
+ROAD_KIND = [("TxDOT 2019 inventory", "#2a78d6"), ("OSM 2022, public streets", "#eb6834"),
+             ("OSM 2022, Texas A&M campus", "#1baf7a")]
+# The road behind a segment, as the name key map-matching compares (route code, else street name).
+ROAD_NAME_SQL = "upper(trim(CASE WHEN r.route_name IS NULL OR r.route_name = 'LS0000' THEN r.street_name ELSE r.route_name END))"
+
+
+def fig_city_network(cur, net, out):
+    rows = q(cur, """SELECT ST_AsGeoJSON(ST_Transform(s.geom, 4326)),
+                            CASE WHEN r.source LIKE 'osm_roads%%' AND r.maintainer = 'TAMU' THEN 2
+                                 WHEN r.source LIKE 'osm_roads%%' THEN 1 ELSE 0 END
+                     FROM tasc.site s JOIN tasc.road r USING (road_id)
+                     WHERE s.network_version = %(net)s AND s.site_type = 'segment'""", {"net": net})
+    miles = dict(q(cur, """SELECT CASE WHEN r.source LIKE 'osm_roads%%' AND r.maintainer = 'TAMU' THEN 2
+                                       WHEN r.source LIKE 'osm_roads%%' THEN 1 ELSE 0 END, sum(s.length_m) / 1609.344
+                           FROM tasc.site s JOIN tasc.road r USING (road_id)
+                           WHERE s.network_version = %(net)s AND s.site_type = 'segment' GROUP BY 1""", {"net": net}))
+    pts = q(cur, """SELECT ST_X(g), ST_Y(g), interchange FROM (
+                      SELECT ST_Transform(geom, 4326) g, interchange FROM tasc.site
+                      WHERE network_version = %(net)s AND site_type = 'intersection') t""", {"net": net})
+    bnd = json.loads(q(cur, "SELECT ST_AsGeoJSON(ST_Transform(geom, 4326)) FROM tasc.boundary WHERE name = 'College Station'")[0][0])
+    fig = plt.figure(figsize=(10, 9.4))
+    ax = map_axes(fig, [0.01, 0.05, 0.98, 0.83])
+    for poly in bnd["coordinates"]:
+        ax.plot([p[0] for p in poly[0]], [p[1] for p in poly[0]], color=MUTED, lw=0.8, ls=(0, (4, 3)), zorder=1)
+    for kind in (0, 1, 2):
+        for xs, ys, _ in lines_from_geojson([r for r in rows if r[1] == kind]):
+            ax.plot(xs, ys, color=ROAD_KIND[kind][1], lw=0.9 if kind == 0 else 1.3, zorder=2 + kind,
+                    solid_capstyle="round")
+    ax.scatter([p[0] for p in pts if not p[2]], [p[1] for p in pts if not p[2]], s=2.5, color=INK_2, lw=0, zorder=6)
+    ax.scatter([p[0] for p in pts if p[2]], [p[1] for p in pts if p[2]], s=70, facecolor="none", edgecolor=INK,
+               lw=1.4, zorder=7)
+    n_int, n_ix = len(pts), sum(1 for p in pts if p[2])
+    handles = [Line2D([], [], color=c, lw=2.5, label=f"{name}: {miles.get(k, 0):.1f} mi")
+               for k, (name, c) in enumerate(ROAD_KIND)]
+    handles += [Line2D([], [], ls="", marker="o", ms=3, color=INK_2, label=f"Intersection (3+ legs): {n_int - n_ix:,}"),
+                Line2D([], [], ls="", marker="o", ms=9, mfc="none", mec=INK, mew=1.4,
+                       label=f"Interchange (touches a freeway): {n_ix}"),
+                Line2D([], [], color=MUTED, lw=0.8, ls=(0, (4, 3)), label="City limits (Census, 2022)")]
+    ax.legend(handles=handles, loc="lower left", frameon=True, facecolor=SURFACE, edgecolor=GRID, fontsize=9)
+    total = sum(miles.values())
+    finish(fig, os.path.join(out, "fig12_city_network.png"),
+           f"The network now covers all of College Station: {total:.0f} miles, {n_int:,} intersections",
+           "Every road site S2 ranks. Blue roads come from TxDOT; OpenStreetMap fills the streets TxDOT does not "
+           "list, mostly on campus and in newer neighbourhoods.", net, CITY_SOURCE)
+
+
+def fig_scale_up(cur, out, old="v0_2019", new="v1_2022"):
+    def network(v):
+        return q(cur, """SELECT sum(length_m) / 1609.344, count(*) FILTER (WHERE site_type = 'segment'),
+                                count(*) FILTER (WHERE site_type = 'intersection')
+                         FROM tasc.site WHERE network_version = %(v)s""", {"v": v})[0]
+    fsi = {old: q(cur, "SELECT fsi_geocoded FROM tasc.match_rate WHERE network_version = %(v)s", {"v": old})[0][0],
+           new: q(cur, """SELECT count(*) FROM tasc.crash c, tasc.boundary b
+                          WHERE b.name = 'College Station' AND c.is_fsi AND ST_Within(c.geom, b.geom)""")[0][0]}
+    a, b = network(old), network(new)
+    panels = [("Road miles", a[0], b[0], "{:,.1f}"), ("Segments", a[1], b[1], "{:,}"),
+              ("Intersections", a[2], b[2], "{:,}"), ("Fatal + serious crashes\nin the area, 2016–2025", fsi[old], fsi[new], "{:,}")]
+    fig, axes = plt.subplots(1, 4, figsize=(13, 3.9), gridspec_kw=dict(wspace=0.5))
+    fig.subplots_adjust(left=0.08, right=0.97, top=0.64, bottom=0.12)
+    for ax, (label, v_old, v_new, fmt) in zip(axes, panels):
+        ax.barh([1, 0], [v_old, v_new], height=0.56, color=[CONTEXT, SERIES])
+        for y, v in ((1, v_old), (0, v_new)):
+            ax.text(v + 0.02 * v_new, y, fmt.format(v), va="center", fontsize=10, color=INK)
+        ax.set_yticks([1, 0], ["3 corridors\n(v0_2019)", "Whole city\n(v1_2022)"] if ax is axes[0] else ["", ""])
+        ax.set_xlim(0, v_new * 1.32)
+        ax.set_title(label, fontsize=10.5)
+        ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(3))
+        ax.grid(axis="x")
+        ax.set_axisbelow(True)
+        ax.tick_params(axis="y", length=0)
+    finish(fig, os.path.join(out, "fig13_corridors_vs_city.png"),
+           f"From 3 corridors to the whole city: {b[0] / a[0]:.0f}× the road miles, {fsi[new] / fsi[old]:.1f}× the "
+           "serious crashes to learn from",
+           "More sites and more crashes give S2's model enough data to separate risky roads from safe ones.",
+           f"{old} and {new}", CITY_SOURCE)
+
+
+def fig_name_matching(cur, net, out):
+    """Share of geocoded in-city crashes whose CRIS street name matches a road of the network."""
+    base = f"""WITH roads AS (SELECT DISTINCT r.source, {ROAD_NAME_SQL} AS name, k.name_key, k.name_base
+                              FROM tasc.site s JOIN tasc.road r USING (road_id)
+                              LEFT JOIN tasc.street_key k ON k.street_name = {ROAD_NAME_SQL}
+                              WHERE s.network_version = %(net)s AND s.site_type = 'segment'),
+                    c AS (SELECT c.is_fsi, upper(trim(c.street_name)) AS name, k.name_key, k.name_base
+                          FROM tasc.crash c JOIN tasc.boundary b ON b.name = 'College Station' AND ST_Within(c.geom, b.geom)
+                          LEFT JOIN tasc.street_key k ON k.street_name = upper(trim(c.street_name)))"""
+    stages = [
+        ("Exact spelling,\nTxDOT roads only", "r.source NOT LIKE 'osm_roads%%' AND r.name = c.name"),
+        ("Name keys (typos, suffixes,\nroute names), TxDOT only",
+         "r.source NOT LIKE 'osm_roads%%' AND (r.name_key = c.name_key OR r.name_base = c.name_base)"),
+        ("Name keys, TxDOT +\nOSM 2022 streets", "r.name_key = c.name_key OR r.name_base = c.name_base"),
+    ]
+    vals = []
+    for label, cond in stages:
+        all_pct, fsi_pct = q(cur, base + f"""
+            SELECT 100.0 * avg((EXISTS (SELECT FROM roads r WHERE {cond}))::int),
+                   100.0 * avg((EXISTS (SELECT FROM roads r WHERE {cond}))::int) FILTER (WHERE c.is_fsi) FROM c""",
+                             {"net": net})[0]
+        vals.append((label, float(all_pct), float(fsi_pct)))
+    fig, ax = plt.subplots(figsize=(10, 4.8))
+    fig.subplots_adjust(left=0.27, right=0.95, top=0.76, bottom=0.14)
+    ys = [2, 1, 0]
+    colors = {"All crashes": SERIES, "Fatal + serious": "#eb6834"}
+    for (label, a, f), y in zip(vals, ys):
+        ax.plot([a, f], [y, y], color=GRID, lw=2, zorder=1)
+        for v, c, dy in ((a, colors["All crashes"], 0.06), (f, colors["Fatal + serious"], -0.06)):
+            ax.scatter(v, y + dy, s=70, color=c, edgecolor=SURFACE, lw=2, zorder=3)
+        # Values to the left of the pair, one line each, so close or equal values never collide.
+        ax.text(min(a, f) - 0.35, y, f"all {a:.1f}%\nserious {f:.1f}%", ha="right", va="center",
+                fontsize=9, color=INK, linespacing=1.3)
+    ax.axvline(95, color=INK_2, lw=1, ls=(0, (3, 3)), zorder=0)
+    ax.text(95.3, -0.45, "FSR target: 95% of fatal +\nserious crashes matched", fontsize=8.5, color=INK_2, va="bottom")
+    ax.set_yticks(ys, [v[0] for v in vals])
+    ax.set_ylim(-0.6, 2.6)
+    lo = min(min(v[1], v[2]) for v in vals)
+    ax.set_xlim(math.floor(lo / 5) * 5 - 5, 100.5)
+    ax.xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(5))
+    ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(decimals=0))
+    ax.grid(axis="x")
+    ax.set_axisbelow(True)
+    ax.tick_params(axis="y", length=0)
+    ax.legend(handles=[Line2D([], [], ls="", marker="o", ms=8, color=c, label=n) for n, c in colors.items()],
+              loc="lower left", frameon=False, fontsize=9)
+    rate = q(cur, "SELECT fsi_match_pct FROM tasc.match_rate WHERE network_version = %(net)s", {"net": net})
+    result = (f"Full map-matching (name and distance, 07_map_match_city.sql) placed {float(rate[0][0]):.1f}% of them."
+              if rate else "Name check only: map-matching has not run on this network yet.")
+    finish(fig, os.path.join(out, "fig14_name_matching.png"),
+           f"Crash street names now match a road for {vals[-1][2]:.1f}% of serious crashes",
+           "Share of geocoded crashes inside the city whose CRIS street name matches a road in the network. "
+           + result, net, CITY_SOURCE)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Draw S1 progress figures from the database")
     parser.add_argument("--network", default="v0_2019")
+    parser.add_argument("--city-network", default="v1_2022", help="city-wide network for figures 12-14")
+    parser.add_argument("--only", help="comma list of figure numbers to draw, e.g. 12,13,14")
     parser.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "figures"))
     args = parser.parse_args(argv)
     os.makedirs(args.out, exist_ok=True)
+    corridor = [fig_network, fig_by_year, fig_matching, fig_speed, fig_funnel, fig_osm_growth, fig_osm_maps,
+                fig_conditions, fig_speed_check, fig_feature_strips, fig_lineage]
+    figures = {i + 1: (lambda fn: lambda cur: fn(cur, args.network, args.out))(fn) for i, fn in enumerate(corridor)}
+    figures[12] = lambda cur: fig_city_network(cur, args.city_network, args.out)
+    figures[13] = lambda cur: fig_scale_up(cur, args.out, args.network, args.city_network)
+    figures[14] = lambda cur: fig_name_matching(cur, args.city_network, args.out)
+    wanted = [int(n) for n in args.only.split(",")] if args.only else sorted(figures)
     with ingest.connect() as conn, conn.cursor() as cur:
-        for fn in (fig_network, fig_by_year, fig_matching, fig_speed, fig_funnel,
-                   fig_osm_growth, fig_osm_maps, fig_conditions, fig_speed_check,
-                   fig_feature_strips, fig_lineage):
-            fn(cur, args.network, args.out)
+        for n in wanted:
+            figures[n](cur)
 
 
 if __name__ == "__main__":
