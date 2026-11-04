@@ -32,6 +32,10 @@ ROUTE_NAMES = {
     "GEORGE BUSH DR": "FM2347",
     "HARVEY RD": "SH0030",
     "FB RD": "F AND B RD",
+    # Old name in the 2019 inventory for the in-city piece of Holleman Dr South (1.6 km): 68 crashes
+    # within 20 m of it are reported on S HOLLEMAN DR and none on I&GN. The I&GN Road outside
+    # the city is spelled IG AND N RD and keeps its own name.
+    "N I AND G RD": "HOLLEMAN DR",
 }
 
 

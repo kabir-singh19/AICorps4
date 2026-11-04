@@ -28,6 +28,7 @@ class StreetKeyTests(unittest.TestCase):
             ("S HOLLEMAN DR", "HOLLEMAN W DR"),                 # TxDOT: direction before the suffix
             ("E SOUTHWEST PKWY", "SOUTHWEST E PKWY"),
             ("W GREENS PRAIRIE RD", "GREENS PRAIRIE W RD"),
+            ("S HOLLEMAN DR", "N I AND G RD"),                  # TxDOT 2019's old name for it
         ]
         for crash, road in pairs:
             self.assertTrue(same_street(crash, road), (crash, road))
@@ -46,7 +47,8 @@ class StreetKeyTests(unittest.TestCase):
 
     def test_letters_that_are_part_of_the_name_stay(self):
         self.assertEqual(street_key("PARK WEST BLVD"), "PARK WEST BLVD")   # spelled-out word is a name
-        self.assertEqual(street_key("IG AND N RD"), "IG AND N RD")         # I&GN Road
+        self.assertEqual(street_key("IG AND N RD"), "IG AND N RD")         # I&GN Road, outside the city
+        self.assertFalse(same_street("IG AND N RD", "HOLLEMAN DR"))        # not caught by the Holleman alias
         self.assertEqual(street_key("MERVIN'S RUN"), "MERVINS RUN")        # possessive, not South
 
     def test_same_name_with_another_suffix_matches_on_purpose(self):
