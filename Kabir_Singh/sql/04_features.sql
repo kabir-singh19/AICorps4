@@ -7,7 +7,7 @@
 --
 -- Segments: speed_limit, num_lanes, aadt, func_class, median_type from the source road nearest
 --           the segment midpoint (site.road_id). AADT is dated Dec 31 of its own count year.
--- Intersections: legs.
+-- Intersections: legs, and interchange (1 = touches a freeway, so the roads may cross on a bridge).
 -- func_class and median_type are stored as TxDOT codes in value_text.
 
 SET search_path = tasc, public;
@@ -37,10 +37,12 @@ WHERE s.network_version = :'network_version'
   AND v.as_of_date IS NOT NULL;
 
 INSERT INTO site_feature (site_id, feature_set, feature_name, value_num, as_of_date, source)
-SELECT site_id, :'feature_set', 'legs', legs, as_of_date, 'network ' || network_version
+SELECT site_id, :'feature_set', v.feature_name, v.value_num, as_of_date, 'network ' || network_version
 FROM site
+CROSS JOIN LATERAL (VALUES ('legs', legs::float8), ('interchange', interchange::int::float8)) AS v(feature_name, value_num)
 WHERE network_version = :'network_version'
-  AND site_type = 'intersection';
+  AND site_type = 'intersection'
+  AND v.value_num IS NOT NULL;
 
 COMMIT;
 

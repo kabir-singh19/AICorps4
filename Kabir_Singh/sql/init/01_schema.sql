@@ -141,6 +141,7 @@ CREATE TABLE site (
     geom            geometry(Geometry, 32614) NOT NULL,
     length_m        double precision,              -- segments only
     legs            integer,                       -- intersections only
+    interchange     boolean,                       -- intersections only: touches a freeway (TxDOT class 1-2)
     road_id         bigint REFERENCES road,        -- segments: source road nearest the midpoint
     network_version text NOT NULL,
     as_of_date      date NOT NULL
