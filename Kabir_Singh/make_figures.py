@@ -891,10 +891,64 @@ def fig_name_matching(cur, net, out):
            + result, net, CITY_SOURCE)
 
 
+CRASH_BINS = [(1, 2, "#86b6ef"), (3, 9, "#3987e5"), (10, 29, "#1c5cab"), (30, None, "#0d366b")]   # ordinal blue
+
+
+def crash_bin(n):
+    for lo, hi, color in CRASH_BINS:
+        if n >= lo and (hi is None or n <= hi):
+            return color
+    return None
+
+
+def fig_city_crashes(cur, net, out):
+    """Every site of the city network, shaded by the crashes map-matching placed on it."""
+    segs = q(cur, """SELECT ST_AsGeoJSON(ST_Transform(s.geom, 4326)), count(m.crash_id)
+                     FROM tasc.site s LEFT JOIN tasc.crash_match m ON m.site_id = s.site_id
+                     WHERE s.network_version = %(net)s AND s.site_type = 'segment'
+                     GROUP BY s.site_id, s.geom""", {"net": net})
+    ints = q(cur, """SELECT ST_X(g), ST_Y(g), n FROM (
+                       SELECT ST_Transform(s.geom, 4326) g, count(m.crash_id) n
+                       FROM tasc.site s LEFT JOIN tasc.crash_match m ON m.site_id = s.site_id
+                       WHERE s.network_version = %(net)s AND s.site_type = 'intersection'
+                       GROUP BY s.site_id, s.geom) t ORDER BY n""", {"net": net})
+    matched, at_int, fsi, fsi_geo = q(cur, """
+        SELECT count(*) FILTER (WHERE m.status = 'matched'),
+               count(*) FILTER (WHERE s.site_type = 'intersection'),
+               count(*) FILTER (WHERE m.status = 'matched' AND c.is_fsi),
+               (SELECT fsi_geocoded FROM tasc.match_rate WHERE network_version = %(net)s)
+        FROM tasc.crash_match m JOIN tasc.crash c USING (crash_id) LEFT JOIN tasc.site s USING (site_id)
+        WHERE m.network_version = %(net)s""", {"net": net})[0]
+    bnd = json.loads(q(cur, "SELECT ST_AsGeoJSON(ST_Transform(geom, 4326)) FROM tasc.boundary WHERE name = 'College Station'")[0][0])
+    fig = plt.figure(figsize=(10, 9.4))
+    ax = map_axes(fig, [0.01, 0.05, 0.98, 0.83])
+    for poly in bnd["coordinates"]:
+        ax.plot([p[0] for p in poly[0]], [p[1] for p in poly[0]], color=MUTED, lw=0.8, ls=(0, (4, 3)), zorder=1)
+    for g, n in sorted(segs, key=lambda r: r[1]):           # busiest segments drawn last, on top
+        color = crash_bin(n)
+        for xs, ys, _ in lines_from_geojson([(g,)]):
+            ax.plot(xs, ys, color=color or CONTEXT, lw=0.6 if color is None else 1.6, zorder=2 if color is None else 3,
+                    solid_capstyle="round")
+    for x, y, n in ints:
+        if n:
+            ax.scatter(x, y, s=6 + 2.2 * min(n, 120), color=crash_bin(n), edgecolor=SURFACE, lw=0.6, zorder=5)
+    handles = [Line2D([], [], color=CONTEXT, lw=2, label="No crash placed (0)")]
+    handles += [Line2D([], [], color=c, lw=2.5, marker="o", ms=6, mec=SURFACE,
+                       label=f"{lo}–{hi} crashes" if hi else f"{lo} or more crashes") for lo, hi, c in CRASH_BINS]
+    handles += [Line2D([], [], color=MUTED, lw=0.8, ls=(0, (4, 3)), label="City limits (Census, 2022)")]
+    ax.legend(handles=handles, loc="lower left", frameon=True, facecolor=SURFACE, edgecolor=GRID, fontsize=9,
+              title="Crashes 2016–2025 per site\n(lines = segments, dots = intersections)", title_fontsize=9)
+    finish(fig, os.path.join(out, "fig15_city_crashes.png"),
+           f"{matched:,} crashes placed on the city network; {100 * at_int / matched:.0f}% at intersections",
+           f"Each crash goes to the intersection within 250 ft, else the nearest segment of its own street. "
+           f"Fatal + serious: {fsi} of {fsi_geo} geocoded in the city matched ({100 * fsi / fsi_geo:.1f}%).",
+           net, CITY_SOURCE)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Draw S1 progress figures from the database")
     parser.add_argument("--network", default="v0_2019")
-    parser.add_argument("--city-network", default="v1_2022", help="city-wide network for figures 12-14")
+    parser.add_argument("--city-network", default="v1_2022", help="city-wide network for figures 12-15")
     parser.add_argument("--only", help="comma list of figure numbers to draw, e.g. 12,13,14")
     parser.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "figures"))
     args = parser.parse_args(argv)
@@ -905,6 +959,7 @@ def main(argv=None):
     figures[12] = lambda cur: fig_city_network(cur, args.city_network, args.out)
     figures[13] = lambda cur: fig_scale_up(cur, args.out, args.network, args.city_network)
     figures[14] = lambda cur: fig_name_matching(cur, args.city_network, args.out)
+    figures[15] = lambda cur: fig_city_crashes(cur, args.city_network, args.out)
     wanted = [int(n) for n in args.only.split(",")] if args.only else sorted(figures)
     with ingest.connect() as conn, conn.cursor() as cur:
         for n in wanted:
