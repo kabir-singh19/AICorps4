@@ -72,6 +72,14 @@ CREATE TABLE corridor_street (
     route_name  text NOT NULL                      -- TxDOT HWY code, matches road.route_name
 );
 
+-- Street-name keys for city-wide matching: every crash and road name spelling, with the key
+-- street_names.py gives it. Filled by `python ingest.py street-keys`.
+CREATE TABLE street_key (
+    street_name text PRIMARY KEY,                  -- upper case, trimmed, as stored on crash / road
+    name_key    text NOT NULL,                     -- e.g. ROCK PRAIRIE RD, or a route code like FM2154
+    name_base   text NOT NULL                      -- name_key without its suffix, e.g. ROCK PRAIRIE
+);
+
 -- ---------------------------------------------------------------------------
 -- Source road linework (IF-02, TxDOT roadway inventory), one row per line part.
 -- ---------------------------------------------------------------------------

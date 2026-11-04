@@ -4,6 +4,8 @@
     python ingest.py crashes data/cris_2022.csv               # validate, then load
     python ingest.py roads   data/roadway_brazos.geojson --as-of 2022-12-31
     python ingest.py corridors                                # study-corridor street spellings
+    python ingest.py road-names data/roadway_brazos.geojson --source roadway_inventory_2019
+    python ingest.py street-keys                              # name keys for city-wide matching
     python ingest.py crash-details data/new_features_2022.csv # extra crash columns (weather, ...)
 
 A crash file with more than 2% bad records is rejected whole: nothing is loaded, the run is
@@ -573,6 +575,26 @@ def cmd_corridors(args):
     return 0
 
 
+def cmd_street_keys(args):
+    """Replace tasc.street_key with a key for every crash and road street name now in the database."""
+    from street_names import base_key, street_key
+    with connect() as conn, conn.cursor() as cur:
+        # Databases created before street_key was added to sql/init/01_schema.sql.
+        cur.execute("""CREATE TABLE IF NOT EXISTS tasc.street_key (
+                           street_name text PRIMARY KEY, name_key text NOT NULL, name_base text NOT NULL)""")
+        cur.execute("""SELECT upper(trim(n)) FROM (
+                           SELECT street_name FROM tasc.crash UNION SELECT street_name FROM tasc.road
+                           UNION SELECT route_name FROM tasc.road) names(n)
+                       WHERE trim(n) <> ''
+                       GROUP BY 1""")
+        names = [r[0] for r in cur.fetchall()]
+        rows = [(n, street_key(n), base_key(street_key(n))) for n in names if street_key(n)]
+        cur.execute("DELETE FROM tasc.street_key")
+        cur.executemany("INSERT INTO tasc.street_key (street_name, name_key, name_base) VALUES (%s, %s, %s)", rows)
+    print(f"Loaded {len(rows)} street-name keys ({len({r[1] for r in rows})} distinct keys).")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="TASC S1 ingest")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -605,6 +627,9 @@ def main(argv=None):
 
     k = sub.add_parser("corridors", help="load the study-corridor street spellings from corridors.py")
     k.set_defaults(func=cmd_corridors)
+
+    s = sub.add_parser("street-keys", help="key every crash and road street name (street_names.py)")
+    s.set_defaults(func=cmd_street_keys)
 
     args = parser.parse_args(argv)
     return args.func(args)
