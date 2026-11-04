@@ -3,6 +3,7 @@
 --   psql "$DATABASE_URL" -v network_version=v0_2019 -v feature_set=backtest_2022 \
 --        -v osm_source=osm_2022-12-31 -f sql/06_osm_features.sql
 --   (live ranking: -v feature_set=current -v osm_source=osm_latest)
+--   City-wide network: -v network_version=v1_2022 -v osm_source=osm_city_2022-12-31 (or osm_city_latest)
 --
 -- Every value is dated with the snapshot date, so the site_feature trigger refuses a snapshot
 -- newer than the feature set's cutoff (e.g. osm_latest into backtest_2022).

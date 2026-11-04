@@ -83,7 +83,26 @@ INSERT INTO s2_source_availability (source, version, role, as_of_date, available
    'public by the cutoff. Counts reflect OSM completeness in 2022 (far sparser than today).'),
   ('osm_latest', 'OpenStreetMap as of 2026-07-27T09:00Z (newest ohsome data)', 'predictor', '2026-07-27', '2026-07-27',
    'Same method as osm_2022-12-31 at ohsome''s newest time, downloaded 2026-10-28. For the live '
-   '"current" feature set only; after the backtest cutoff, so never listed under backtest_2022.')
+   '"current" feature set only; after the backtest cutoff, so never listed under backtest_2022.'),
+  -- City-wide network v1_2022 (4 Nov 2026).
+  ('osm_roads_2022-12-31', 'OpenStreetMap streets as of 2022-12-31T23:59:59Z, missing from TxDOT 2019', 'predictor',
+   '2022-12-31', '2022-12-31',
+   'Named public OSM streets (no highway=service, no ramps) inside the College Station limits, added by '
+   'ingest.py osm-roads where TxDOT 2019 has no road; same ohsome full-history method as osm_2022-12-31, '
+   'downloaded 2026-11-04. Gives speed_limit and num_lanes where OSM tags them, and func_class mapped from '
+   'the OSM road type (an approximation of TxDOT F_SYSTEM). No AADT or median type.'),
+  ('network v1_2022', 'v1_2022', 'predictor', '2022-12-31', '2022-12-31',
+   'Built by 02_build_network.sql from roadway_inventory_2019 (available 2021-08-06) and osm_roads_2022-12-31 '
+   '(2022-12-31), inside the Census city limits (TIGERweb ACS 2022, boundary vintage 2022-01-01; its '
+   'publication date was not checked, and it only chooses which roads are in the area, never a feature '
+   'value). Stub and junction clean-up 15 m. Used for the intersection features "legs" and "interchange".'),
+  ('osm_city_2022-12-31', 'OpenStreetMap as of 2022-12-31T23:59:59Z, whole city', 'predictor', '2022-12-31', '2022-12-31',
+   'Same method and time as osm_2022-12-31, but within 400 m of the College Station limits instead of 600 m '
+   'of the corridors; fetch_osm.py --boundary, downloaded 2026-11-04. For network v1_2022.'),
+  ('osm_city_latest', 'OpenStreetMap as of 2026-07-27T09:00Z (newest ohsome data), whole city', 'predictor',
+   '2026-07-27', '2026-07-27',
+   'Same area as osm_city_2022-12-31 at ohsome''s newest time, downloaded 2026-11-04. For the live '
+   '"current" feature set of v1_2022 only; after the backtest cutoff, so never listed under backtest_2022.')
 ON CONFLICT (source) DO UPDATE SET
     version = EXCLUDED.version, role = EXCLUDED.role, as_of_date = EXCLUDED.as_of_date,
     available_as_of = EXCLUDED.available_as_of, evidence = EXCLUDED.evidence;
