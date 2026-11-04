@@ -72,6 +72,16 @@ CREATE TABLE corridor_street (
     route_name  text NOT NULL                      -- TxDOT HWY code, matches road.route_name
 );
 
+-- Analysis-area outline (FSR: public roads inside College Station city limits).
+-- Filled by `python ingest.py boundary` from fetch_boundary.py's Census file.
+CREATE TABLE boundary (
+    name        text PRIMARY KEY,                  -- e.g. 'College Station'
+    geoid       text,                              -- Census GEOID, 4815976 = College Station
+    as_of_date  date NOT NULL,                     -- boundary vintage, e.g. 2022-01-01
+    geom        geometry(MultiPolygon, 32614) NOT NULL,
+    run_id      bigint REFERENCES ingest_run
+);
+
 -- Street-name keys for city-wide matching: every crash and road name spelling, with the key
 -- street_names.py gives it. Filled by `python ingest.py street-keys`.
 CREATE TABLE street_key (

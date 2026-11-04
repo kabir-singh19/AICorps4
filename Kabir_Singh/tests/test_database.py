@@ -197,6 +197,30 @@ class GuardrailTests(unittest.TestCase):
                                                     ORDER BY street_name NULLS LAST""", (source,))],
                          ["HOLLEMAN DR", None])
 
+    def test_boundary_reload_replaces_and_bad_file_is_refused(self):
+        name = "test_guardrail_boundary"
+
+        def square(x):
+            return {"type": "Feature", "properties": {"NAME": "Test", "GEOID": "0", "vintage": "2022-01-01"},
+                    "geometry": {"type": "Polygon", "coordinates": [[[x, 30.60], [x + 0.01, 30.60],
+                                                                     [x + 0.01, 30.61], [x, 30.61], [x, 30.60]]]}}
+        first = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": [square(-96.30)]}))
+        second = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": [square(-96.40)]}))
+        two = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": [square(-96.30), square(-96.40)]}))
+
+        def cleanup():
+            self.sql("DELETE FROM tasc.boundary WHERE name = %s", (name,))
+            self.sql("DELETE FROM tasc.ingest_run WHERE source = 'boundary' AND file_name IN (%s, %s)",
+                     (os.path.basename(first), os.path.basename(second)))
+        self.addCleanup(cleanup)
+        with contextlib.redirect_stdout(io.StringIO()):
+            for path in (first, second):
+                self.assertEqual(ingest.main(["boundary", path, "--name", name]), 0)
+            self.assertEqual(ingest.main(["boundary", two, "--name", name]), 2)
+        rows = self.sql("""SELECT round(ST_X(ST_Centroid(ST_Transform(geom, 4326)))::numeric, 3)
+                           FROM tasc.boundary WHERE name = %s""", (name,))
+        self.assertEqual([float(r[0]) for r in rows], [-96.395])        # one row, the second square
+
     def test_crash_already_loaded_from_another_file_is_rejected(self):
         row = self.sql("SELECT crash_id, crash_date FROM tasc.crash LIMIT 1")
         if not row:

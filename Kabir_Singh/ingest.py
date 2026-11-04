@@ -6,6 +6,7 @@
     python ingest.py corridors                                # study-corridor street spellings
     python ingest.py road-names data/roadway_brazos.geojson --source roadway_inventory_2019
     python ingest.py street-keys                              # name keys for city-wide matching
+    python ingest.py boundary ../../raw/boundary/college_station_2022.geojson   # city limits
     python ingest.py crash-details data/new_features_2022.csv # extra crash columns (weather, ...)
 
 A crash file with more than 2% bad records is rejected whole: nothing is loaded, the run is
@@ -575,6 +576,33 @@ def cmd_corridors(args):
     return 0
 
 
+def cmd_boundary(args):
+    """Load a fetch_boundary.py file into tasc.boundary, replacing that boundary's earlier row."""
+    with open(args.file, encoding="utf-8") as f:
+        features = json.load(f)["features"]
+    if len(features) != 1 or not features[0].get("geometry"):
+        print(f"STOPPED: {os.path.basename(args.file)} must hold exactly one boundary polygon. Nothing changed.")
+        return 2
+    p = features[0]["properties"]
+    with connect() as conn, conn.cursor() as cur:
+        # Databases created before boundary was added to sql/init/01_schema.sql.
+        cur.execute("""CREATE TABLE IF NOT EXISTS tasc.boundary (
+                           name text PRIMARY KEY, geoid text, as_of_date date NOT NULL,
+                           geom geometry(MultiPolygon, 32614) NOT NULL, run_id bigint REFERENCES tasc.ingest_run)""")
+        run_id = log_run(cur, "boundary", args.file, 1, 0, "loaded",
+                         note=f"{p.get('NAME')} GEOID {p.get('GEOID')}, vintage {p['vintage']}")
+        cur.execute(
+            """INSERT INTO tasc.boundary (name, geoid, as_of_date, geom, run_id)
+               VALUES (%s, %s, %s, ST_Multi(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), 32614)), %s)
+               ON CONFLICT (name) DO UPDATE SET geoid = EXCLUDED.geoid, as_of_date = EXCLUDED.as_of_date,
+                                                geom = EXCLUDED.geom, run_id = EXCLUDED.run_id
+               RETURNING ST_Area(geom) / 1e6""",
+            (args.name, p.get("GEOID"), p["vintage"], json.dumps(features[0]["geometry"]), run_id))
+        km2 = cur.fetchone()[0]
+    print(f"Loaded boundary {args.name!r}: {km2:.1f} km2 (land and water), as of {p['vintage']}. run_id {run_id}")
+    return 0
+
+
 def cmd_street_keys(args):
     """Replace tasc.street_key with a key for every crash and road street name now in the database."""
     from street_names import base_key, street_key
@@ -627,6 +655,11 @@ def main(argv=None):
 
     k = sub.add_parser("corridors", help="load the study-corridor street spellings from corridors.py")
     k.set_defaults(func=cmd_corridors)
+
+    b = sub.add_parser("boundary", help="load the city-limits polygon from fetch_boundary.py")
+    b.add_argument("file")
+    b.add_argument("--name", default="College Station")
+    b.set_defaults(func=cmd_boundary)
 
     s = sub.add_parser("street-keys", help="key every crash and road street name (street_names.py)")
     s.set_defaults(func=cmd_street_keys)

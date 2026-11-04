@@ -2,6 +2,7 @@
 
     python fetch_osm.py --date 2022-12-31 --out ../../raw/osm   # backtest snapshot (feature set backtest_2022)
     python fetch_osm.py --date latest     --out ../../raw/osm   # newest available (feature set current)
+    python fetch_osm.py --date 2022-12-31 --out ../../raw/osm --boundary "College Station" --margin-m 100 --groups road
 
 Uses the ohsome API (api.ohsome.org, HeiGIT / Heidelberg University), which serves the full
 OSM history: each query returns features exactly as they stood at the requested time, so the
@@ -9,12 +10,14 @@ OSM history: each query returns features exactly as they stood at the requested 
 lags live OSM by weeks to months; the file records it.
 
 The area is a band --margin-m wide around every site of --network (default 600 m around
-v0_2019). Ways are clipped to that band. One request per feature group; any HTTP error stops the
-run, so a partial snapshot is never written. The output records endpoint, filters, area and time.
+v0_2019), or with --boundary the city limits grown by --margin-m. Ways are clipped to that
+area. One request per feature group (--groups picks some); any HTTP error stops the run, so a
+partial snapshot is never written. The output records endpoint, filters, area and time.
 """
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import urllib.parse
@@ -39,6 +42,11 @@ GROUPS = {
     # Major roads only, for their sidewalk=*, lit=* and lanes tags.
     "major_road":      "type:way and highway in (motorway, trunk, primary, secondary, tertiary, "
                        "motorway_link, trunk_link, primary_link, secondary_link, tertiary_link)",
+    # Every public street, to fill roads missing from the TxDOT inventory. No service roads,
+    # parking aisles or driveways (highway=service), which are not public streets.
+    "road":            "type:way and highway in (motorway, trunk, primary, secondary, tertiary, unclassified, "
+                       "residential, living_street, motorway_link, trunk_link, primary_link, secondary_link, "
+                       "tertiary_link)",
 }
 
 
@@ -54,6 +62,19 @@ def area_from_db(network_version, margin_m):
         geojson = cur.fetchone()[0]
     if geojson is None:
         raise ValueError(f"no sites for network {network_version}")
+    return json.loads(geojson)
+
+
+def area_from_boundary(name, margin_m):
+    """tasc.boundary `name` grown by margin_m, so roads along the city limit are not cut off."""
+    with ingest.connect() as conn, conn.cursor() as cur:
+        cur.execute("""SELECT ST_AsGeoJSON(ST_Transform(ST_Collect(ARRAY(
+                                  SELECT ST_MakePolygon(ST_ExteriorRing((ST_Dump(ST_SimplifyPreserveTopology(
+                                             ST_Buffer(geom, %s), 10))).geom)))), 4326), 6)
+                       FROM tasc.boundary WHERE name = %s""", (margin_m, name))
+        geojson = cur.fetchone()[0]
+    if geojson is None:
+        raise ValueError(f"no boundary {name!r}: run 'python ingest.py boundary' first")
     return json.loads(geojson)
 
 
@@ -83,15 +104,26 @@ def main(argv=None):
     parser.add_argument("--date", required=True, help="YYYY-MM-DD, or 'latest'")
     parser.add_argument("--out", required=True)
     parser.add_argument("--network", default="v0_2019")
+    parser.add_argument("--boundary", help="use this tasc.boundary (e.g. 'College Station') instead of --network")
     parser.add_argument("--margin-m", type=int, default=600)
+    parser.add_argument("--groups", default=",".join(GROUPS), help=f"comma list, default all: {','.join(GROUPS)}")
     args = parser.parse_args(argv)
+    groups_wanted = args.groups.split(",")
+    unknown = [g for g in groups_wanted if g not in GROUPS]
+    if unknown:
+        parser.error(f"unknown group(s) {unknown}; choose from {list(GROUPS)}")
 
     if args.date == "latest":
         when = latest_time()
     else:
         datetime.strptime(args.date, "%Y-%m-%d")
         when = f"{args.date}T23:59:59Z"
-    area = area_from_db(args.network, args.margin_m)
+    if args.boundary:
+        area = area_from_boundary(args.boundary, args.margin_m)
+        area_label = re.sub(r"[^a-z0-9]+", "_", args.boundary.lower()).strip("_")
+    else:
+        area = area_from_db(args.network, args.margin_m)
+        area_label = args.network
     bpolys = json.dumps({"type": "FeatureCollection",
                          "features": [{"type": "Feature", "properties": {"id": "band"}, "geometry": area}]})
     started = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -104,6 +136,8 @@ def main(argv=None):
     end_s = end.strftime("%Y-%m-%dT%H:%M:%SZ")
     groups = {}
     for name, flt in GROUPS.items():
+        if name not in groups_wanted:
+            continue
         result = call("elementsFullHistory/geometry", {"bpolys": bpolys, "filter": flt,
                                                        "time": f"{start},{end_s}", "properties": "tags"})
         current = [f for f in result["features"] if f["properties"].get("@validTo") == end_s]
@@ -112,13 +146,15 @@ def main(argv=None):
 
     os.makedirs(args.out, exist_ok=True)
     label = "latest" if args.date == "latest" else args.date
-    path = os.path.join(args.out, f"osm_{args.network}_{args.margin_m}m_{label}.json")
+    suffix = "" if len(groups_wanted) == len(GROUPS) else "_" + "_".join(groups_wanted)
+    path = os.path.join(args.out, f"osm_{area_label}_{args.margin_m}m_{label}{suffix}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump({
             "endpoint": f"{ENDPOINT}/elementsFullHistory/geometry",
             "snapshot_time": when,
             "requested": args.date,
-            "network": args.network,
+            "network": None if args.boundary else args.network,
+            "boundary": args.boundary,
             "margin_m": args.margin_m,
             "area": area,
             "downloaded_utc": started,
