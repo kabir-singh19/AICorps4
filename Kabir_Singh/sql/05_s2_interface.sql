@@ -3,8 +3,10 @@
 --   psql "$DATABASE_URL" -v s2_password="$S2_PASSWORD" -f sql/05_s2_interface.sql
 -- s2_password is optional; without it the read-only role is created but cannot log in.
 --
--- These describe the CORRIDOR network (v0_2019) for the M2 diagnostic. A full-city network
--- needs a different in_analysis_area rule (the College Station boundary, not corridor names).
+-- Networks: v1_2022 is the whole city (the FSR analysis area); v0_2019 is the three-corridor
+-- network of the M2 diagnostic. s2_site_scope serves both (one row per site per network).
+-- s2_crash_scope has one row per crash, so it can hold one area: the city (FSR). The corridor
+-- rule stays available as s2_crash_scope_corridor for re-running the M2 diagnostic.
 
 SET search_path = tasc, public;
 BEGIN;
@@ -15,34 +17,51 @@ BEGIN;
 --    Length policy, agreed with S2 on 18 Oct 2026: segments run all the way through each
 --    intersection, so intersections add 0 flagging length; their exposure is the ICD Table 9
 --    250 ft influence zone (250 / 5280 mi).
+--    road_name: the corridor name on the study corridors, else the street name in capitals (TxDOT
+--    and OSM spell them differently), else the TxDOT route code; '' for an unnamed city street
+--    (TxDOT LS0000 without a name). Every site of both networks lies in the area (v1_2022 is cut
+--    to the city limits).
 CREATE OR REPLACE VIEW s2_site_scope AS
 WITH corridor AS (SELECT DISTINCT route_name, corridor FROM corridor_street),
+     segment_name AS (
+         SELECT s.site_id, s.network_version, s.geom,
+                COALESCE(c.corridor, upper(nullif(r.street_name, '')), nullif(r.route_name, 'LS0000'), '') AS road_name
+         FROM site s
+         JOIN road r USING (road_id)
+         LEFT JOIN corridor c ON c.route_name = r.route_name
+         WHERE s.site_type = 'segment'),
      intersection_name AS (
-         -- An intersection is named after the corridors whose segments end at it.
-         SELECT i.site_id, string_agg(DISTINCT c.corridor, ' & ' ORDER BY c.corridor) AS road_name
+         -- An intersection is named after the roads whose segments end at it. 16 m: merged
+         -- junctions (02_build_network.sql merge_m = 15) sit at the center of their nodes.
+         SELECT i.site_id, string_agg(DISTINCT n.road_name, ' & ' ORDER BY n.road_name) AS road_name
          FROM site i
-         JOIN site s ON s.network_version = i.network_version AND s.site_type = 'segment'
-                    AND ST_DWithin(i.geom, s.geom, 1)
-         JOIN road r ON r.road_id = s.road_id
-         JOIN corridor c ON c.route_name = r.route_name
-         WHERE i.site_type = 'intersection'
+         JOIN segment_name n ON n.network_version = i.network_version AND ST_DWithin(i.geom, n.geom, 16)
+         WHERE i.site_type = 'intersection' AND n.road_name <> ''
          GROUP BY i.site_id)
 SELECT s.site_id,
        s.network_version,
        true AS in_analysis_area,
        CASE s.site_type WHEN 'segment' THEN s.length_m / 1609.344 ELSE 250 / 5280.0 END AS risk_length_mi,
        CASE s.site_type WHEN 'segment' THEN s.length_m / 1609.344 ELSE 0 END           AS network_length_mi,
-       COALESCE(c.corridor, n.road_name, r.route_name, '') AS road_name
+       COALESCE(g.road_name, n.road_name, '') AS road_name
 FROM site s
-LEFT JOIN road r USING (road_id)
-LEFT JOIN corridor c ON c.route_name = r.route_name
+LEFT JOIN segment_name g ON g.site_id = s.site_id
 LEFT JOIN intersection_name n ON n.site_id = s.site_id;
 
--- 2. Crashes: every crash classified once, including ones without coordinates. For the corridor
---    network, "in the analysis area" means CRIS recorded the crash on a corridor street, the
---    same rule 03_map_match.sql uses, so unmatched and no-coordinate corridor crashes stay in
---    the capture denominator.
+-- 2. Crashes: every crash classified once, including ones without coordinates. The analysis
+--    area is the College Station city limits (FSR). A crash with no coordinates stays in (the
+--    CRIS export is for the City of College Station), so it counts in the capture denominator
+--    although no site can hold it; the 53 geocoded outside the limits are out.
 CREATE OR REPLACE VIEW s2_crash_scope AS
+SELECT c.crash_id,
+       c.geom IS NULL OR ST_Within(c.geom, (SELECT geom FROM boundary WHERE name = 'College Station'))
+           AS in_analysis_area
+FROM crash c;
+
+-- 2b. The M2 corridor diagnostic's rule: in the area when CRIS recorded the crash on a
+--     corridor street (the same rule 03_map_match.sql uses). S2 selects it with
+--     "crash_scope_view": "tasc.s2_crash_scope_corridor" in its corridor config.
+CREATE OR REPLACE VIEW s2_crash_scope_corridor AS
 SELECT c.crash_id,
        COALESCE(upper(trim(c.street_name)) IN (SELECT street_name FROM corridor_street), false)
            AS in_analysis_area
@@ -125,13 +144,13 @@ JOIN s2_source_availability a
 
 COMMIT;
 
--- 5. Read-only role for S2: SELECT on the three views and the tables S2 reads, nothing else.
+-- 5. Read-only role for S2: SELECT on the interface views and the tables S2 reads, nothing else.
 SELECT 'CREATE ROLE s2_reader LOGIN'
 WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 's2_reader') \gexec
 GRANT CONNECT ON DATABASE tasc TO s2_reader;
 GRANT USAGE ON SCHEMA tasc TO s2_reader;
 REVOKE ALL ON ALL TABLES IN SCHEMA tasc FROM s2_reader;
-GRANT SELECT ON tasc.s2_site_scope, tasc.s2_crash_scope, tasc.s2_source_registry,
+GRANT SELECT ON tasc.s2_site_scope, tasc.s2_crash_scope, tasc.s2_crash_scope_corridor, tasc.s2_source_registry,
                 tasc.site, tasc.site_feature, tasc.crash, tasc.crash_match TO s2_reader;
 \if :{?s2_password}
 ALTER ROLE s2_reader PASSWORD :'s2_password';

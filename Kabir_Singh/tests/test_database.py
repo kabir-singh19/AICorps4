@@ -103,6 +103,20 @@ class S2InterfaceTests(unittest.TestCase):
             SELECT (SELECT count(*) FROM tasc.crash), count(*), count(DISTINCT crash_id) FROM tasc.s2_crash_scope""")
         self.assertEqual((scoped, distinct), (crashes, crashes))
 
+    def test_corridor_crash_scope_classifies_every_crash_once(self):
+        if self.one("SELECT to_regclass('tasc.s2_crash_scope_corridor')")[0] is None:
+            self.skipTest("s2_crash_scope_corridor not created yet")
+        crashes, scoped, distinct = self.one("""
+            SELECT (SELECT count(*) FROM tasc.crash), count(*), count(DISTINCT crash_id)
+            FROM tasc.s2_crash_scope_corridor""")
+        self.assertEqual((scoped, distinct), (crashes, crashes))
+
+    def test_crashes_matched_city_wide_are_in_the_analysis_area(self):
+        # A crash placed on a site of the city network must count in the capture denominator.
+        self.assertEqual(self.one("""
+            SELECT count(*) FROM tasc.crash_match m JOIN tasc.s2_crash_scope a USING (crash_id)
+            WHERE m.network_version = 'v1_2022' AND m.status = 'matched' AND NOT a.in_analysis_area""")[0], 0)
+
     def test_backtest_sources_available_by_cutoff(self):
         # Later sources (e.g. osm_latest for the live 'current' set) may exist, but the backtest
         # registry must list only predictor and history sources dated and available by the cutoff.
