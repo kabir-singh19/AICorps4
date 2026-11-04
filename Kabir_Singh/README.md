@@ -31,7 +31,7 @@ use this one) and `v0_2019`, the three corridors of the M2 diagnostic, kept unch
 | `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median, the `road.attrs` fields, curvature, distance to intersection; intersection legs and interchange), each value dated | Feature tables with as-of dates (due 11/3) |
 | `tests/test_validate.py` | 15 tests for the crash validator (incl. guardrails), no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
-| `make_map.py`, `map/` | Writes `map/index.html`, an interactive map of every v1_2022 site with crash totals per year and its features (from `map/template.html`; open the file in a browser, no database needed). Totals per site only, no crash locations | Progress evidence |
+| `make_map.py`, `map/` | Writes `map/index.html`, an interactive road map of College Station (roads by type with street names, water, parks, buildings, campus, drawn from the database, no map tiles) with a Crashes view: every v1_2022 site coloured by crash totals per year, plus its features. Open the file in a browser, no database needed. Totals per site only, no crash locations | Progress evidence |
 | `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_crash_scope_corridor`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 |
 | `dumps/tasc_v1_2022_2026-11-04.sql.gz` | **Current** database copy: both networks, city-wide matching and features; see "For S2" | IF-09 to S2 |
 | `dumps/tasc_v0_2019_2026-10-28.sql.gz` | 28 Oct copy (corridor network with crash details and OSM features) | IF-09 to S2 |
@@ -134,6 +134,11 @@ docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 -v fea
 # d. Tests, figures 12-15, interactive map, database copy
 .venv/bin/python -m unittest discover -s tests -v
 .venv/bin/python make_figures.py --only 12,13,14,15
+# basemap for the map (today's OSM: water, streams, parks, buildings, campus; scenery only, never a feature)
+.venv/bin/python fetch_osm.py --date latest --out ../../raw/osm --boundary "College Station" --margin-m 400 \
+    --groups water,waterway,green,building,campus
+.venv/bin/python ingest.py osm ../../raw/osm/osm_college_station_400m_latest_water_waterway_green_building_campus.json \
+    --source osm_basemap_latest
 .venv/bin/python make_map.py
 docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --no-owner --no-privileges | gzip -9 > dumps/tasc_v1_2022_$(date +%F).sql.gz
 ```

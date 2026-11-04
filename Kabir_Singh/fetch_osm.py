@@ -42,6 +42,10 @@ GROUPS = {
     # Major roads only, for their sidewalk=*, lit=* and lanes tags.
     "major_road":      "type:way and highway in (motorway, trunk, primary, secondary, tertiary, "
                        "motorway_link, trunk_link, primary_link, secondary_link, tertiary_link)",
+}
+
+# Fetched only when named in --groups: they are not site features.
+EXTRA_GROUPS = {
     # Every public street, to fill roads missing from the TxDOT inventory. No service roads,
     # parking aisles or driveways (highway=service), which are not public streets.
     "road":            "type:way and highway in (motorway, trunk, primary, secondary, tertiary, unclassified, "
@@ -49,7 +53,15 @@ GROUPS = {
                        "tertiary_link)",
     # University campus outlines, to tag the streets on them (Texas A&M maintains its own).
     "campus":          "amenity=university and geometry:polygon",
+    # Basemap for make_map.py (scenery only, never a feature, so the latest map is the right one).
+    "water":           "natural=water and geometry:polygon",
+    "waterway":        "type:way and waterway in (river, stream, canal)",
+    "green":           "(leisure in (park, golf_course, pitch, nature_reserve, recreation_ground) or "
+                       "landuse in (grass, recreation_ground, forest, meadow, cemetery) or natural=wood) "
+                       "and geometry:polygon",
+    "building":        "building=* and geometry:polygon",
 }
+ALL_GROUPS = {**GROUPS, **EXTRA_GROUPS}
 
 
 def area_from_db(network_version, margin_m):
@@ -108,12 +120,14 @@ def main(argv=None):
     parser.add_argument("--network", default="v0_2019")
     parser.add_argument("--boundary", help="use this tasc.boundary (e.g. 'College Station') instead of --network")
     parser.add_argument("--margin-m", type=int, default=600)
-    parser.add_argument("--groups", default=",".join(GROUPS), help=f"comma list, default all: {','.join(GROUPS)}")
+    parser.add_argument("--groups", default=",".join(GROUPS),
+                        help=f"comma list; default the feature groups {','.join(GROUPS)}; "
+                             f"also: {','.join(EXTRA_GROUPS)}")
     args = parser.parse_args(argv)
     groups_wanted = args.groups.split(",")
-    unknown = [g for g in groups_wanted if g not in GROUPS]
+    unknown = [g for g in groups_wanted if g not in ALL_GROUPS]
     if unknown:
-        parser.error(f"unknown group(s) {unknown}; choose from {list(GROUPS)}")
+        parser.error(f"unknown group(s) {unknown}; choose from {list(ALL_GROUPS)}")
 
     if args.date == "latest":
         when = latest_time()
@@ -137,7 +151,7 @@ def main(argv=None):
     start = (end - timedelta(days=1)).strftime("%Y-%m-%dT%H:%M:%SZ")
     end_s = end.strftime("%Y-%m-%dT%H:%M:%SZ")
     groups = {}
-    for name, flt in GROUPS.items():
+    for name, flt in ALL_GROUPS.items():
         if name not in groups_wanted:
             continue
         result = call("elementsFullHistory/geometry", {"bpolys": bpolys, "filter": flt,
@@ -148,7 +162,7 @@ def main(argv=None):
 
     os.makedirs(args.out, exist_ok=True)
     label = "latest" if args.date == "latest" else args.date
-    suffix = "" if len(groups_wanted) == len(GROUPS) else "_" + "_".join(groups_wanted)
+    suffix = "" if set(groups_wanted) == set(GROUPS) else "_" + "_".join(groups_wanted)
     path = os.path.join(args.out, f"osm_{area_label}_{args.margin_m}m_{label}{suffix}.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump({

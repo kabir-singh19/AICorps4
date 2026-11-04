@@ -1,75 +1,92 @@
 <title>College Station Crash Map</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a working map tool. Control panel on the left (stacks under the map on phones), the
-   city drawn from TASC's own road sites on the right; one blue ramp carries crash counts. */
+/* Layout: a road map in the style people know from everyday map apps, drawn from TASC's own
+   data (no tiles): control panel on the left (under the map on phones), map on the right.
+   Basemap colours follow road-map convention; crash counts use one red ramp, kept apart from
+   the blue of water. */
 :root {
-  --bg: #f3f4f2;
-  --panel: #fbfbfa;
-  --map: #e9ebe7;
-  --ink: #15191c;
-  --ink-2: #4a5158;
-  --muted: #7d858c;
-  --line: #d7dad6;
-  --road-zero: #c4c9c4;
-  --city: #f7f8f5;
-  --city-edge: #8f979c;
-  --sel: #15191c;
-  --tamu: #7a1f35;
-  --corridor: #c9552a;
-  --r1: #86b6ef; --r2: #3987e5; --r3: #1c5cab; --r4: #0d366b;
-  --focus: #2a78d6;
+  --bg: #eef0f1; --panel: #ffffff; --ink: #1f2328; --ink-2: #4f5660; --muted: #80868e; --line: #dde0e3;
+  --focus: #1a73e8;
+  /* basemap */
+  --land: #f4f3ef; --water: #a8d4f5; --waterline: #8cc2ee; --green: #cfe8c4; --campus: #f0e7dc;
+  --building: #e6e3dd; --building-edge: #d4d0c8; --city-edge: #9aa0a6;
+  --road-local: #ffffff; --road-local-case: #d8d5ce; --road-col: #ffffff; --road-col-case: #c6c2b9;
+  --road-art: #fde9a6; --road-art-case: #e7c35a; --road-hwy: #f8c26a; --road-hwy-case: #d8992f;
+  --label: #3c4043; --label-halo: #ffffff; --label-water: #2f6eb5; --label-green: #3b7a36; --label-campus: #7a5a3a;
+  /* crash overlay */
+  --zero: #d3d0c8; --r1: #f7b39a; --r2: #ee6b4d; --r3: #c9302c; --r4: #7d1218; --sel: #1a73e8;
+  --corridor: #6250d6; --tamu: #0f9d76;
   --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
   --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #111416; --panel: #171b1e; --map: #0d1012; --ink: #eceeec; --ink-2: #b6bcc0; --muted: #848c92;
-    --line: #2b3135; --road-zero: #343b40; --city: #151a1d; --city-edge: #5d666c; --sel: #ffffff;
-    --tamu: #e0899c; --corridor: #f08a5d;
-    --r1: #184f95; --r2: #2a78d6; --r3: #6da7ec; --r4: #c4dcf8; --focus: #6da7ec;
+    --bg: #111418; --panel: #1a1d22; --ink: #e8eaed; --ink-2: #b5bac1; --muted: #858b93; --line: #2d3238; --focus: #8ab4f8;
+    --land: #1d2126; --water: #17324a; --waterline: #1f4566; --green: #1e3527; --campus: #272a2b;
+    --building: #2b3036; --building-edge: #363c43; --city-edge: #5f666e;
+    --road-local: #3a4048; --road-local-case: #2a2f35; --road-col: #454c55; --road-col-case: #2a2f35;
+    --road-art: #5c5437; --road-art-case: #3f3a27; --road-hwy: #6d522a; --road-hwy-case: #4b3a20;
+    --label: #d6dadf; --label-halo: #15181c; --label-water: #7fb3e6; --label-green: #8fc28a; --label-campus: #cdb79c;
+    --zero: #3a4048; --r1: #6e2620; --r2: #b33b2c; --r3: #ee6b4d; --r4: #f9c2ab; --sel: #8ab4f8;
+    --corridor: #9085e9; --tamu: #34c494;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #111416; --panel: #171b1e; --map: #0d1012; --ink: #eceeec; --ink-2: #b6bcc0; --muted: #848c92;
-  --line: #2b3135; --road-zero: #343b40; --city: #151a1d; --city-edge: #5d666c; --sel: #ffffff;
-  --tamu: #e0899c; --corridor: #f08a5d;
-  --r1: #184f95; --r2: #2a78d6; --r3: #6da7ec; --r4: #c4dcf8; --focus: #6da7ec;
+  --bg: #111418; --panel: #1a1d22; --ink: #e8eaed; --ink-2: #b5bac1; --muted: #858b93; --line: #2d3238; --focus: #8ab4f8;
+  --land: #1d2126; --water: #17324a; --waterline: #1f4566; --green: #1e3527; --campus: #272a2b;
+  --building: #2b3036; --building-edge: #363c43; --city-edge: #5f666e;
+  --road-local: #3a4048; --road-local-case: #2a2f35; --road-col: #454c55; --road-col-case: #2a2f35;
+  --road-art: #5c5437; --road-art-case: #3f3a27; --road-hwy: #6d522a; --road-hwy-case: #4b3a20;
+  --label: #d6dadf; --label-halo: #15181c; --label-water: #7fb3e6; --label-green: #8fc28a; --label-campus: #cdb79c;
+  --zero: #3a4048; --r1: #6e2620; --r2: #b33b2c; --r3: #ee6b4d; --r4: #f9c2ab; --sel: #8ab4f8;
+  --corridor: #9085e9; --tamu: #34c494;
   color-scheme: dark;
 }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45; }
 * { box-sizing: border-box; }
 
 .app {
   height: 100%;
-  display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px;
-  padding-block: 16px;
+  display: grid; grid-template-columns: minmax(300px, 370px) 1fr; gap: 14px;
+  padding-block: 14px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 .panel {
-  min-width: 0; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  min-width: 0; overflow-y: auto; background: var(--panel); border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(60,64,67,.18), 0 1px 3px 1px rgba(60,64,67,.08);
   padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 18px;
 }
-.mapwrap { position: relative; min-width: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-#map { position: absolute; inset: 0; background: var(--map); }
+.mapwrap { position: relative; min-width: 0; border-radius: 10px; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(60,64,67,.18), 0 1px 3px 1px rgba(60,64,67,.08); }
+#map { position: absolute; inset: 0; background: var(--land); }
+#labels { position: absolute; inset: 0; z-index: 450; pointer-events: none; }
 
 header .eyebrow { font-family: var(--font-data); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-h1 { font-size: 22px; line-height: 1.2; margin: 4px 0 6px; font-weight: 700; text-wrap: balance; }
+h1 { font-size: 21px; line-height: 1.2; margin: 4px 0 6px; font-weight: 700; text-wrap: balance; }
 header p { margin: 0; color: var(--ink-2); max-width: 60ch; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.views { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.views button {
+  font: inherit; font-weight: 600; font-size: 13.5px; padding: 9px 10px; border-radius: 18px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink-2);
+}
+.views button[aria-pressed="true"] { background: var(--focus); border-color: var(--focus); color: var(--panel); }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .stat { background: var(--panel); padding: 9px 10px; min-width: 0; }
 .stat b { display: block; font-family: var(--font-data); font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
 .stat span { font-size: 11.5px; color: var(--ink-2); }
 
 .group { display: flex; flex-direction: column; gap: 8px; }
 .label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-.seg { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.seg { display: flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
 .seg button {
   flex: 1 1 auto; font: inherit; font-size: 12.5px; padding: 7px 8px; border: 0; border-right: 1px solid var(--line);
   background: transparent; color: var(--ink-2); cursor: pointer;
@@ -79,27 +96,29 @@ header p { margin: 0; color: var(--ink-2); max-width: 60ch; }
 .range { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
 select, input[type="search"] {
   font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
-  border-radius: 4px; padding: 6px 8px;
+  border-radius: 6px; padding: 6px 8px;
 }
-input[type="search"] { width: 100%; }
+.search { position: relative; }
+input[type="search"] { width: 100%; padding: 9px 12px; border-radius: 20px; font-size: 14px; }
 .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 13px; }
 .checks label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
-.swatch { width: 18px; height: 4px; border-radius: 2px; display: inline-block; }
+.swatch { width: 18px; height: 4px; border-radius: 2px; display: inline-block; flex: none; }
 button:focus-visible, select:focus-visible, input:focus-visible, .top li:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 .legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-2); }
 .legend i { display: inline-block; width: 22px; height: 6px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+.keyrow { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-2); }
+.keyrow i { display: inline-block; width: 16px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--line); }
 
-.card { border: 1px solid var(--line); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .card h2 { font-size: 16px; margin: 0; line-height: 1.25; text-wrap: balance; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 11.5px; padding: 2px 7px; border-radius: 10px; border: 1px solid var(--line); color: var(--ink-2); }
+.chip { font-size: 11.5px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--line); color: var(--ink-2); }
 .chip.tamu { border-color: var(--tamu); color: var(--tamu); }
-.chip.x { border-color: var(--ink-2); }
 .card table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 .card td { padding: 3px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .card td:last-child { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; padding-left: 10px; }
-.card .close { align-self: flex-start; font: inherit; font-size: 12px; background: none; border: 0; color: var(--ink-2); padding: 0; cursor: pointer; text-decoration: underline; }
+.card .close { align-self: flex-start; font: inherit; font-size: 12px; background: none; border: 0; color: var(--focus); padding: 0; cursor: pointer; }
 .bars text { font-family: var(--font-data); font-size: 9.5px; fill: var(--muted); }
 
 .top { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -115,41 +134,45 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
 
 #tip {
   position: absolute; z-index: 1000; pointer-events: none; background: var(--panel); color: var(--ink);
-  border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; font-size: 12px; max-width: 240px;
-  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+  border-radius: 6px; padding: 5px 9px; font-size: 12px; max-width: 250px;
+  box-shadow: 0 1px 3px rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15);
 }
 #tip b { font-weight: 600; }
 
 /* Leaflet essentials (its stylesheet cannot be loaded here) */
-.leaflet-pane, .leaflet-pane > svg, .leaflet-pane > canvas, .leaflet-zoom-box, .leaflet-layer { position: absolute; left: 0; top: 0; }
+.leaflet-pane, .leaflet-tile, .leaflet-pane > svg, .leaflet-pane > canvas, .leaflet-zoom-box, .leaflet-layer,
+.leaflet-tile-container { position: absolute; left: 0; top: 0; }
 .leaflet-container { overflow: hidden; outline-offset: 1px; -webkit-tap-highlight-color: transparent; font-family: var(--font-body); }
-.leaflet-container .leaflet-overlay-pane svg { max-width: none !important; max-height: none !important; }
+.leaflet-tile { user-select: none; visibility: hidden; }
+.leaflet-tile-loaded { visibility: inherit; }
 .leaflet-pane { z-index: 400; }
+.leaflet-tile-pane { z-index: 200; }
 .leaflet-overlay-pane { z-index: 400; }
 .leaflet-map-pane canvas { z-index: 100; }
-.leaflet-zoom-box { z-index: 800; border: 2px dotted var(--focus); background: rgba(42,120,214,.08); }
+.leaflet-zoom-box { z-index: 800; border: 2px dotted var(--focus); }
 .leaflet-control { position: relative; z-index: 800; pointer-events: auto; float: left; clear: both; }
 .leaflet-top, .leaflet-bottom { position: absolute; z-index: 1000; pointer-events: none; }
 .leaflet-top { top: 0; } .leaflet-right { right: 0; } .leaflet-bottom { bottom: 0; } .leaflet-left { left: 0; }
 .leaflet-right .leaflet-control { float: right; }
-.leaflet-top .leaflet-control { margin-top: 10px; } .leaflet-bottom .leaflet-control { margin-bottom: 8px; }
+.leaflet-top .leaflet-control { margin-top: 10px; } .leaflet-bottom .leaflet-control { margin-bottom: 10px; }
 .leaflet-left .leaflet-control { margin-left: 10px; } .leaflet-right .leaflet-control { margin-right: 10px; }
 .leaflet-zoom-animated { transform-origin: 0 0; }
 .leaflet-zoom-anim .leaflet-zoom-animated { transition: transform .25s cubic-bezier(0,0,.25,1); }
 .leaflet-zoom-anim .leaflet-zoom-hide { visibility: hidden; }
 .leaflet-interactive { cursor: pointer; }
 .leaflet-grab { cursor: grab; } .leaflet-dragging .leaflet-grab { cursor: grabbing; }
-.leaflet-bar { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--panel); }
-.leaflet-bar a { display: block; width: 30px; height: 30px; line-height: 30px; text-align: center; text-decoration: none; color: var(--ink); font-size: 18px; border-bottom: 1px solid var(--line); }
+.leaflet-bar { border-radius: 8px; overflow: hidden; background: var(--panel); box-shadow: 0 1px 4px rgba(60,64,67,.3); }
+.leaflet-bar a { display: block; width: 36px; height: 36px; line-height: 36px; text-align: center; text-decoration: none; color: var(--ink-2); font-size: 20px; border-bottom: 1px solid var(--line); }
 .leaflet-bar a:last-child { border-bottom: 0; }
-.leaflet-bar a:hover { background: var(--bg); }
-.leaflet-control-attribution { background: var(--panel); color: var(--muted); font-size: 10.5px; padding: 1px 6px; border-radius: 3px; }
-.leaflet-control-attribution a { color: var(--ink-2); }
+.leaflet-bar a:hover { background: var(--bg); color: var(--ink); }
+.leaflet-control-attribution { background: var(--panel); color: var(--muted); font-size: 10.5px; padding: 1px 6px; border-radius: 4px; opacity: .9; }
+.leaflet-control-scale-line { border: 2px solid var(--ink-2); border-top: 0; color: var(--ink-2); font-size: 10.5px; padding: 0 5px; background: var(--panel); opacity: .9; line-height: 1.3; }
+.leaflet-control-scale-line + .leaflet-control-scale-line { display: none; }
 @media (prefers-reduced-motion: reduce) { .leaflet-zoom-anim .leaflet-zoom-animated { transition: none; } }
 
 @media (max-width: 760px) {
   html, body { height: auto; }
-  .app { height: auto; grid-template-columns: 1fr; grid-template-rows: 62vh auto; }
+  .app { height: auto; grid-template-columns: 1fr; grid-template-rows: 64vh auto; }
   .mapwrap { order: -1; min-height: 340px; }
   .panel { overflow: visible; }
   .checks { grid-template-columns: 1fr; }
@@ -161,8 +184,19 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
     <header>
       <div class="eyebrow">TASC · S1 road network <span id="net"></span></div>
       <h1>College Station Crash Map</h1>
-      <p>Every public road in the city as TASC's risk model sees it: 0.1-mile segments and intersections, each with the crashes TxDOT CRIS recorded there. This is crash history, not a risk prediction.</p>
+      <p>Every public road in the city as TASC's risk model sees it, with the crashes TxDOT CRIS recorded on each road section and intersection. Crash history, not a risk prediction.</p>
     </header>
+
+    <div class="views" role="group" aria-label="View">
+      <button type="button" id="v-map" data-view="map">Map</button>
+      <button type="button" id="v-crash" data-view="crash">Crashes</button>
+    </div>
+
+    <div class="search">
+      <label class="label" for="search" style="display:block;margin-bottom:6px">Find a street</label>
+      <input type="search" id="search" list="streets" placeholder="Search streets, e.g. Holleman Dr" autocomplete="off">
+      <datalist id="streets"></datalist>
+    </div>
 
     <div class="stats" aria-live="polite">
       <div class="stat"><b id="s-crashes">–</b><span>crashes placed</span></div>
@@ -173,9 +207,9 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
     <div class="group">
       <div class="label" id="lbl-period">Years</div>
       <div class="seg" role="group" aria-labelledby="lbl-period">
-        <button type="button" id="p-all" data-from="2016" data-to="2025">2016–2025</button>
-        <button type="button" id="p-hist" data-from="2016" data-to="2022">History 2016–22</button>
-        <button type="button" id="p-test" data-from="2023" data-to="2025">Test 2023–25</button>
+        <button type="button" data-from="2016" data-to="2025">2016–2025</button>
+        <button type="button" data-from="2016" data-to="2022">History 2016–22</button>
+        <button type="button" data-from="2023" data-to="2025">Test 2023–25</button>
       </div>
       <div class="range">
         <label for="from">From</label><select id="from"></select>
@@ -183,19 +217,15 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
       </div>
     </div>
 
-    <div class="group">
+    <div class="group" id="crash-controls">
       <div class="label" id="lbl-metric">Colour roads by</div>
       <div class="seg" role="group" aria-labelledby="lbl-metric">
-        <button type="button" id="m-all" data-metric="c">All crashes</button>
-        <button type="button" id="m-fsi" data-metric="k">Fatal + serious (K+A)</button>
+        <button type="button" data-metric="c">All crashes</button>
+        <button type="button" data-metric="k">Fatal + serious (K+A)</button>
       </div>
       <div class="legend" id="legend"></div>
-    </div>
-
-    <div class="group">
-      <div class="label">Show</div>
       <div class="checks">
-        <label><input type="checkbox" id="l-seg" checked> Road segments</label>
+        <label><input type="checkbox" id="l-seg" checked> Road sections</label>
         <label><input type="checkbox" id="l-int" checked> Intersections</label>
         <label><input type="checkbox" id="l-cor"> <span class="swatch" style="background:var(--corridor)"></span>Study corridors</label>
         <label><input type="checkbox" id="l-tamu"> <span class="swatch" style="background:var(--tamu)"></span>Texas A&amp;M streets</label>
@@ -204,10 +234,17 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
       </div>
     </div>
 
-    <div class="group">
-      <label class="label" for="search">Find a street</label>
-      <input type="search" id="search" list="streets" placeholder="e.g. HOLLEMAN DR" autocomplete="off">
-      <datalist id="streets"></datalist>
+    <div class="group" id="map-key">
+      <div class="label">Map key</div>
+      <div class="keyrow">
+        <span><i style="background:var(--road-hwy);border-color:var(--road-hwy-case)"></i>Freeway</span>
+        <span><i style="background:var(--road-art);border-color:var(--road-art-case)"></i>Major road</span>
+        <span><i style="background:var(--road-local);border-color:var(--road-local-case)"></i>Street</span>
+        <span><i style="background:var(--campus)"></i>Texas A&amp;M campus</span>
+        <span><i style="background:var(--green)"></i>Park, golf, green space</span>
+        <span><i style="background:var(--water)"></i>Water</span>
+      </div>
+      <p class="note">Click any road or intersection for its crash history. Switch to <b>Crashes</b> to colour every road by its crash count.</p>
     </div>
 
     <div id="detail"></div>
@@ -215,14 +252,15 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
     <div class="group" id="topwrap">
       <div class="label" id="top-title">Most crashes</div>
       <ol class="top" id="top"></ol>
-      <p class="note">Segments are about 0.1 mile; an intersection counts crashes within 250 ft of it, so the two are not the same size.</p>
+      <p class="note">Road sections are about 0.1 mile; an intersection counts crashes within 250 ft of it, so the two are not the same size.</p>
     </div>
 
     <footer id="foot"></footer>
   </aside>
 
   <div class="mapwrap">
-    <div id="map" role="application" aria-label="Map of College Station road sites"></div>
+    <div id="map" role="application" aria-label="Map of College Station roads"></div>
+    <canvas id="labels"></canvas>
     <div id="tip" hidden></div>
   </div>
 </div>
@@ -237,64 +275,180 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
   const FUNC = { "1": "Interstate", "2": "Freeway / expressway", "3": "Principal arterial", "4": "Minor arterial",
                  "5": "Major collector", "6": "Minor collector", "7": "Local street" };
   const ACCESS = { "1": "Full", "2": "Partial", "3": "None" };
-  const state = { from: 2016, to: 2025, metric: "c", sel: null };
+  const state = { from: 2016, to: 2025, metric: "c", sel: null, view: "map" };
   const fmt = n => n.toLocaleString("en-US");
+  const $ = id => document.getElementById(id);
   const tok = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
   let C = {};
   function readColors() {
-    C = { zero: tok("--road-zero"), r: [tok("--r1"), tok("--r2"), tok("--r3"), tok("--r4")], sel: tok("--sel"),
-          tamu: tok("--tamu"), cor: tok("--corridor"), city: tok("--city"), edge: tok("--city-edge") };
+    const t = ["land", "water", "waterline", "green", "campus", "building", "building-edge", "city-edge",
+               "road-local", "road-local-case", "road-col", "road-col-case", "road-art", "road-art-case",
+               "road-hwy", "road-hwy-case", "label", "label-halo", "label-water", "label-green", "label-campus",
+               "zero", "sel", "corridor", "tamu"];
+    C = {}; t.forEach(k => { C[k] = tok("--" + k); });
+    C.r = [tok("--r1"), tok("--r2"), tok("--r3"), tok("--r4")];
   }
   readColors();
 
-  document.getElementById("net").textContent = D.network;
-  document.getElementById("foot").innerHTML =
-    "Network " + D.network + ": roads from the TxDOT Roadway Inventory (2019) and OpenStreetMap streets as of " +
-    "31 Dec 2022 (© OpenStreetMap contributors, ODbL); city limits from the US Census (2022). Crashes: TxDOT CRIS, " +
-    "City of College Station, 2016–2025, matched to the nearest site on the crash's own street (fatal + serious: " +
-    fmt(D.summary.fsi_matched) + " of " + fmt(D.summary.fsi_geocoded) + " geocoded, " + D.summary.fsi_pct + "%). " +
-    "Totals per site only; no individual crash locations are shown.";
-
-  const yearIdx = () => [Y.indexOf(state.from), Y.indexOf(state.to)];
-  function total(site, key) {
-    const [a, b] = yearIdx(); let n = 0;
-    for (let i = a; i <= b; i++) n += site[key][i];
-    return n;
+  // ---------- geometry: Web Mercator, 0..1 across the world ----------
+  const mx = lon => (lon + 180) / 360;
+  const my = lat => { const s = Math.sin(lat * Math.PI / 180); return 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI); };
+  function decode(flat) {               // delta-encoded 1e-5 degree ints -> Float64Array [x, y, ...] in 0..1
+    const out = new Float64Array(flat.length); let x = 0, y = 0;
+    for (let i = 0; i < flat.length; i += 2) { x += flat[i]; y += flat[i + 1]; out[i] = mx(x / 1e5); out[i + 1] = my(y / 1e5); }
+    return out;
   }
+  function fromCoords(coords) {
+    const out = new Float64Array(coords.length * 2);
+    coords.forEach((c, i) => { out[2 * i] = mx(c[0]); out[2 * i + 1] = my(c[1]); });
+    return out;
+  }
+  function bbox(rings) {
+    let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+    for (const r of rings) for (let i = 0; i < r.length; i += 2) {
+      if (r[i] < a) a = r[i]; if (r[i] > c) c = r[i]; if (r[i + 1] < b) b = r[i + 1]; if (r[i + 1] > d) d = r[i + 1];
+    }
+    return [a, b, c, d];
+  }
+  const shapes = {};
+  for (const [layer, list] of Object.entries(D.basemap)) {
+    shapes[layer] = list.map(rings => { const rs = rings.map(decode); return { rings: rs, bb: bbox(rs) }; });
+  }
+  // Road class from the functional class: 0 freeway, 1 major, 2 collector, 3 street.
+  const roadClass = fc => (fc === "1" || fc === "2") ? 0 : (fc === "3" || fc === "4") ? 1 : (fc === "5" || fc === "6") ? 2 : 3;
+  const roads = D.sites.filter(s => s.t === "s").map(s => {
+    const pts = fromCoords(s.g); return { site: s, pts, bb: bbox([pts]), cls: roadClass(s.fc) };
+  }).sort((a, b) => b.cls - a.cls);        // streets first, freeways drawn last (on top)
+  // Each street's road sections joined end to end (matching end points), so a name can run along it.
+  const chains = (() => {
+    const byName = {};
+    roads.forEach(r => { const n = r.site.n; if (n && !n.includes(" & ")) (byName[n] = byName[n] || []).push(r); });
+    const out = [];
+    for (const [name, list] of Object.entries(byName)) {
+      const key = (x, y) => x.toFixed(9) + "," + y.toFixed(9), ends = {};
+      list.forEach((r, i) => { const p = r.pts, k = p.length - 2;
+        [key(p[0], p[1]), key(p[k], p[k + 1])].forEach(e => (ends[e] = ends[e] || []).push(i)); });
+      const used = new Array(list.length).fill(false);
+      const order = list.map((r, i) => i).sort((a, b) => {             // start from line ends, not the middle
+        const deg = i => { const p = list[i].pts, k = p.length - 2; return Math.min(ends[key(p[0], p[1])].length, ends[key(p[k], p[k + 1])].length); };
+        return deg(a) - deg(b);
+      });
+      for (const start of order) {
+        if (used[start]) continue;
+        used[start] = true;
+        let pts = Array.from(list[start].pts), cls = list[start].cls;
+        for (const dir of [1, 0]) {                                   // grow forward, then backward
+          for (;;) {
+            const x = dir ? pts[pts.length - 2] : pts[0], y = dir ? pts[pts.length - 1] : pts[1];
+            const next = (ends[key(x, y)] || []).filter(i => !used[i]);
+            if (next.length !== 1 || ends[key(x, y)].length > 2) break;
+            const j = next[0]; used[j] = true; cls = Math.min(cls, list[j].cls);
+            let q = Array.from(list[j].pts); const k = q.length - 2;
+            const startsHere = Math.abs(q[0] - x) < 1e-12 && Math.abs(q[1] - y) < 1e-12;
+            if (dir) { if (!startsHere) q = reversePts(q); pts = pts.concat(q.slice(2)); }
+            else { if (startsHere) q = reversePts(q); pts = q.slice(0, k).concat(pts); }
+          }
+        }
+        const arr = Float64Array.from(pts);
+        let len = 0; for (let i = 2; i < arr.length; i += 2) len += Math.hypot(arr[i] - arr[i - 2], arr[i + 1] - arr[i - 1]);
+        out.push({ name, cls, pts: arr, bb: bbox([arr]), len });
+      }
+    }
+    return out;
+  })();
+  function reversePts(q) { const r = []; for (let i = q.length - 2; i >= 0; i -= 2) r.push(q[i], q[i + 1]); return r; }
+  const areaLabels = D.areaLabels.map(l => ({ ...l, x: mx(l.p[0]), y: my(l.p[1]) }));
+  const cityRings = D.boundary.map(poly => poly.map(fromCoords));
+
+  // ---------- map ----------
+  const map = L.map("map", { zoomControl: false, attributionControl: true, preferCanvas: true, minZoom: 11.5, maxZoom: 19,
+                             zoomSnap: 0.25, wheelPxPerZoomLevel: 90 });
+  L.control.zoom({ position: "bottomright" }).addTo(map);
+  L.control.scale({ position: "bottomleft", imperial: true, metric: false, maxWidth: 110 }).addTo(map);
+  map.attributionControl.setPrefix(false);
+  map.attributionControl.addAttribution("© OpenStreetMap contributors · TxDOT · US Census");
+  const ll = c => [c[1], c[0]];
+  const cityBounds = L.latLngBounds(D.boundary.flat(2).map(ll));
+  map.fitBounds(cityBounds, { padding: [10, 10] });     // the map needs a view before any layer is added
+  map.setMaxBounds(cityBounds.pad(0.35));
+
+  const WIDTH = [[3.2, 5.2], [2.4, 4], [1.6, 2.8], [1, 1.9]];   // [fill, casing] at zoom 14, per road class
+  const roadW = (cls, z, casing) => {
+    const base = WIDTH[cls][casing ? 1 : 0] * Math.pow(1.55, z - 14);
+    const minZ = [0, 0, 12.5, 13.5][cls];
+    return z < minZ ? 0 : Math.max(casing ? 0.8 : 0.5, Math.min(base, casing ? 26 : 20));
+  };
+  function trace(ctx, pts, s, ox, oy, close) {
+    ctx.moveTo(pts[0] * s - ox, pts[1] * s - oy);
+    for (let i = 2; i < pts.length; i += 2) ctx.lineTo(pts[i] * s - ox, pts[i + 1] * s - oy);
+    if (close) ctx.closePath();
+  }
+  function hits(bb, t) { return bb[0] <= t[2] && bb[2] >= t[0] && bb[1] <= t[3] && bb[3] >= t[1]; }
+  const Base = L.GridLayer.extend({
+    createTile(coords) {
+      const tile = document.createElement("canvas"), size = this.getTileSize(), dpr = window.devicePixelRatio || 1;
+      tile.width = size.x * dpr; tile.height = size.y * dpr;
+      const ctx = tile.getContext("2d"); ctx.scale(dpr, dpr);
+      const z = coords.z, n = Math.pow(2, z), s = 256 * n, ox = coords.x * 256, oy = coords.y * 256;
+      const pad = 24 / s, t = [coords.x / n - pad, coords.y / n - pad, (coords.x + 1) / n + pad, (coords.y + 1) / n + pad];
+      ctx.fillStyle = C.land; ctx.fillRect(0, 0, 256, 256);
+      const fillLayer = (name, color, edge) => {
+        ctx.fillStyle = color; if (edge) { ctx.strokeStyle = edge; ctx.lineWidth = 0.6; }
+        for (const sh of shapes[name] || []) {
+          if (!hits(sh.bb, t)) continue;
+          ctx.beginPath(); sh.rings.forEach(r => trace(ctx, r, s, ox, oy, true)); ctx.fill("evenodd"); if (edge) ctx.stroke();
+        }
+      };
+      fillLayer("campus", C.campus);
+      fillLayer("green", C.green);
+      fillLayer("water", C.water);
+      ctx.strokeStyle = C.waterline; ctx.lineWidth = Math.max(0.8, Math.min(1 + (z - 14) * 0.8, 4)); ctx.lineCap = "round";
+      for (const sh of shapes.waterway || []) {
+        if (!hits(sh.bb, t)) continue; ctx.beginPath(); trace(ctx, sh.rings[0], s, ox, oy, false); ctx.stroke();
+      }
+      if (z >= 15) fillLayer("building", C.building, z >= 16 ? C["building-edge"] : null);
+      ctx.beginPath(); cityRings.forEach(poly => poly.forEach(r => trace(ctx, r, s, ox, oy, true)));
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = C["city-edge"]; ctx.lineWidth = 1.1; ctx.stroke(); ctx.setLineDash([]);
+      if (state.view === "map") {
+        ctx.lineCap = "round"; ctx.lineJoin = "round";
+        const casing = ["road-hwy-case", "road-art-case", "road-col-case", "road-local-case"];
+        const fill = ["road-hwy", "road-art", "road-col", "road-local"];
+        for (const pass of [1, 0]) {
+          for (const r of roads) {
+            const w = roadW(r.cls, z, pass); if (!w || !hits(r.bb, t)) continue;
+            ctx.strokeStyle = C[pass ? casing[r.cls] : fill[r.cls]]; ctx.lineWidth = w;
+            ctx.beginPath(); trace(ctx, r.pts, s, ox, oy, false); ctx.stroke();
+          }
+        }
+      }
+      return tile;
+    },
+  });
+  const base = new Base({ tileSize: 256, updateWhenZooming: false, keepBuffer: 2 }).addTo(map);
+
+  // ---------- crash overlay (clickable in both views) ----------
+  const renderer = L.canvas({ padding: 0.4, tolerance: 7 });
+  const tip = $("tip"), mapEl = $("map");
+  const yearIdx = () => [Y.indexOf(state.from), Y.indexOf(state.to)];
+  function total(site, key) { const [a, b] = yearIdx(); let n = 0; for (let i = a; i <= b; i++) n += site[key][i]; return n; }
   function colorFor(n) {
     if (n <= 0) return null;
     const b = BINS[state.metric]; let i = 0;
     while (i < b.length - 1 && n >= b[i + 1]) i++;
     return C.r[i];
   }
-
-  // ---------- map ----------
-  const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true, minZoom: 11, maxZoom: 18,
-                             zoomSnap: 0.25, wheelPxPerZoomLevel: 90 });
-  map.attributionControl.setPrefix(false);
-  map.attributionControl.addAttribution("© OpenStreetMap contributors · TxDOT · US Census");
-  const renderer = L.canvas({ padding: 0.4, tolerance: 6 });
-  const ll = c => [c[1], c[0]];
-  const boundary = L.polygon(D.boundary.map(poly => poly.map(ring => ring.map(ll))),
-    { renderer, interactive: false, weight: 1.2, dashArray: "5 4" });
-  map.fitBounds(boundary.getBounds(), { padding: [12, 12] });   // the map needs a view before any layer is added
-  map.setMaxBounds(boundary.getBounds().pad(0.35));
-  boundary.addTo(map);
-
-  const tip = document.getElementById("tip");
-  const mapEl = document.getElementById("map");
+  const nameOf = s => s.n || "Unnamed street";
   function showTip(e, site) {
     const n = total(site, "c"), k = total(site, "k");
-    tip.innerHTML = "<b>" + (site.n || "Unnamed street") + "</b><br>" +
-      (site.t === "s" ? "Segment" : "Intersection") + " · " + fmt(n) + " crashes, " + fmt(k) + " fatal + serious";
+    tip.innerHTML = "<b>" + nameOf(site) + "</b><br>" + (site.t === "s" ? "Road section" : "Intersection") + " · " +
+      fmt(n) + " crash" + (n === 1 ? "" : "es") + (k ? ", " + fmt(k) + " fatal + serious" : "");
     tip.hidden = false;
     const p = e.containerPoint, w = mapEl.clientWidth;
-    tip.style.left = Math.min(p.x + 14, w - 250) + "px";
-    tip.style.top = (p.y + 14) + "px";
+    tip.style.left = Math.min(p.x + 14, w - 260) + "px"; tip.style.top = (p.y + 14) + "px";
   }
   const layers = D.sites.map(site => {
     const layer = site.t === "s"
-      ? L.polyline(site.g.map(ll), { renderer, weight: 2, lineCap: "round" })
+      ? L.polyline(site.g.map(ll), { renderer, weight: 2, lineCap: "round", lineJoin: "round" })
       : L.circleMarker(ll(site.g), { renderer, radius: 3, weight: 1 });
     layer.site = site;
     layer.on("mouseover mousemove", e => showTip(e, site));
@@ -303,91 +457,164 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
     return layer;
   });
   const group = L.layerGroup(layers).addTo(map);
+  const byId = {}; D.sites.forEach(s => { byId[s.id] = s; });
 
-  const $ = id => document.getElementById(id);
+  function dotScale() { return Math.max(0.7, Math.min(2.2, 0.7 + (map.getZoom() - 12.5) * 0.42)); }
   function visible(site, n) {
+    if (state.view === "map") return site.t === "s" || state.sel === site;     // the basemap draws roads; overlay only for clicks
     if (site.t === "s" && !$("l-seg").checked) return false;
     if (site.t === "i" && !$("l-int").checked) return false;
     if ($("l-x").checked && !(site.t === "i" && site.x)) return false;
     if (!$("l-zero").checked && n === 0) return false;
     return true;
   }
-  // Dots grow as you zoom in, so at city scale they do not cover the roads.
-  function dotScale() { return Math.max(0.7, Math.min(2, 0.7 + (map.getZoom() - 12.5) * 0.4)); }
   function restyle() {
-    boundary.setStyle({ color: C.edge, fillColor: C.city, fillOpacity: 1 });
-    const cor = $("l-cor").checked, tamu = $("l-tamu").checked;
+    const crash = state.view === "crash", cor = $("l-cor").checked, tamu = $("l-tamu").checked, z = map.getZoom();
     const order = [];
     for (const layer of layers) {
-      const s = layer.site, n = total(s, state.metric), col = colorFor(n);
-      const show = visible(s, n);
-      if (!show) { if (group.hasLayer(layer)) group.removeLayer(layer); continue; }
+      const s = layer.site, n = total(s, state.metric), selected = state.sel === s;
+      if (!visible(s, n)) { if (group.hasLayer(layer)) group.removeLayer(layer); continue; }
       if (!group.hasLayer(layer)) group.addLayer(layer);
-      const selected = state.sel === s;
       if (s.t === "s") {
-        let color = col || C.zero, weight = col ? 2.6 : 1.1;
-        if (cor && s.cor) { color = col ? color : C.cor; weight = Math.max(weight, 3); }
-        if (tamu && s.tamu) { color = col ? color : C.tamu; weight = Math.max(weight, 2.4); }
-        layer.setStyle({ color: selected ? C.sel : color, weight: selected ? 6 : weight, opacity: 1 });
+        if (!crash) {                                            // invisible but clickable
+          const w = Math.max(roadW(roadClass(s.fc), z, 1), 6);
+          layer.setStyle(selected ? { color: C.sel, weight: w + 3, opacity: 0.9 } : { color: C.sel, weight: w, opacity: 0 });
+        } else {
+          const col = colorFor(n);
+          let color = col || C.zero, weight = col ? 2.8 : 1.2;
+          if (cor && s.cor && !col) { color = C.corridor; weight = 3; }
+          if (tamu && s.tamu && !col) { color = C.tamu; weight = 2.6; }
+          layer.setStyle({ color: selected ? C.sel : color, weight: selected ? 7 : weight * Math.max(1, (z - 12) * 0.45), opacity: 1 });
+        }
       } else {
+        const col = colorFor(n);
         const r = (n <= 0 ? 1.5 : Math.min(2 + Math.sqrt(n) * 0.7, 9)) * dotScale();
-        layer.setStyle({ radius: selected ? r + 3 : r, color: selected ? C.sel : (s.x ? C.sel : C.city),
-                         weight: selected ? 2.5 : (s.x ? 1.6 : 0.8), fillColor: col || C.zero, fillOpacity: 1 });
+        layer.setStyle({ radius: selected ? r + 3 : r, color: selected ? C.sel : C.land, weight: selected ? 3 : (s.x ? 2 : 0.8),
+                         fillColor: crash ? (col || C.zero) : C.sel, fillOpacity: crash ? 1 : 0.9, opacity: 1 });
       }
-      if (n > 0 || selected) order.push([n, layer]);
+      if (crash && n > 0) order.push([n, layer]);
     }
-    order.sort((a, b) => a[0] - b[0]).forEach(([, layer]) => layer.bringToFront());   // busiest drawn on top
+    order.sort((a, b) => a[0] - b[0]).forEach(([, layer]) => layer.bringToFront());
     if (state.sel) layers.find(l => l.site === state.sel)?.bringToFront();
-    stats(); legend(); top(); if (state.sel) detail(state.sel);
+    stats(); legend(); topList(); if (state.sel) detail(state.sel);
   }
+
+  // ---------- street and area labels (redrawn after each move) ----------
+  const lc = $("labels"), lctx = lc.getContext("2d");
+  const labelMinZ = [12.5, 13.75, 15, 15.75];
+  function sizeLabels() {
+    const dpr = window.devicePixelRatio || 1, w = mapEl.clientWidth, h = mapEl.clientHeight;
+    lc.width = w * dpr; lc.height = h * dpr; lc.style.width = w + "px"; lc.style.height = h + "px";
+    lctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function overlaps(box, boxes) {
+    for (const b of boxes) if (box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1]) return true;
+    return false;
+  }
+  function drawLabels() {
+    const w = mapEl.clientWidth, h = mapEl.clientHeight; lctx.clearRect(0, 0, w, h);
+    const z = map.getZoom(), s = 256 * Math.pow(2, z), o = map.getPixelBounds().min;
+    const view = [o.x / s, o.y / s, (o.x + w) / s, (o.y + h) / s], boxes = [], placed = {};
+    const halo = (text, x, y, color, font) => {
+      lctx.font = font; lctx.lineJoin = "round"; lctx.lineWidth = 3.2; lctx.strokeStyle = C["label-halo"];
+      lctx.strokeText(text, x, y); lctx.fillStyle = color; lctx.fillText(text, x, y);
+    };
+    function roadLabels(classes) {
+      // Along each street's joined line, every `gap` pixels, where the text fits without bending much.
+      const font0 = getComputedStyle(document.body).fontFamily;
+      const list = chains.filter(ch => classes.includes(ch.cls) && z >= labelMinZ[ch.cls] && hits(ch.bb, view))
+                         .sort((a, b) => a.cls - b.cls || b.len - a.len);
+      for (const ch of list) {
+        const size = [12.5, 12, 11.5, 11][ch.cls], font = (ch.cls <= 1 ? "600 " : "500 ") + size + "px " + font0;
+        lctx.font = font; const tw = lctx.measureText(ch.name).width;
+        const px = [], cum = [0];                       // the chain in screen pixels, with distance along it
+        for (let i = 0; i < ch.pts.length; i += 2) {
+          px.push([ch.pts[i] * s - o.x, ch.pts[i + 1] * s - o.y]);
+          if (px.length > 1) { const a = px[px.length - 2], b = px[px.length - 1]; cum.push(cum[cum.length - 1] + Math.hypot(b[0] - a[0], b[1] - a[1])); }
+        }
+        const total = cum[cum.length - 1]; if (total < tw + 20) continue;
+        const at = d => { let i = 1; while (i < cum.length - 1 && cum[i] < d) i++;
+          const t = (d - cum[i - 1]) / ((cum[i] - cum[i - 1]) || 1);
+          return [px[i - 1][0] + t * (px[i][0] - px[i - 1][0]), px[i - 1][1] + t * (px[i][1] - px[i - 1][1])]; };
+        const gap = 420;
+        for (let d = Math.min(total / 2, gap / 2); d + tw / 2 + 6 < total; d += gap) {
+          if (d - tw / 2 - 6 < 0) continue;
+          const p0 = at(d - tw / 2), p1 = at(d + tw / 2), c = at(d);
+          if (Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < tw * 0.92) continue;        // too curved here
+          if (c[0] < 0 || c[1] < 0 || c[0] > w || c[1] > h) continue;
+          let a = Math.atan2(p1[1] - p0[1], p1[0] - p0[0]); if (a > Math.PI / 2) a -= Math.PI; if (a < -Math.PI / 2) a += Math.PI;
+          const hw = (Math.abs(Math.cos(a)) * tw + Math.abs(Math.sin(a)) * size) / 2 + 3;
+          const hh = (Math.abs(Math.sin(a)) * tw + Math.abs(Math.cos(a)) * size) / 2 + 3;
+          const box = [c[0] - hw, c[1] - hh, c[0] + hw, c[1] + hh];
+          if (overlaps(box, boxes)) continue;
+          boxes.push(box);
+          lctx.save(); lctx.translate(c[0], c[1]); lctx.rotate(a); lctx.textAlign = "center"; lctx.textBaseline = "middle";
+          halo(ch.name, 0, 0.5, C.label, font); lctx.restore();
+        }
+      }
+    }
+    roadLabels([0, 1]);
+    for (const l of areaLabels) {
+      const minZ = l.k === "campus" ? 12.75 : l.a > 400000 ? 13.5 : l.a > 120000 ? 14.5 : 15.5;
+      const maxZ = l.k === "campus" ? 16.5 : 19;
+      if (z < minZ || z > maxZ) continue;
+      const x = l.x * s - o.x, y = l.y * s - o.y; if (x < 0 || y < 0 || x > w || y > h) continue;
+      const font = "italic 500 " + (l.k === "campus" ? 13 : 11.5) + "px " + getComputedStyle(document.body).fontFamily;
+      lctx.font = font; const tw = lctx.measureText(l.n).width;
+      const box = [x - tw / 2 - 4, y - 9, x + tw / 2 + 4, y + 9];
+      if (box[0] < 0 || box[2] > w || overlaps(box, boxes)) continue;
+      boxes.push(box); lctx.textAlign = "center"; lctx.textBaseline = "middle";
+      halo(l.n, x, y, C[l.k === "water" ? "label-water" : l.k === "campus" ? "label-campus" : "label-green"], font);
+    }
+    roadLabels([2, 3]);
+  }
+  const clearLabels = () => lctx.clearRect(0, 0, mapEl.clientWidth, mapEl.clientHeight);
+  map.on("movestart zoomstart", clearLabels);
+  map.on("moveend zoomend", drawLabels);
+  map.on("zoomend", restyle);
+  map.on("resize", () => { sizeLabels(); drawLabels(); });
 
   // ---------- panel ----------
   function stats() {
     let crashes = 0, fsi = 0, atInt = 0;
     for (const s of D.sites) { const n = total(s, "c"); crashes += n; fsi += total(s, "k"); if (s.t === "i") atInt += n; }
-    $("s-crashes").textContent = fmt(crashes);
-    $("s-fsi").textContent = fmt(fsi);
+    $("s-crashes").textContent = fmt(crashes); $("s-fsi").textContent = fmt(fsi);
     $("s-int").textContent = crashes ? Math.round(100 * atInt / crashes) + "%" : "–";
   }
+  const period = () => state.from + (state.to !== state.from ? "–" + state.to : "");
   function legend() {
-    const b = BINS[state.metric], parts = [];
-    parts.push('<span><i style="background:' + C.zero + '"></i>0</span>');
+    const b = BINS[state.metric], parts = ['<span><i style="background:' + C.zero + '"></i>0</span>'];
     b.forEach((lo, i) => {
       const hi = b[i + 1] ? b[i + 1] - 1 : null;
-      const label = hi === null ? lo + "+" : (hi === lo ? String(lo) : lo + "–" + hi);
-      parts.push('<span><i style="background:' + C.r[i] + '"></i>' + label + "</span>");
+      parts.push('<span><i style="background:' + C.r[i] + '"></i>' + (hi === null ? lo + "+" : hi === lo ? lo : lo + "–" + hi) + "</span>");
     });
     $("legend").innerHTML = parts.join("") + '<span style="flex-basis:100%">' +
-      (state.metric === "c" ? "crashes" : "fatal + serious crashes") + " per site, " + state.from +
-      (state.to !== state.from ? "–" + state.to : "") + ". Dots are intersections, sized by crashes.</span>";
+      (state.metric === "c" ? "crashes" : "fatal + serious crashes") + " per road section or intersection, " + period() +
+      ". Dots are intersections, sized by crashes.</span>";
   }
-  function top() {
+  function topList() {
     const key = state.metric;
     const rows = D.sites.map(s => [total(s, key), s]).filter(r => r[0] > 0).sort((a, b) => b[0] - a[0]).slice(0, 10);
-    $("top-title").textContent = key === "c" ? "Most crashes" : "Most fatal + serious crashes";
+    $("top-title").textContent = (key === "c" ? "Most crashes, " : "Most fatal + serious crashes, ") + period();
     $("top").innerHTML = rows.map(([n, s], i) =>
-      '<li tabindex="0" data-id="' + s.id + '"><span class="rank">' + (i + 1) + '</span><span class="nm">' +
-      (s.n || "Unnamed street") + "<small>" + (s.t === "s" ? "segment, " + s.len.toFixed(2) + " mi" : "intersection") +
-      "</small></span><span class=\"n\">" + fmt(n) + "</span></li>").join("") ||
+      '<li tabindex="0" data-id="' + s.id + '"><span class="rank">' + (i + 1) + '</span><span class="nm">' + nameOf(s) +
+      "<small>" + (s.t === "s" ? "road section, " + s.len.toFixed(2) + " mi" : "intersection") + "</small></span>" +
+      '<span class="n">' + fmt(n) + "</span></li>").join("") ||
       '<li><span></span><span class="nm">No crashes in these years.</span><span></span></li>';
   }
   $("top").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) select(byId[li.dataset.id], true); });
   $("top").addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { const li = e.target.closest("li[data-id]"); if (li) { e.preventDefault(); select(byId[li.dataset.id], true); } }
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const li = e.target.closest("li[data-id]"); if (li) { e.preventDefault(); select(byId[li.dataset.id], true); }
   });
-  const byId = {}; D.sites.forEach(s => { byId[s.id] = s; });
-
   function bars(site) {
-    const w = 300, h = 74, pad = 14, n = Y.length, bw = (w - 2) / n;
-    const max = Math.max(1, ...site.c);
-    const [a, b] = yearIdx();
+    const w = 300, h = 74, pad = 14, n = Y.length, bw = (w - 2) / n, max = Math.max(1, ...site.c), [a, b] = yearIdx();
     let out = '<svg class="bars" viewBox="0 0 ' + w + " " + (h + pad) + '" width="100%" role="img" aria-label="Crashes per year">';
     Y.forEach((yr, i) => {
-      const hc = (site.c[i] / max) * h, hk = (site.k[i] / max) * h, x = 1 + i * bw;
-      const op = i >= a && i <= b ? 1 : 0.3;
-      out += '<rect x="' + (x + 2).toFixed(1) + '" y="' + (h - hc).toFixed(1) + '" width="' + (bw - 4).toFixed(1) +
-             '" height="' + hc.toFixed(1) + '" rx="2" fill="' + C.r[1] + '" opacity="' + op + '"><title>' + yr + ": " +
-             site.c[i] + " crashes, " + site.k[i] + " fatal + serious</title></rect>";
+      const hc = site.c[i] / max * h, hk = site.k[i] / max * h, x = 1 + i * bw, op = i >= a && i <= b ? 1 : 0.3;
+      out += '<rect x="' + (x + 2).toFixed(1) + '" y="' + (h - hc).toFixed(1) + '" width="' + (bw - 4).toFixed(1) + '" height="' +
+             hc.toFixed(1) + '" rx="2" fill="' + C.r[1] + '" opacity="' + op + '"><title>' + yr + ": " + site.c[i] + " crashes, " +
+             site.k[i] + " fatal + serious</title></rect>";
       if (hk > 0) out += '<rect x="' + (x + 2).toFixed(1) + '" y="' + (h - hk).toFixed(1) + '" width="' + (bw - 4).toFixed(1) +
              '" height="' + hk.toFixed(1) + '" rx="2" fill="' + C.r[3] + '" opacity="' + op + '"></rect>';
       if (i === 0 || i === n - 1 || yr === 2023) out += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (h + 11) +
@@ -398,8 +625,8 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
   function featureRows(site) {
     return D.features.filter(f => site.f[f.key] !== undefined).map(f => {
       let v = site.f[f.key];
-      if (f.key === "func_class") v = (FUNC[v] || "code " + v);
-      else if (f.key === "access_control") v = (ACCESS[v] || "code " + v);
+      if (f.key === "func_class") v = FUNC[v] || "code " + v;
+      else if (f.key === "access_control") v = ACCESS[v] || "code " + v;
       else if (f.key === "osm_sidewalk_share") v = Math.round(v * 100) + "%";
       else if (typeof v === "number") v = fmt(Math.round(v * 10) / 10) + (f.unit ? " " + f.unit : "");
       const label = f.key === "func_class" ? "Road type" : f.key === "access_control" ? "Access control" : f.label;
@@ -408,17 +635,15 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
   }
   function detail(site) {
     const n = total(site, "c"), k = total(site, "k");
-    const chips = [site.t === "s" ? "Segment · " + site.len.toFixed(2) + " mi" : "Intersection" + (site.f.legs ? " · " + site.f.legs + " legs" : "")];
+    const chips = [site.t === "s" ? "Road section · " + site.len.toFixed(2) + " mi" : "Intersection" + (site.f.legs ? " · " + site.f.legs + " legs" : "")];
     if (site.x) chips.push("Interchange");
     if (site.cor) chips.push("Study corridor");
     chips.push(site.src === "osm" ? "Road from OSM 2022" : "Road from TxDOT 2019");
-    $("detail").innerHTML = '<div class="card"><button type="button" class="close" id="close">Back to the list</button>' +
-      "<h2>" + (site.n || "Unnamed street") + "</h2>" +
-      '<div class="chips">' + chips.map(c => '<span class="chip' + (c === "Interchange" ? " x" : "") + '">' + c + "</span>").join("") +
+    $("detail").innerHTML = '<div class="card"><button type="button" class="close" id="close">← Back to the list</button>' +
+      "<h2>" + nameOf(site) + "</h2>" + '<div class="chips">' + chips.map(c => '<span class="chip">' + c + "</span>").join("") +
       (site.tamu ? '<span class="chip tamu">Texas A&amp;M street</span>' : "") + "</div>" +
-      '<div class="note"><b>' + fmt(n) + "</b> crashes, <b>" + fmt(k) + "</b> fatal + serious in " + state.from +
-      (state.to !== state.from ? "–" + state.to : "") + ". Light bars: all crashes; dark: fatal + serious.</div>" +
-      bars(site) + "<table>" + featureRows(site) + "</table>" +
+      '<div class="note"><b>' + fmt(n) + "</b> crashes, <b>" + fmt(k) + "</b> fatal + serious in " + period() +
+      ". Light bars: all crashes; dark: fatal + serious.</div>" + bars(site) + "<table>" + featureRows(site) + "</table>" +
       '<div class="note">Site ' + site.id + ". Road features as known on 31 Dec 2022 (TxDOT values from 2019).</div></div>";
     $("topwrap").hidden = true;
     $("close").addEventListener("click", () => { state.sel = null; $("detail").innerHTML = ""; $("topwrap").hidden = false; restyle(); });
@@ -450,26 +675,40 @@ footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line)
     document.querySelectorAll("[data-metric]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
     restyle();
   }));
+  function setView(view) {
+    state.view = view;
+    document.querySelectorAll("[data-view]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === view)));
+    $("crash-controls").hidden = view !== "crash"; $("map-key").hidden = view !== "map";
+    base.redraw(); restyle();
+  }
+  document.querySelectorAll("[data-view]").forEach(b => b.addEventListener("click", () => setView(b.dataset.view)));
   ["l-seg", "l-int", "l-cor", "l-tamu", "l-x", "l-zero"].forEach(id => $(id).addEventListener("change", restyle));
 
-  const names = [...new Set(D.sites.filter(s => s.t === "s" && s.n).map(s => s.n))].sort();
+  const names = [...new Set(D.sites.filter(s => s.t === "s" && s.n && !s.n.includes(" & ")).map(s => s.n))].sort();
   $("streets").innerHTML = names.map(n => '<option value="' + n.replace(/"/g, "&quot;") + '">').join("");
   $("search").addEventListener("change", () => {
     const q = $("search").value.trim().toUpperCase(); if (!q) return;
-    const hits = layers.filter(l => l.site.t === "s" && l.site.n.toUpperCase() === q);
-    if (!hits.length) return;
-    const bounds = L.latLngBounds([]); hits.forEach(l => bounds.extend(l.getBounds()));
+    const hits2 = layers.filter(l => l.site.t === "s" && l.site.n.toUpperCase() === q);
+    if (!hits2.length) return;
+    const bounds = L.latLngBounds([]); hits2.forEach(l => bounds.extend(l.getBounds()));
     map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 17, duration: 0.6 });
-    const busiest = hits.map(l => l.site).sort((a, b) => total(b, "c") - total(a, "c"))[0];
-    select(busiest, false);
+    select(hits2.map(l => l.site).sort((a, b) => total(b, "c") - total(a, "c"))[0], false);
   });
 
-  function onTheme() { readColors(); restyle(); }
-  map.on("zoomend", restyle);
+  function onTheme() { readColors(); base.redraw(); restyle(); drawLabels(); }
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", onTheme);
   new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-  $("m-all").setAttribute("aria-pressed", "true");
+  $("foot").innerHTML = "Network " + D.network + ": roads from the TxDOT Roadway Inventory (2019) and OpenStreetMap streets as of " +
+    "31 Dec 2022; water, parks, buildings and campus from today's OpenStreetMap (© OpenStreetMap contributors, ODbL); " +
+    "city limits from the US Census (2022). Crashes: TxDOT CRIS, City of College Station, 2016–2025, matched to the " +
+    "nearest site on the crash's own street (fatal + serious: " + fmt(D.summary.fsi_matched) + " of " +
+    fmt(D.summary.fsi_geocoded) + " geocoded, " + D.summary.fsi_pct + "%). Totals per site only; no individual crash locations.";
+  $("net").textContent = D.network;
+  document.querySelector('[data-metric="c"]').setAttribute("aria-pressed", "true");
+  sizeLabels();
+  setView("map");
   setPeriod(2016, 2025);
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(drawLabels);
 })();
 </script>
