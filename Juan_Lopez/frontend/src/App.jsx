@@ -10,7 +10,10 @@ const RiskMap = lazy(() => import('./components/RiskMap.jsx'));
 const emptySites = { type: 'FeatureCollection', features: [] };
 const pages = ['Risk map', 'Site details', 'Backtest', 'Memos', 'AI assistant', 'Example lab'];
 export default function App() {
-  const [page, setPage] = useState(() => new URLSearchParams(window.location.search).get('example') === '1' ? 'Example lab' : pages[0]);
+  const [page, setPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('assistant') === '1' ? 'AI assistant' : params.get('example') === '1' ? 'Example lab' : pages[0];
+  });
   const [selectedRoad, setSelectedRoad] = useState(null);
   const [preferredRunId, setPreferredRunId] = useState('');
   const [selectedSiteId, setSelectedSiteId] = useState(null);
@@ -45,7 +48,7 @@ export default function App() {
       <main id="content"><p className="eyebrow">TRAFFIC SAFETY / {page.toUpperCase()}</p><h1 ref={heading} tabIndex={-1}>{page}</h1><p className="intro">Explore road risk, understand flagged sites, and review the evidence behind planning decisions.</p>
         {page !== 'Example lab' && <ModelRuns resource={runsResource} runs={runs} activeRun={activeRun} onChange={id => { setPreferredRunId(id); setSelectedSiteId(null); }} onRefresh={() => { runsResource.refresh(); sitesResource.refresh(); }} />}
         {page === 'Risk map' && <><Suspense fallback={<p role="status">Loading the interactive map…</p>}><RiskMap selectedRoad={selectedRoad} onSelectRoad={selectRoad} modelSites={sitesResource.data || emptySites} selectedModelSite={selectedSite} onSelectModelSite={selectModelSite} /></Suspense><RankedSites resource={sitesResource} run={activeRun} onSelect={selectModelSite} /></>}
-        {page === 'Site details' && <SiteDetails selectedRoad={selectedRoad} modelSite={selectedSite} run={activeRun} resource={sitesResource} onBackToMap={() => setPage('Risk map')} />}
+        {page === 'Site details' && <SiteDetails selectedRoad={selectedRoad} modelSite={selectedSite} run={activeRun} resource={sitesResource} onBackToMap={() => setPage('Risk map')} onAskAI={() => setPage('AI assistant')} />}
         {page === 'Backtest' && <Backtest run={activeRun} />}
         {page === 'Memos' && <Memos run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}
         {page === 'AI assistant' && <Assistant run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}

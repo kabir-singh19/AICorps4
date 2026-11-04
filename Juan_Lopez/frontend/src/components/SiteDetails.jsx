@@ -1,7 +1,7 @@
 import React from 'react';
 import { roadGeometry, segmentLengthMiles } from '../data/corridors.js';
 
-export default function SiteDetails({ selectedRoad, modelSite, run, resource, onBackToMap }) {
+export default function SiteDetails({ selectedRoad, modelSite, run, resource, onBackToMap, onAskAI }) {
   if (!selectedRoad && !modelSite) return <section className="card">
     <h2>Select a road segment</h2>
     <p>Click a highlighted road on the map, or use the road details buttons below it.</p>
@@ -30,6 +30,7 @@ export default function SiteDetails({ selectedRoad, modelSite, run, resource, on
     </section>
     <section className="card" aria-label="Model results">
       <h2>Model results</h2>
+      {properties && <button onClick={onAskAI}>Ask AI about this site</button>}
       {resource.loading && <p role="status">Loading model site results…</p>}
       {resource.error && <p role="alert" className="api-error">{resource.error}</p>}
       {!properties && !resource.loading && !resource.error && <p>{run ? 'No model result is linked to this mapped section in the selected run.' : 'Select a published model run to see results for this site.'}</p>}

@@ -8,7 +8,7 @@ from .model_results import load_runs, PublishedRun, run_summary
 from .exports import sites_csv
 from .web import mount_frontend, security_headers, frontend_directory
 from .access import router as access_router
-from .assistant import router as assistant_router, status as assistant_status
+from .assistant import router as assistant_router, provider_config
 from .examples import router as examples_router
 
 app = FastAPI(title="ATSC API", version="0.3.0", openapi_url="/api/v1/openapi.json", docs_url="/api/v1/docs")
@@ -55,7 +55,8 @@ def find_site(run, site_id):
 @app.get("/api/v1/health")
 def health():
     runs, invalid = load_runs()
-    return {"status": "degraded" if invalid else "ok", "db": "not_configured", "llm": "configured" if assistant_status()["available"] else "not_configured", "model_adapter": "local_json", "published_runs": len(runs), "invalid_files": invalid, "version": "0.3.0"}
+    config = provider_config()
+    return {"status": "degraded" if invalid else "ok", "db": "not_configured", "llm": "configured" if config["enabled"] and config["configured"] else "not_configured", "model_adapter": "local_json", "published_runs": len(runs), "invalid_files": invalid, "version": "0.3.0"}
 
 @app.get("/api/v1/ready")
 def ready():

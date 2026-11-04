@@ -1,5 +1,6 @@
 """Private prototype access. This is project access, not university SSO."""
 import hmac
+import ipaddress
 import os
 import secrets
 import threading
@@ -41,6 +42,18 @@ def access_configured():
     return len(os.environ.get("ATSC_SESSION_SECRET", "")) >= 32 and len(os.environ.get("ATSC_ASSISTANT_PASSWORD", "")) >= 12
 
 
+def local_access(request):
+    """Explicit local-only mode cannot grant access on a deployed/public host."""
+    if os.environ.get("ATSC_ENV") == "production" or os.environ.get("ATSC_LOCAL_AI") != "true" or os.environ.get("ATSC_AI_PROVIDER") != "ollama":
+        return False
+    if request is None or request.url.hostname not in {"127.0.0.1", "localhost", "::1"} or not request.client:
+        return False
+    try:
+        return ipaddress.ip_address(request.client.host).is_loopback
+    except ValueError:
+        return False
+
+
 def signer():
     return URLSafeTimedSerializer(os.environ["ATSC_SESSION_SECRET"], salt="atsc-project-access-v1")
 
@@ -63,7 +76,7 @@ def same_origin(request):
 
 def require_access(request):
     same_origin(request)
-    if not authenticated(request):
+    if not local_access(request) and not authenticated(request):
         raise HTTPException(401, "Sign in with project access before using the assistant.")
 
 
@@ -73,7 +86,8 @@ class Login(BaseModel):
 
 @router.get("/session")
 def session(request: Request):
-    return {"authenticated": authenticated(request), "configured": access_configured()}
+    local = local_access(request)
+    return {"authenticated": local or authenticated(request), "configured": access_configured(), "mode": "local" if local else "project"}
 
 
 @router.post("/login")

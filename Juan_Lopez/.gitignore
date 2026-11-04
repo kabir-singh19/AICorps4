@@ -13,3 +13,4 @@ frontend/dist/
 *.pem
 *.key
 *.log
+.local-ai/

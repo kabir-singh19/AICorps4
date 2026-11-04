@@ -53,3 +53,5 @@ textarea{resize:vertical;min-height:130px;margin:10px 0}
 .example-report{scroll-margin-top:20px}.example-report h3{margin-top:28px}
 @media(max-width:1000px){.example-columns{grid-template-columns:1fr}.example-columns aside{margin-top:0}}
 @media(max-width:520px){.example-inputs{grid-template-columns:1fr}}
+.question-ideas{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.question-ideas button{font-size:13px;padding:8px 10px}

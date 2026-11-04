@@ -1,5 +1,7 @@
 # University AI connector
 
+For the working local Qwen/Ollama assistant, see [local-ai.md](local-ai.md). The setup below describes the separate hosted university-provider path. Local AI is disabled in production; the public service continues to require approved provider credentials and project access.
+
 The AI assistant is a separate explanation service for this Texas A&M student capstone. It can discuss the project workflow and the selected published run/site. It does not train or execute the traffic-risk model, compute missing risk values, replace S3's memo pipeline, or represent an official university service.
 
 ## Provider setup

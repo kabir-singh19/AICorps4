@@ -1,5 +1,13 @@
 # Starter validation
 
+## Working local language model — November 4, 2026
+
+- Installed the official Ollama 0.40.14 command-line runtime in ignored local storage and verified its code signature. Downloaded Qwen 2.5 1.5B; a real inference explained the Texas Avenue fixture's synthetic 0.94 rate and rank 1 without a provider API key.
+- A full browser request from the assistant tab generated an answer identifying Texas Avenue and University Drive as the two flagged sites in example-dashboard-002, with rates 0.94 and 0.78. It explicitly identified the records as synthetic and not real predictions. This is a language-model response, not a canned answer. The UI retained draft and synthetic labels; no captured browser console errors/warnings appeared.
+- Twenty-eight backend tests pass. Five new checks cover loopback-only access, production/remote/origin rejection, runtime/model availability checks, native provider requests without credentials or arbitrary URLs, and bounded concurrent local requests. Existing hosted-provider access protections remain covered by prior tests.
+- Production frontend build passed with the existing separately loaded MapLibre warning. A project launcher starts the website and reuses or starts the local runtime; development at port 5173 also uses the configured backend environment.
+- This verifies local language-model inference only. It does not establish factual reliability, university endorsement/access, public AI hosting, real model accuracy, or engineering approval. Render continues to require a separately configured authenticated HTTPS provider and a completed deployment.
+
 ## Populated dashboard examples — November 4, 2026
 
 - Two synthetic runs are now bundled at the user's request. Each contains all four road sites, a complete A/B/C comparison, and a memo for every site. Risks and comparison counts are invented interface fixtures, separate from the trained synthetic Example lab classifier.
