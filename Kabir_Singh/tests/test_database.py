@@ -166,6 +166,37 @@ class GuardrailTests(unittest.TestCase):
         self.assertIn("STOPPED", out.getvalue())
         self.assertEqual(self.sql("SELECT count(*) FROM tasc.road WHERE source = %s", (source,))[0][0], before)
 
+    def test_road_names_fill_in_place_and_refuse_the_wrong_file(self):
+        source = "test_guardrail_road_names"
+
+        def feature(name, x):
+            return {"type": "Feature", "properties": {"HWY": "LS0000", "STE_NAM": name},
+                    "geometry": {"type": "LineString", "coordinates": [[x, 30.60], [x - 0.01, 30.61]]}}
+        path = self.tmp(".geojson", json.dumps({"type": "FeatureCollection",
+                                                "features": [feature(" HOLLEMAN DR ", -96.30), feature(None, -96.32)]}))
+        other = self.tmp(".geojson", json.dumps({"type": "FeatureCollection", "features": [feature("X ST", -96.50)]}))
+
+        def cleanup():
+            self.sql("DELETE FROM tasc.road WHERE source = %s", (source,))
+            self.sql("DELETE FROM tasc.ingest_run WHERE source = %s", (source,))
+        self.addCleanup(cleanup)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(ingest.main(["roads", path, "--as-of", "2019-12-31", "--source", source]), 0)
+        ids_before = self.sql("SELECT road_id FROM tasc.road WHERE source = %s ORDER BY road_id", (source,))
+        self.sql("UPDATE tasc.road SET street_name = NULL WHERE source = %s", (source,))
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(ingest.main(["road-names", other, "--source", source]), 2)
+        self.assertIn("STOPPED", out.getvalue())
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(ingest.main(["road-names", path, "--source", source]), 0)
+        self.assertEqual(self.sql("SELECT road_id FROM tasc.road WHERE source = %s ORDER BY road_id", (source,)),
+                         ids_before)                                   # same roads, not reloaded
+        self.assertEqual([r[0] for r in self.sql("""SELECT street_name FROM tasc.road WHERE source = %s
+                                                    ORDER BY street_name NULLS LAST""", (source,))],
+                         ["HOLLEMAN DR", None])
+
     def test_crash_already_loaded_from_another_file_is_rejected(self):
         row = self.sql("SELECT crash_id, crash_date FROM tasc.crash LIMIT 1")
         if not row:

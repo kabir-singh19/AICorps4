@@ -78,7 +78,8 @@ CREATE TABLE corridor_street (
 CREATE TABLE road (
     road_id     bigserial PRIMARY KEY,
     geom        geometry(LineString, 32614) NOT NULL,
-    route_name  text,                              -- TxDOT HWY, e.g. FM0060
+    route_name  text,                              -- TxDOT HWY, e.g. FM0060 (LS0000 = any city street)
+    street_name text,                              -- TxDOT STE_NAM, e.g. HOLLEMAN DR; empty on state routes
     roadbed     text,                              -- TxDOT RDBD_ID: KG = centerline, LG/RG = divided roadbeds
     city_code   integer,                           -- TxDOT CITY: 9050 = College Station, 6100 = Bryan, 0 = none
     func_class  text,

@@ -49,7 +49,7 @@ SEVERITY_CODES = {"4": "K", "1": "A", "2": "B", "3": "C", "5": "O", "0": "U"}
 
 # TxDOT roadway inventory field names (checked against the TxDOT open-data layer, Oct 2026).
 ROAD_FIELDS = {
-    "route_name": "HWY", "roadbed": "RDBD_ID", "city_code": "CITY", "func_class": "F_SYSTEM", "num_lanes": "NUM_LANES",
+    "route_name": "HWY", "street_name": "STE_NAM", "roadbed": "RDBD_ID", "city_code": "CITY", "func_class": "F_SYSTEM", "num_lanes": "NUM_LANES",
     "speed_limit": "SPD_MAX", "median_type": "MED_TYPE", "aadt": "ADT_CUR", "aadt_year": "ADT_YEAR",
 }
 
@@ -386,6 +386,11 @@ def _to_int(value):
         return None
 
 
+def _street_name(p):
+    name = (p.get(ROAD_FIELDS["street_name"]) or "").strip()
+    return name or None
+
+
 def cmd_roads(args):
     """Load a GeoJSON FeatureCollection of road lines (WGS84 lon/lat, as the TxDOT portal exports it)."""
     with open(args.file, encoding="utf-8") as f:
@@ -398,6 +403,7 @@ def cmd_roads(args):
         rows.append({
             "geojson": json.dumps(feat["geometry"]),
             "route_name": p.get(ROAD_FIELDS["route_name"]),
+            "street_name": _street_name(p),
             "roadbed": p.get(ROAD_FIELDS["roadbed"]),
             "city_code": _to_int(p.get(ROAD_FIELDS["city_code"])),
             "func_class": None if p.get(ROAD_FIELDS["func_class"]) is None else str(p.get(ROAD_FIELDS["func_class"])),
@@ -427,15 +433,65 @@ def cmd_roads(args):
                          note="rows_bad = features with no geometry"
                               + (f"; replaced {replaced} earlier rows of this source" if replaced else ""))
         cur.executemany(
-            """INSERT INTO tasc.road (geom, route_name, roadbed, city_code, func_class, num_lanes, speed_limit,
-                                      median_type, aadt, aadt_year, source, as_of_date, run_id)
+            """INSERT INTO tasc.road (geom, route_name, street_name, roadbed, city_code, func_class, num_lanes,
+                                      speed_limit, median_type, aadt, aadt_year, source, as_of_date, run_id)
                SELECT (ST_Dump(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%(geojson)s), 4326), 32614))).geom,
-                      %(route_name)s, %(roadbed)s, %(city_code)s, %(func_class)s, %(num_lanes)s, %(speed_limit)s, %(median_type)s,
+                      %(route_name)s, %(street_name)s, %(roadbed)s, %(city_code)s, %(func_class)s, %(num_lanes)s, %(speed_limit)s, %(median_type)s,
                       %(aadt)s, %(aadt_year)s, %(source)s, %(as_of)s::date, %(run_id)s""",
             [dict(r, run_id=run_id) for r in rows],
         )
     print(f"Loaded {len(rows)} road features ({skipped} skipped, no geometry"
           + (f"; replaced {replaced} earlier rows" if replaced else "") + f"). run_id {run_id}")
+    return 0
+
+
+def cmd_road_names(args):
+    """Fill road.street_name on roads already loaded from this file, without reloading them.
+
+    Reloading would give every road a new road_id, and a built network (v0_2019) points at the old
+    ones, so the guardrail in cmd_roads refuses it. Instead each feature is converted exactly as
+    cmd_roads converted it and matched to its stored road by identical geometry.
+    """
+    with open(args.file, encoding="utf-8") as f:
+        features = json.load(f)["features"]
+    rows = [(json.dumps(feat["geometry"]), _street_name(feat.get("properties") or {}))
+            for feat in features if feat.get("geometry")]
+    with connect() as conn, conn.cursor() as cur:
+        # Databases created before street_name was added to sql/init/01_schema.sql.
+        cur.execute("ALTER TABLE tasc.road ADD COLUMN IF NOT EXISTS street_name text")
+        cur.execute("SELECT count(*) FROM tasc.road WHERE source = %s", (args.source,))
+        stored = cur.fetchone()[0]
+        if not stored:
+            print(f"STOPPED: no roads with source {args.source!r}. Load them with 'ingest.py roads' first.")
+            return 2
+        cur.execute("CREATE TEMP TABLE named (geom geometry(LineString, 32614), street_name text) ON COMMIT DROP")
+        cur.executemany(
+            """INSERT INTO named
+               SELECT (ST_Dump(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), 32614))).geom, %s""", rows)
+        cur.execute("CREATE INDEX ON named USING gist (geom)")
+        cur.execute(
+            """WITH pair AS (
+                   SELECT r.road_id, n.street_name
+                   FROM tasc.road r JOIN named n ON r.geom && n.geom AND ST_OrderingEquals(r.geom, n.geom)
+                   WHERE r.source = %s),
+               one AS (SELECT road_id, min(street_name) AS street_name FROM pair
+                       GROUP BY road_id HAVING count(DISTINCT street_name) <= 1)
+               UPDATE tasc.road r SET street_name = one.street_name FROM one
+               WHERE r.road_id = one.road_id""", (args.source,))
+        updated = cur.rowcount
+        cur.execute("SELECT count(*) FROM tasc.road WHERE source = %s AND street_name IS NOT NULL", (args.source,))
+        named = cur.fetchone()[0]
+        missed = stored - updated
+        # A road with no twin in the file, or with two twins named differently, keeps its old value.
+        if missed:
+            print(f"STOPPED: {missed} of {stored} roads in {args.source!r} have no single match in "
+                  f"{os.path.basename(args.file)}; is it the file they were loaded from? Nothing changed.")
+            conn.rollback()
+            return 2
+        log_run(cur, args.source, args.file, len(features), 0, "loaded",
+                note=f"road-names: street_name filled on {updated} roads ({named} named)")
+    print(f"Matched all {stored} roads in {args.source!r}; {named} have a street name "
+          f"({stored - named} have none, mostly state routes).")
     return 0
 
 
@@ -531,6 +587,11 @@ def main(argv=None):
     r.add_argument("--as-of", required=True, help="date the data describes, YYYY-MM-DD")
     r.add_argument("--source", default="roadway_inventory")
     r.set_defaults(func=cmd_roads)
+
+    n = sub.add_parser("road-names", help="fill street names on roads already loaded, without reloading")
+    n.add_argument("file", help="the GeoJSON the roads were loaded from")
+    n.add_argument("--source", required=True)
+    n.set_defaults(func=cmd_road_names)
 
     d = sub.add_parser("crash-details", help="add extra CRIS crash columns to crashes already loaded")
     d.add_argument("file")
