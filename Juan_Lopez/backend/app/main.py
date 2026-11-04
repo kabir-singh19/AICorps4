@@ -9,11 +9,13 @@ from .exports import sites_csv
 from .web import mount_frontend, security_headers, frontend_directory
 from .access import router as access_router
 from .assistant import router as assistant_router, status as assistant_status
+from .examples import router as examples_router
 
 app = FastAPI(title="ATSC API", version="0.3.0", openapi_url="/api/v1/openapi.json", docs_url="/api/v1/docs")
 app.middleware("http")(security_headers)
 app.include_router(access_router)
 app.include_router(assistant_router)
+app.include_router(examples_router)
 
 class ApiError(Exception):
     def __init__(self, status, error, message):
@@ -25,7 +27,7 @@ async def api_error(request: Request, error: ApiError):
 
 @app.exception_handler(RequestValidationError)
 async def invalid_request(request: Request, error: RequestValidationError):
-    return JSONResponse(status_code=422, content={"error": "invalid_request", "message": "Check the required query parameters and their types."})
+    return JSONResponse(status_code=422, content={"error": "invalid_request", "message": "Check the required fields, allowed ranges, and value types."})
 
 @app.exception_handler(StarletteHTTPException)
 async def http_error(request: Request, error: StarletteHTTPException):

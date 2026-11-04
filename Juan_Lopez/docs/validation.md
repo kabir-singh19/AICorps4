@@ -1,5 +1,12 @@
 # Starter validation
 
+## Example lab — November 4, 2026
+
+- Twenty-one backend tests pass, including four new example tests. They verify the score against the saved learned model, changed-input behavior, range/type validation, ranked report/prediction consistency, HTML escaping/downloads, synthetic labels, and isolation from published runs.
+- The production frontend build passes. The core script is approximately 302 kB; the separate MapLibre chunk retains its size warning.
+- In the production preview, Example lab loaded without credentials. Changing the University Drive preset's speed from 45 to 25 changed its synthetic score from 0.704 to 0.407 after running the model. The fixed four-scenario report remained unchanged, as labeled. No captured browser console errors or warnings appeared during this check.
+- These checks concern a teaching model trained on invented data. No real traffic-risk validation, university AI connection, or public deployment is implied.
+
 ## Render package and AI connector — November 4, 2026
 
 - Seventeen backend tests pass: the existing eight model-contract tests plus nine hosted/assistant checks. New checks cover signed Secure/HttpOnly/SameSite cookies, incorrect/tampered credentials, origin rejection, logout, login and AI quotas, disabled providers, client configuration rejection, run/site evidence isolation, draft/demo labeling, CSV formula escaping and explicit zero/false preservation, GeoJSON exports, same-origin static/API delivery, production headers, missing-build readiness, and mocked provider payload/error mapping.

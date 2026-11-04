@@ -9,6 +9,7 @@ Owner: Juan Lopez. React/Vite + MapLibre frontend and FastAPI backend, following
 - `frontend/src/components/SiteDetails.jsx`: mapped road details and matched model site results.
 - `frontend/src/components/ModelPanels.jsx`: model run selector, ranked sites, backtest table, and published memos.
 - `frontend/src/components/Assistant.jsx`: project access, evidence selection, and AI draft answers.
+- `frontend/src/components/ExampleLab.jsx`: interactive synthetic ML example and printable/downloadable report.
 - `frontend/src/data/corridors.geojson.json`: attributed OpenStreetMap road geometry for the central College Station corridor sections.
 - `frontend/src/api.js`: same-origin API requests.
 - `backend/app/main.py`: health, schema, and model-result read endpoints.
@@ -52,6 +53,8 @@ Backtest and Memos are enabled. The backend reads validated model output JSON fi
 Clicking a highlighted road selects the specific mapped section and opens Site details. Keyboard-accessible road details buttons select one mapped section per corridor. Returning to the map focuses that corridor and outlines the selected section. Selection is retained while navigating within the app and resets on browser reload. An explicit `map_segment_id` can link that section to a model result; OpenStreetMap references are not model site IDs. Rankings can open a model site without a local map match. Missing model results are shown as unavailable, not invented.
 
 The AI assistant uses a server-configured, compatible university provider. It requires project access and remains unavailable until explicitly enabled with credentials. Questions use the selected published evidence, and responses are labeled drafts. It does not automatically generate approved memos or calculate risk. No API keys belong in the frontend. See [AI setup](docs/ai-assistant.md); an actual TAMU provider call is still unverified.
+
+**Example lab** works immediately without a provider key. It includes a small logistic-regression model trained on 400 synthetic records, editable fictional road inputs, and a report for four corridor scenarios. Open `?example=1` to go directly to it. All example scores and reports are labeled synthetic and stay separate from published model runs. See [example-lab.md](docs/example-lab.md).
 
 For public hosting, follow [Render deployment](docs/deployment.md). FastAPI serves the production build and API under the same origin; the map loads separately from other pages to reduce initial script loading. Deployment files alone do not create a public URL: a connected Render account and successful deploy are required. The shared database, confirmed model site mappings, actual inference, university SSO, independently executed memo grounding, and PDF memo export remain pending. Imported grounding markers are validated, but the publishing pipeline must perform the real checks.
 
