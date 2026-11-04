@@ -18,6 +18,7 @@ use this one) and `v0_2019`, the three corridors of the M2 diagnostic, kept unch
 | `sql/06_osm_features.sql` | OSM site features (crossings, signalized intersections, sidewalks, schools, bars, restaurants), dated | IF-03 features |
 | `ingest.py corridors` | Loads the study-corridor street spellings from `corridors.py` | Corridor scope |
 | `ingest.py road-names` | Fills `road.street_name` (TxDOT `STE_NAM`) on roads already loaded, without reloading | City-wide matching |
+| `ingest.py road-attrs` | Fills `road.attrs` (9 more TxDOT fields: lane width, shoulders, median width, curbs, access control, truck %) the same way | IF-02 features |
 | `street_names.py`, `ingest.py street-keys` | One key per street spelling (typos, suffixes, directions, route names) in `street_key` | City-wide matching |
 | `fetch_boundary.py`, `ingest.py boundary` | College Station city limits (Census, 2022 vintage) into `boundary` | Analysis area |
 | `ingest.py osm-roads` | Adds the named streets TxDOT 2019 lacks, from OSM as of 2022-12-31; tags Texas A&M campus streets | IF-03, network coverage |
@@ -27,7 +28,7 @@ use this one) and `v0_2019`, the three corridors of the M2 diagnostic, kept unch
 | `filter_corridors.py` | Writes the `*_3roads.csv` corridor files from the CRIS exports | Corridor scope |
 | `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections; optional OSM roads, city boundary, stub and junction clean-up, interchange flag | Network build (due 10/20) |
 | `sql/03_map_match.sql` | Matches corridor crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
-| `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median; intersection legs), each value dated | Feature tables with as-of dates (due 11/3) |
+| `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median, the `road.attrs` fields, curvature, distance to intersection; intersection legs and interchange), each value dated | Feature tables with as-of dates (due 11/3) |
 | `tests/test_validate.py` | 15 tests for the crash validator (incl. guardrails), no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
 | `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_crash_scope_corridor`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 |
@@ -99,6 +100,7 @@ docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --
 ```bash
 # a. Street names on the 2019 roads, the city limits, and the streets TxDOT lacks (OSM 2022)
 .venv/bin/python ingest.py road-names ../../raw/roads/roadway_brazos_2019.geojson --source roadway_inventory_2019
+.venv/bin/python ingest.py road-attrs ../../raw/roads/roadway_brazos_2019.geojson --source roadway_inventory_2019
 .venv/bin/python fetch_boundary.py --out ../../raw/boundary
 .venv/bin/python ingest.py boundary ../../raw/boundary/college_station_2022.geojson
 .venv/bin/python fetch_osm.py --date 2022-12-31 --out ../../raw/osm --boundary "College Station" --margin-m 100 --groups road
@@ -309,6 +311,16 @@ methods B and C only.
   *Features* (`backtest_2022`): func_class on all 5,590 segments; speed 4,718, lanes 4,649, AADT and
   median 4,521; legs and interchange on all 1,634 intersections; 7 OSM features from
   `osm_city_2022-12-31` on all sites, none constant. `current`: the same 7 from `osm_city_latest`.
+  Added the same day: `road-attrs` matched all 5,547 roads, and 9 more TxDOT 2019 fields became
+  segment features on the 4,521 TxDOT segments (lane width median 10 ft, range 4–21; inside /
+  outside shoulder 0 ft on most city streets, up to 20 / 24; median width 0–376 ft; pavement width
+  10–98 ft; truck % 0.5–17.2, but 3.2 on most roads, likely a TxDOT default; access control 3 (none)
+  on 4,406, 1 (full) on 108; curbs coded 0/1/2, codes not yet translated). Two geometry features on
+  all 5,590 segments: `curvature_deg_per_mi` (median 23, 95th percentile 1,106; very high on short
+  segments that turn a corner) and `dist_to_intersection_m` (median 62 m). Empty or constant for
+  College Station, so not used: turn lanes, signal and stop-sign counts, TxDOT curvature classes,
+  terrain, school zones. `04_features.sql` now replaces only the features it writes; before, a
+  rerun also deleted the OSM features from `06_osm_features.sql`.
   *Checks.* 39/39 tests pass, including leakage and "every feature source is registered". The
   v0_2019 rows of `s2_site_scope` and the corridor crash scope were compared before and after the
   view change: identical.

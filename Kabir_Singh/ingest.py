@@ -5,6 +5,7 @@
     python ingest.py roads   data/roadway_brazos.geojson --as-of 2022-12-31
     python ingest.py corridors                                # study-corridor street spellings
     python ingest.py road-names data/roadway_brazos.geojson --source roadway_inventory_2019
+    python ingest.py road-attrs data/roadway_brazos.geojson --source roadway_inventory_2019
     python ingest.py street-keys                              # name keys for city-wide matching
     python ingest.py boundary ../../raw/boundary/college_station_2022.geojson   # city limits
     python ingest.py osm-roads ../../raw/osm/osm_college_station_100m_2022-12-31_road.json \
@@ -427,6 +428,7 @@ def cmd_roads(args):
             "geojson": json.dumps(feat["geometry"]),
             "route_name": p.get(ROAD_FIELDS["route_name"]),
             "street_name": _street_name(p),
+            "attrs": _road_attrs(p),
             "roadbed": p.get(ROAD_FIELDS["roadbed"]),
             "city_code": _to_int(p.get(ROAD_FIELDS["city_code"])),
             "func_class": None if p.get(ROAD_FIELDS["func_class"]) is None else str(p.get(ROAD_FIELDS["func_class"])),
@@ -440,6 +442,9 @@ def cmd_roads(args):
         })
     skipped = len(features) - len(rows)
     with connect() as conn, conn.cursor() as cur:
+        # Databases created before these columns were added to sql/init/01_schema.sql.
+        cur.execute("ALTER TABLE tasc.road ADD COLUMN IF NOT EXISTS street_name text, "
+                    "ADD COLUMN IF NOT EXISTS attrs jsonb")
         replaced = _replace_road_source(cur, args.source)
         if replaced is None:
             return 2
@@ -447,10 +452,10 @@ def cmd_roads(args):
                          note="rows_bad = features with no geometry"
                               + (f"; replaced {replaced} earlier rows of this source" if replaced else ""))
         cur.executemany(
-            """INSERT INTO tasc.road (geom, route_name, street_name, roadbed, city_code, func_class, num_lanes,
+            """INSERT INTO tasc.road (geom, route_name, street_name, attrs, roadbed, city_code, func_class, num_lanes,
                                       speed_limit, median_type, aadt, aadt_year, source, as_of_date, run_id)
                SELECT (ST_Dump(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%(geojson)s), 4326), 32614))).geom,
-                      %(route_name)s, %(street_name)s, %(roadbed)s, %(city_code)s, %(func_class)s, %(num_lanes)s, %(speed_limit)s, %(median_type)s,
+                      %(route_name)s, %(street_name)s, %(attrs)s::jsonb, %(roadbed)s, %(city_code)s, %(func_class)s, %(num_lanes)s, %(speed_limit)s, %(median_type)s,
                       %(aadt)s, %(aadt_year)s, %(source)s, %(as_of)s::date, %(run_id)s""",
             [dict(r, run_id=run_id) for r in rows],
         )
@@ -459,53 +464,90 @@ def cmd_roads(args):
     return 0
 
 
-def cmd_road_names(args):
-    """Fill road.street_name on roads already loaded from this file, without reloading them.
+def _backfill_road_column(args, column, sql_type, value_of, command):
+    """Fill one road column on roads already loaded from this file, without reloading them.
 
     Reloading would give every road a new road_id, and a built network (v0_2019) points at the old
     ones, so the guardrail in cmd_roads refuses it. Instead each feature is converted exactly as
-    cmd_roads converted it and matched to its stored road by identical geometry.
+    cmd_roads converted it and matched to its stored road by identical geometry. value_of(props)
+    gives the new value as text (or None); it is cast to sql_type. Returns (stored, filled) or None.
     """
     with open(args.file, encoding="utf-8") as f:
         features = json.load(f)["features"]
-    rows = [(json.dumps(feat["geometry"]), _street_name(feat.get("properties") or {}))
+    rows = [(json.dumps(feat["geometry"]), value_of(feat.get("properties") or {}))
             for feat in features if feat.get("geometry")]
     with connect() as conn, conn.cursor() as cur:
-        # Databases created before street_name was added to sql/init/01_schema.sql.
-        cur.execute("ALTER TABLE tasc.road ADD COLUMN IF NOT EXISTS street_name text")
+        # Databases created before the column was added to sql/init/01_schema.sql.
+        cur.execute(f"ALTER TABLE tasc.road ADD COLUMN IF NOT EXISTS {column} {sql_type}")
         cur.execute("SELECT count(*) FROM tasc.road WHERE source = %s", (args.source,))
         stored = cur.fetchone()[0]
         if not stored:
             print(f"STOPPED: no roads with source {args.source!r}. Load them with 'ingest.py roads' first.")
-            return 2
-        cur.execute("CREATE TEMP TABLE named (geom geometry(LineString, 32614), street_name text) ON COMMIT DROP")
+            return None
+        cur.execute("CREATE TEMP TABLE backfill (geom geometry(LineString, 32614), value text) ON COMMIT DROP")
         cur.executemany(
-            """INSERT INTO named
+            """INSERT INTO backfill
                SELECT (ST_Dump(ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), 32614))).geom, %s""", rows)
-        cur.execute("CREATE INDEX ON named USING gist (geom)")
+        cur.execute("CREATE INDEX ON backfill USING gist (geom)")
         cur.execute(
-            """WITH pair AS (
-                   SELECT r.road_id, n.street_name
-                   FROM tasc.road r JOIN named n ON r.geom && n.geom AND ST_OrderingEquals(r.geom, n.geom)
-                   WHERE r.source = %s),
-               one AS (SELECT road_id, min(street_name) AS street_name FROM pair
-                       GROUP BY road_id HAVING count(DISTINCT street_name) <= 1)
-               UPDATE tasc.road r SET street_name = one.street_name FROM one
-               WHERE r.road_id = one.road_id""", (args.source,))
+            f"""WITH pair AS (
+                    SELECT r.road_id, b.value
+                    FROM tasc.road r JOIN backfill b ON r.geom && b.geom AND ST_OrderingEquals(r.geom, b.geom)
+                    WHERE r.source = %s),
+                one AS (SELECT road_id, min(value) AS value FROM pair
+                        GROUP BY road_id HAVING count(DISTINCT value) <= 1)
+                UPDATE tasc.road r SET {column} = one.value::{sql_type} FROM one
+                WHERE r.road_id = one.road_id""", (args.source,))
         updated = cur.rowcount
-        cur.execute("SELECT count(*) FROM tasc.road WHERE source = %s AND street_name IS NOT NULL", (args.source,))
-        named = cur.fetchone()[0]
+        cur.execute(f"SELECT count(*) FROM tasc.road WHERE source = %s AND {column} IS NOT NULL", (args.source,))
+        filled = cur.fetchone()[0]
         missed = stored - updated
-        # A road with no twin in the file, or with two twins named differently, keeps its old value.
+        # A road with no twin in the file, or with two twins that disagree, keeps its old value.
         if missed:
             print(f"STOPPED: {missed} of {stored} roads in {args.source!r} have no single match in "
                   f"{os.path.basename(args.file)}; is it the file they were loaded from? Nothing changed.")
             conn.rollback()
-            return 2
+            return None
         log_run(cur, args.source, args.file, len(features), 0, "loaded",
-                note=f"road-names: street_name filled on {updated} roads ({named} named)")
+                note=f"{command}: {column} filled on {updated} roads ({filled} not empty)")
+    return stored, filled
+
+
+def cmd_road_names(args):
+    """Fill road.street_name (TxDOT STE_NAM) on roads already loaded from this file."""
+    result = _backfill_road_column(args, "street_name", "text", _street_name, "road-names")
+    if result is None:
+        return 2
+    stored, named = result
     print(f"Matched all {stored} roads in {args.source!r}; {named} have a street name "
           f"({stored - named} have none, mostly state routes).")
+    return 0
+
+
+# TxDOT inventory fields kept in road.attrs (feature name -> field). Checked on the 2019 snapshot for
+# College Station centerlines (1,501 pieces): all filled. Left out because they are empty there:
+# RT_TURN_LANE, LT_TURN_LANE, NBR_SGNL, TRFC_SGNL, NBR_STOP_SIGN, CURV_CLASS_*, TRRN, PEAK_PRKG,
+# DIR_TRAV; SCHOOL_ZN is 0 everywhere. Codes are TxDOT's, not yet translated.
+ROAD_ATTRS = {
+    "lane_width_ft": "LANE_WIDTH", "shoulder_inside_ft": "S_WID_I", "shoulder_outside_ft": "S_WID_O",
+    "access_control": "ACES_CTRL", "truck_pct": "TRK_AADT_PCT", "median_width_ft": "MED_WID",
+    "curb_left": "CURB_L", "curb_right": "CURB_R", "surface_width_ft": "SUR_W",
+}
+
+
+def _road_attrs(p):
+    attrs = {name: p[field] for name, field in ROAD_ATTRS.items() if p.get(field) not in (None, "")}
+    return json.dumps(attrs, sort_keys=True) if attrs else None
+
+
+def cmd_road_attrs(args):
+    """Fill road.attrs (the ROAD_ATTRS fields, as JSON) on roads already loaded from this file."""
+    result = _backfill_road_column(args, "attrs", "jsonb", _road_attrs, "road-attrs")
+    if result is None:
+        return 2
+    stored, filled = result
+    print(f"Matched all {stored} roads in {args.source!r}; {filled} have attributes "
+          f"({', '.join(ROAD_ATTRS)}).")
     return 0
 
 
@@ -773,6 +815,11 @@ def main(argv=None):
     n.add_argument("file", help="the GeoJSON the roads were loaded from")
     n.add_argument("--source", required=True)
     n.set_defaults(func=cmd_road_names)
+
+    a = sub.add_parser("road-attrs", help="fill extra TxDOT road attributes (ROAD_ATTRS) on roads already loaded")
+    a.add_argument("file", help="the GeoJSON the roads were loaded from")
+    a.add_argument("--source", required=True)
+    a.set_defaults(func=cmd_road_attrs)
 
     w = sub.add_parser("osm-roads", help="add streets missing from the TxDOT inventory, from a fetch_osm.py road file")
     w.add_argument("file")

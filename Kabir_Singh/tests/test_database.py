@@ -184,7 +184,7 @@ class GuardrailTests(unittest.TestCase):
         source = "test_guardrail_road_names"
 
         def feature(name, x):
-            return {"type": "Feature", "properties": {"HWY": "LS0000", "STE_NAM": name},
+            return {"type": "Feature", "properties": {"HWY": "LS0000", "STE_NAM": name, "LANE_WIDTH": 11},
                     "geometry": {"type": "LineString", "coordinates": [[x, 30.60], [x - 0.01, 30.61]]}}
         path = self.tmp(".geojson", json.dumps({"type": "FeatureCollection",
                                                 "features": [feature(" HOLLEMAN DR ", -96.30), feature(None, -96.32)]}))
@@ -197,7 +197,7 @@ class GuardrailTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(ingest.main(["roads", path, "--as-of", "2019-12-31", "--source", source]), 0)
         ids_before = self.sql("SELECT road_id FROM tasc.road WHERE source = %s ORDER BY road_id", (source,))
-        self.sql("UPDATE tasc.road SET street_name = NULL WHERE source = %s", (source,))
+        self.sql("UPDATE tasc.road SET street_name = NULL, attrs = NULL WHERE source = %s", (source,))
 
         out = io.StringIO()
         with contextlib.redirect_stdout(out):
@@ -205,6 +205,9 @@ class GuardrailTests(unittest.TestCase):
         self.assertIn("STOPPED", out.getvalue())
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(ingest.main(["road-names", path, "--source", source]), 0)
+            self.assertEqual(ingest.main(["road-attrs", path, "--source", source]), 0)
+        self.assertEqual(self.sql("SELECT DISTINCT attrs ->> 'lane_width_ft' FROM tasc.road WHERE source = %s",
+                                  (source,)), [("11",)])
         self.assertEqual(self.sql("SELECT road_id FROM tasc.road WHERE source = %s ORDER BY road_id", (source,)),
                          ids_before)                                   # same roads, not reloaded
         self.assertEqual([r[0] for r in self.sql("""SELECT street_name FROM tasc.road WHERE source = %s

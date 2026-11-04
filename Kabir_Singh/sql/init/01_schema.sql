@@ -98,6 +98,7 @@ CREATE TABLE road (
     geom        geometry(LineString, 32614) NOT NULL,
     route_name  text,                              -- TxDOT HWY, e.g. FM0060 (LS0000 = any city street)
     street_name text,                              -- TxDOT STE_NAM, e.g. HOLLEMAN DR; empty on state routes
+    attrs       jsonb,                             -- more TxDOT fields (ingest.py ROAD_ATTRS): lane width, shoulders, ...
     roadbed     text,                              -- TxDOT RDBD_ID: KG = centerline, LG/RG = divided roadbeds
     city_code   integer,                           -- TxDOT CITY: 9050 = College Station, 6100 = Bryan, 0 = none
     func_class  text,
