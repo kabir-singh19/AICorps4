@@ -25,6 +25,9 @@ class StreetKeyTests(unittest.TestCase):
             ("F AND B RD", "F&B RD"),
             ("Holleman Drive", "HOLLEMAN DR"),                  # case and suffix spelled out
             ("S HOLLEMAN DR", "HOLLEMAN DR"),
+            ("S HOLLEMAN DR", "HOLLEMAN W DR"),                 # TxDOT: direction before the suffix
+            ("E SOUTHWEST PKWY", "SOUTHWEST E PKWY"),
+            ("W GREENS PRAIRIE RD", "GREENS PRAIRIE W RD"),
         ]
         for crash, road in pairs:
             self.assertTrue(same_street(crash, road), (crash, road))
@@ -40,6 +43,11 @@ class StreetKeyTests(unittest.TestCase):
         self.assertFalse(same_street("ROCK PRAIRIE RD", "GREENS PRAIRIE RD"))
         self.assertFalse(same_street("TEXAS AVE", "TEXAS ST"))       # route code vs city street
         self.assertFalse(same_street("1ST ST", "2ND ST"))
+
+    def test_letters_that_are_part_of_the_name_stay(self):
+        self.assertEqual(street_key("PARK WEST BLVD"), "PARK WEST BLVD")   # spelled-out word is a name
+        self.assertEqual(street_key("IG AND N RD"), "IG AND N RD")         # I&GN Road
+        self.assertEqual(street_key("MERVIN'S RUN"), "MERVINS RUN")        # possessive, not South
 
     def test_same_name_with_another_suffix_matches_on_purpose(self):
         # Known looseness: GREENS PRAIRIE RD and GREENS PRAIRIE TRL are two roads that meet.

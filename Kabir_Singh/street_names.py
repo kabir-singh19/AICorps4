@@ -4,6 +4,7 @@ CRIS and the TxDOT roadway inventory spell the same street differently:
     crash  W ROCK PRAIRIE RD       TxDOT  ROCK PRAIRE RD           (TxDOT typo)
     crash  WILLIAM D FITCH PKWY    TxDOT  WILLIAM D. FITCH PKWY
     crash  BARRON RD               TxDOT  BARRON                    (no suffix)
+    crash  S HOLLEMAN DR           TxDOT  HOLLEMAN W DR             (direction before the suffix)
     crash  EARL RUDDER FWY         TxDOT  SH0006                    (state route: code, no name)
 street_key() turns any spelling into one key; base_key() also drops the suffix (RD, ST, ...).
 Two names match when their keys are equal or their base keys are equal. That is loose on
@@ -38,12 +39,17 @@ def _normalize(name):
     s = name.upper().strip()
     for wrong, right in TYPOS.items():
         s = s.replace(wrong, right)
-    s = re.sub(r"[^A-Z0-9 ]", " ", s.replace(".", ""))
+    s = re.sub(r"[^A-Z0-9 ]", " ", s.replace(".", "").replace("'", ""))   # MERVIN'S -> MERVINS, not MERVIN S
     tokens = [SUFFIX.get(t, t) for t in s.split()]
     while len(tokens) > 1 and tokens[0] in DIRECTIONS:
         tokens = tokens[1:]
     while len(tokens) > 1 and tokens[-1] in DIRECTIONS:
         tokens = tokens[:-1]
+    # TxDOT puts a one-letter direction before the suffix: HOLLEMAN W DR, SOUTHWEST E PKWY.
+    # Spelled-out words stay (PARK WEST BLVD is a name), and so does IG AND N RD (I&GN Road).
+    if (len(tokens) > 2 and tokens[-2] in {"N", "S", "E", "W"} and tokens[-1] in SUFFIXES
+            and tokens[-3] != "AND"):
+        tokens = tokens[:-2] + tokens[-1:]
     return " ".join(tokens)
 
 
