@@ -1,29 +1,53 @@
-import { useEffect, useState } from 'react';
-import RiskMap from './components/RiskMap.jsx';
-import { getRuns } from './api.js';
+import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import SiteDetails from './components/SiteDetails.jsx';
+import Assistant from './components/Assistant.jsx';
+import { ModelRuns, RankedSites, Backtest, Memos } from './components/ModelPanels.jsx';
+import { runPath, useApi } from './api.js';
+import { roadById } from './data/corridors.js';
 
-const pages = ['Risk map', 'Site details', 'Backtest', 'Memos'];
+const RiskMap = lazy(() => import('./components/RiskMap.jsx'));
+const emptySites = { type: 'FeatureCollection', features: [] };
+const pages = ['Risk map', 'Site details', 'Backtest', 'Memos', 'AI assistant'];
 export default function App() {
   const [page, setPage] = useState(pages[0]);
-  const [status, setStatus] = useState('Checking model runs…');
-  const [retry, setRetry] = useState(0);
+  const [selectedRoad, setSelectedRoad] = useState(null);
+  const [preferredRunId, setPreferredRunId] = useState('');
+  const [selectedSiteId, setSelectedSiteId] = useState(null);
+  const runsResource = useApi('/api/v1/runs');
+  const runs = runsResource.data || [];
+  const activeRun = runs.find(run => run.run_id === preferredRunId) || runs[0] || null;
+  const sitesResource = useApi(runPath('sites', activeRun?.run_id));
+  const sites = sitesResource.data?.features || [];
+  const selectedSite = selectedSiteId !== null
+    ? sites.find(site => site.properties.site_id === selectedSiteId)
+    : sites.find(site => site.properties.map_segment_id && site.properties.map_segment_id === selectedRoad?.id);
+  const heading = useRef(null);
+  const previousPage = useRef(page);
+  const selectRoad = useCallback(feature => {
+    setSelectedRoad(feature);
+    setSelectedSiteId(null);
+    setPage('Site details');
+  }, []);
+  const selectModelSite = useCallback(feature => {
+    setSelectedSiteId(feature.properties.site_id);
+    setSelectedRoad(roadById.get(feature.properties.map_segment_id) || null);
+    setPage('Site details');
+  }, []);
   useEffect(() => {
-    const controller = new AbortController();
-    setStatus('Checking model runs…');
-    getRuns(controller.signal).then(runs => setStatus(runs.length ? 'Runs available; data display integration pending.' : 'No published model runs available.'))
-      .catch(error => { if (error.name !== 'AbortError') setStatus(error.message); });
-    return () => controller.abort();
-  }, [retry]);
+    if (previousPage.current !== page) heading.current?.focus();
+    previousPage.current = page;
+  }, [page]);
   return <>
     <a className="skip" href="#content">Skip to content</a>
-    <header><span className="brand">ATSC</span><div><strong>AI Traffic-Safety Consultant</strong><p>College Station · AI Corps Team 4</p></div><span className="badge">Development starter</span></header>
+    <header><span className="brand">ATSC</span><div><strong>AI Traffic-Safety Consultant</strong><p>Texas A&amp;M capstone · College Station</p></div><span className="badge">Research preview</span></header>
     <div className="layout"><nav aria-label="Main navigation">{pages.map(name => <button key={name} aria-current={page === name ? 'page' : undefined} onClick={() => setPage(name)}>{name}</button>)}</nav>
-      <main id="content"><p className="eyebrow">TRAFFIC SAFETY / {page.toUpperCase()}</p><h1>{page}</h1><p className="intro">Explore road risk, understand flagged sites, and review the evidence behind planning decisions.</p>
-        <div className="notice" role="status">{status} <button onClick={() => setRetry(value => value + 1)}>Retry connection</button></div>
-        {page === 'Risk map' && <><RiskMap /><section className="card"><h2>Ranked sites</h2><p>Connect the published run and site GeoJSON endpoint to display rankings. No computed results are included in this starter.</p><button disabled>Export CSV</button> <button disabled>Export GeoJSON</button></section></>}
-        {page === 'Site details' && <section className="card"><h2>Select a road segment or intersection</h2><p>This page will show crash history, expected fatal and serious-injury risk, and the top five risk factors for the selected run.</p></section>}
-        {page === 'Backtest' && <section className="card"><h2>Compare methods A, B, and C</h2><p>Training cutoff: December 31, 2022. Test window: 2023–2025.</p><table><caption>Results pending model integration</caption><thead><tr><th>Method</th><th>Capture rate</th><th>95% confidence interval</th></tr></thead><tbody>{['A · Consultant HIN', 'B · Negative binomial + EB', 'C · ATSC ML + EB'].map(method => <tr key={method}><th scope="row">{method}</th><td>Pending</td><td>Pending</td></tr>)}</tbody></table></section>}
-        {page === 'Memos' && <section className="card"><h2>Countermeasure memos</h2><p>No memo selected. Site memos will show crash profiles, countermeasures, benefit/cost assumptions, and references.</p><p>Generation requires an editor role. Grounding failures block publication.</p><button disabled>Generate memo</button> <button disabled>Export PDF</button></section>}
+      <main id="content"><p className="eyebrow">TRAFFIC SAFETY / {page.toUpperCase()}</p><h1 ref={heading} tabIndex={-1}>{page}</h1><p className="intro">Explore road risk, understand flagged sites, and review the evidence behind planning decisions.</p>
+        <ModelRuns resource={runsResource} runs={runs} activeRun={activeRun} onChange={id => { setPreferredRunId(id); setSelectedSiteId(null); }} onRefresh={() => { runsResource.refresh(); sitesResource.refresh(); }} />
+        {page === 'Risk map' && <><Suspense fallback={<p role="status">Loading the interactive map…</p>}><RiskMap selectedRoad={selectedRoad} onSelectRoad={selectRoad} modelSites={sitesResource.data || emptySites} selectedModelSite={selectedSite} onSelectModelSite={selectModelSite} /></Suspense><RankedSites resource={sitesResource} run={activeRun} onSelect={selectModelSite} /></>}
+        {page === 'Site details' && <SiteDetails selectedRoad={selectedRoad} modelSite={selectedSite} run={activeRun} resource={sitesResource} onBackToMap={() => setPage('Risk map')} />}
+        {page === 'Backtest' && <Backtest run={activeRun} />}
+        {page === 'Memos' && <Memos run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}
+        {page === 'AI assistant' && <Assistant run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}
         <footer>Planning-level outputs require review by qualified traffic engineers.</footer>
       </main></div>
   </>;

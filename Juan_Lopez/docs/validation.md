@@ -1,5 +1,14 @@
 # Starter validation
 
+## Render package and AI connector — November 4, 2026
+
+- Seventeen backend tests pass: the existing eight model-contract tests plus nine hosted/assistant checks. New checks cover signed Secure/HttpOnly/SameSite cookies, incorrect/tampered credentials, origin rejection, logout, login and AI quotas, disabled providers, client configuration rejection, run/site evidence isolation, draft/demo labeling, CSV formula escaping and explicit zero/false preservation, GeoJSON exports, same-origin static/API delivery, production headers, missing-build readiness, and mocked provider payload/error mapping.
+- Production frontend build passed. Lazy loading separates the core script (~293 kB uncompressed) from MapLibre (~1.06 MB); the map chunk still produces Vite's size warning. No performance target is claimed.
+- A production-configured FastAPI process served the built frontend and API together. Browser inspection confirmed the four-corridor map loaded with no captured console warnings/errors. The AI tab correctly showed an unavailable connection with input disabled when credentials were absent.
+- An isolated production-configured preview loaded the explicitly synthetic documentation example from a temporary directory. It showed the published-site legend and two ranked results, opened model Site details from the ranking, and retained selection/focus on returning to the map without captured console warnings/errors. Download URLs were present; their content was checked through API tests. Direct pointer selection of the newly added model overlay was not separately exercised.
+- The normal published-data directory remains empty; no sample predictions were added to the live app. The isolated sample preview was stopped after inspection.
+- A Docker engine was unavailable locally, so the Docker image build has not been executed here. Render account access is still required for a deployment/build and public HTTPS verification. Tests use a mocked AI provider; a live university endpoint, model ID, credentials, quota, and permitted public use must be verified separately. Shared-database, actual inference, university SSO, independent memo grounding, full accessibility, and performance validation remain pending.
+
 Checked on October 7, 2026:
 
 - `npm run build` completed with Vite 6.4.4. Vite reported a large JavaScript bundle; MapLibre loading and code splitting remain optimization work.
@@ -9,3 +18,32 @@ Checked on October 7, 2026:
 - `/api/v1/sites` without its required run ID returned HTTP 422.
 
 These checks cover starter build and HTTP behavior only. Browser rendering, accessibility, live database integration, authentication, export generation, performance targets, and ARM64 deployment have not been verified.
+
+## Local street map validation — October 14, 2026
+
+- The production frontend build passed with Vite 6.4.4; the large-bundle warning remains.
+- Browser inspection confirmed OpenStreetMap tiles and road labels around College Station, visible contributor attribution, and the distance scale.
+- Panning, zooming, reset to College Station, and navigation away from and back to the map were checked in the local browser.
+- Traffic-risk overlays and site selection remain pending database integration. Network-error retry and WebGL failure handling have not been exercised under simulated failures.
+
+## Corridor focus validation — October 14, 2026
+
+- The OpenStreetMap snapshot contains 175 road segments across University Drive (78), Harvey Road (25), Texas Avenue (46), and Wellborn Road (26). Coordinates were clipped to central College Station and each corridor has valid line geometry.
+- Browser inspection confirmed all four colored road highlights and the default overview. Each road-focus button updated the selected state and map view; the All corridors button restored the overview.
+- The production frontend build passed. Corridor colors identify roads only; no traffic-risk results were added.
+
+## Clickable roads validation — October 14, 2026
+
+- Clicking University Drive on the actual map opened Site details for the selected OpenStreetMap section, with its name, approximate length, location, and source reference.
+- Returning to the map retained the selected road and focused its corridor. Pressing Enter on the Harvey Road details button selected a real mapped section and opened its details.
+- Crash history, predicted risk, priority rank, and risk factors were visibly marked pending. No model results were fabricated or requested using OpenStreetMap way IDs.
+- The final production frontend build passed; the existing large-bundle warning remains.
+- Full accessibility and model-data integration tests remain pending.
+
+## Basic model adapter — October 18, 2026
+
+- Eight backend tests passed through the ASGI application, covering empty installation, valid published runs, zero/false values, run/site isolation, backtest and memo reads, invalid-new-file preservation, invalid-only files, required parameters, bounding-box validation, and rejection of invalid model output. Invalid-output subcases include negative risk, duplicate site IDs and map mappings, out-of-range coordinates, failed memo grounding markers, and reversed confidence intervals.
+- The production frontend build passed with the existing large-bundle warning.
+- An isolated backend/frontend pair used two explicitly synthetic runs outside the normal results directory. Browser checks loaded ranked sites, selected site results, A/B/C backtest values, a published memo, a missing-memo empty state, and a second run with no sites/backtest/memos. Switching runs cleared the preceding run's results.
+- The normal local app was verified with Backtest and Memos enabled and no synthetic files loaded. The isolated test servers were stopped after verification.
+- This verifies the starter JSON adapter, not a real AI model, the final shared database, independently executed grounding checks, authentication, production hosting, full accessibility, or performance targets.
