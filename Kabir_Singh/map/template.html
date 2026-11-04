@@ -1,0 +1,471 @@
+<title>College Station Crash Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a working map tool. Control panel on the left (stacks under the map on phones), the
+   city drawn from TASC's own road sites on the right; one blue ramp carries crash counts. */
+:root {
+  --bg: #f3f4f2;
+  --panel: #fbfbfa;
+  --map: #e9ebe7;
+  --ink: #15191c;
+  --ink-2: #4a5158;
+  --muted: #7d858c;
+  --line: #d7dad6;
+  --road-zero: #c4c9c4;
+  --city: #f7f8f5;
+  --city-edge: #8f979c;
+  --sel: #15191c;
+  --tamu: #7a1f35;
+  --corridor: #c9552a;
+  --r1: #86b6ef; --r2: #3987e5; --r3: #1c5cab; --r4: #0d366b;
+  --focus: #2a78d6;
+  --font-body: "Public Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111416; --panel: #171b1e; --map: #0d1012; --ink: #eceeec; --ink-2: #b6bcc0; --muted: #848c92;
+    --line: #2b3135; --road-zero: #343b40; --city: #151a1d; --city-edge: #5d666c; --sel: #ffffff;
+    --tamu: #e0899c; --corridor: #f08a5d;
+    --r1: #184f95; --r2: #2a78d6; --r3: #6da7ec; --r4: #c4dcf8; --focus: #6da7ec;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111416; --panel: #171b1e; --map: #0d1012; --ink: #eceeec; --ink-2: #b6bcc0; --muted: #848c92;
+  --line: #2b3135; --road-zero: #343b40; --city: #151a1d; --city-edge: #5d666c; --sel: #ffffff;
+  --tamu: #e0899c; --corridor: #f08a5d;
+  --r1: #184f95; --r2: #2a78d6; --r3: #6da7ec; --r4: #c4dcf8; --focus: #6da7ec;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 14px; line-height: 1.45; }
+* { box-sizing: border-box; }
+
+.app {
+  height: 100%;
+  display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 16px;
+  padding-block: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.panel {
+  min-width: 0; overflow-y: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 18px;
+}
+.mapwrap { position: relative; min-width: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+#map { position: absolute; inset: 0; background: var(--map); }
+
+header .eyebrow { font-family: var(--font-data); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+h1 { font-size: 22px; line-height: 1.2; margin: 4px 0 6px; font-weight: 700; text-wrap: balance; }
+header p { margin: 0; color: var(--ink-2); max-width: 60ch; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.stat { background: var(--panel); padding: 9px 10px; min-width: 0; }
+.stat b { display: block; font-family: var(--font-data); font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 11.5px; color: var(--ink-2); }
+
+.group { display: flex; flex-direction: column; gap: 8px; }
+.label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+.seg button {
+  flex: 1 1 auto; font: inherit; font-size: 12.5px; padding: 7px 8px; border: 0; border-right: 1px solid var(--line);
+  background: transparent; color: var(--ink-2); cursor: pointer;
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+.range { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--ink-2); }
+select, input[type="search"] {
+  font: inherit; font-size: 13px; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 4px; padding: 6px 8px;
+}
+input[type="search"] { width: 100%; }
+.checks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: 13px; }
+.checks label { display: flex; align-items: center; gap: 7px; cursor: pointer; }
+.swatch { width: 18px; height: 4px; border-radius: 2px; display: inline-block; }
+button:focus-visible, select:focus-visible, input:focus-visible, .top li:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 22px; height: 6px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+
+.card { border: 1px solid var(--line); border-radius: 4px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.card h2 { font-size: 16px; margin: 0; line-height: 1.25; text-wrap: balance; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 11.5px; padding: 2px 7px; border-radius: 10px; border: 1px solid var(--line); color: var(--ink-2); }
+.chip.tamu { border-color: var(--tamu); color: var(--tamu); }
+.chip.x { border-color: var(--ink-2); }
+.card table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.card td { padding: 3px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.card td:last-child { text-align: right; font-family: var(--font-data); font-variant-numeric: tabular-nums; padding-left: 10px; }
+.card .close { align-self: flex-start; font: inherit; font-size: 12px; background: none; border: 0; color: var(--ink-2); padding: 0; cursor: pointer; text-decoration: underline; }
+.bars text { font-family: var(--font-data); font-size: 9.5px; fill: var(--muted); }
+
+.top { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.top li { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: baseline; padding: 6px 2px; border-bottom: 1px solid var(--line); cursor: pointer; font-size: 13px; }
+.top li:hover { background: var(--bg); }
+.top .rank { font-family: var(--font-data); font-size: 11px; color: var(--muted); }
+.top .nm { min-width: 0; overflow-wrap: anywhere; }
+.top .nm small { display: block; color: var(--muted); font-size: 11px; }
+.top .n { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+
+.note { font-size: 12px; color: var(--ink-2); margin: 0; }
+footer { font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }
+
+#tip {
+  position: absolute; z-index: 1000; pointer-events: none; background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 4px; padding: 5px 8px; font-size: 12px; max-width: 240px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
+#tip b { font-weight: 600; }
+
+/* Leaflet essentials (its stylesheet cannot be loaded here) */
+.leaflet-pane, .leaflet-pane > svg, .leaflet-pane > canvas, .leaflet-zoom-box, .leaflet-layer { position: absolute; left: 0; top: 0; }
+.leaflet-container { overflow: hidden; outline-offset: 1px; -webkit-tap-highlight-color: transparent; font-family: var(--font-body); }
+.leaflet-container .leaflet-overlay-pane svg { max-width: none !important; max-height: none !important; }
+.leaflet-pane { z-index: 400; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-zoom-box { z-index: 800; border: 2px dotted var(--focus); background: rgba(42,120,214,.08); }
+.leaflet-control { position: relative; z-index: 800; pointer-events: auto; float: left; clear: both; }
+.leaflet-top, .leaflet-bottom { position: absolute; z-index: 1000; pointer-events: none; }
+.leaflet-top { top: 0; } .leaflet-right { right: 0; } .leaflet-bottom { bottom: 0; } .leaflet-left { left: 0; }
+.leaflet-right .leaflet-control { float: right; }
+.leaflet-top .leaflet-control { margin-top: 10px; } .leaflet-bottom .leaflet-control { margin-bottom: 8px; }
+.leaflet-left .leaflet-control { margin-left: 10px; } .leaflet-right .leaflet-control { margin-right: 10px; }
+.leaflet-zoom-animated { transform-origin: 0 0; }
+.leaflet-zoom-anim .leaflet-zoom-animated { transition: transform .25s cubic-bezier(0,0,.25,1); }
+.leaflet-zoom-anim .leaflet-zoom-hide { visibility: hidden; }
+.leaflet-interactive { cursor: pointer; }
+.leaflet-grab { cursor: grab; } .leaflet-dragging .leaflet-grab { cursor: grabbing; }
+.leaflet-bar { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: var(--panel); }
+.leaflet-bar a { display: block; width: 30px; height: 30px; line-height: 30px; text-align: center; text-decoration: none; color: var(--ink); font-size: 18px; border-bottom: 1px solid var(--line); }
+.leaflet-bar a:last-child { border-bottom: 0; }
+.leaflet-bar a:hover { background: var(--bg); }
+.leaflet-control-attribution { background: var(--panel); color: var(--muted); font-size: 10.5px; padding: 1px 6px; border-radius: 3px; }
+.leaflet-control-attribution a { color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { .leaflet-zoom-anim .leaflet-zoom-animated { transition: none; } }
+
+@media (max-width: 760px) {
+  html, body { height: auto; }
+  .app { height: auto; grid-template-columns: 1fr; grid-template-rows: 62vh auto; }
+  .mapwrap { order: -1; min-height: 340px; }
+  .panel { overflow: visible; }
+  .checks { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="app">
+  <aside class="panel" aria-label="Map controls and details">
+    <header>
+      <div class="eyebrow">TASC · S1 road network <span id="net"></span></div>
+      <h1>College Station Crash Map</h1>
+      <p>Every public road in the city as TASC's risk model sees it: 0.1-mile segments and intersections, each with the crashes TxDOT CRIS recorded there. This is crash history, not a risk prediction.</p>
+    </header>
+
+    <div class="stats" aria-live="polite">
+      <div class="stat"><b id="s-crashes">–</b><span>crashes placed</span></div>
+      <div class="stat"><b id="s-fsi">–</b><span>fatal + serious</span></div>
+      <div class="stat"><b id="s-int">–</b><span>at intersections</span></div>
+    </div>
+
+    <div class="group">
+      <div class="label" id="lbl-period">Years</div>
+      <div class="seg" role="group" aria-labelledby="lbl-period">
+        <button type="button" id="p-all" data-from="2016" data-to="2025">2016–2025</button>
+        <button type="button" id="p-hist" data-from="2016" data-to="2022">History 2016–22</button>
+        <button type="button" id="p-test" data-from="2023" data-to="2025">Test 2023–25</button>
+      </div>
+      <div class="range">
+        <label for="from">From</label><select id="from"></select>
+        <label for="to">to</label><select id="to"></select>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="label" id="lbl-metric">Colour roads by</div>
+      <div class="seg" role="group" aria-labelledby="lbl-metric">
+        <button type="button" id="m-all" data-metric="c">All crashes</button>
+        <button type="button" id="m-fsi" data-metric="k">Fatal + serious (K+A)</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="group">
+      <div class="label">Show</div>
+      <div class="checks">
+        <label><input type="checkbox" id="l-seg" checked> Road segments</label>
+        <label><input type="checkbox" id="l-int" checked> Intersections</label>
+        <label><input type="checkbox" id="l-cor"> <span class="swatch" style="background:var(--corridor)"></span>Study corridors</label>
+        <label><input type="checkbox" id="l-tamu"> <span class="swatch" style="background:var(--tamu)"></span>Texas A&amp;M streets</label>
+        <label><input type="checkbox" id="l-x"> Interchanges only</label>
+        <label><input type="checkbox" id="l-zero" checked> Roads with no crash</label>
+      </div>
+    </div>
+
+    <div class="group">
+      <label class="label" for="search">Find a street</label>
+      <input type="search" id="search" list="streets" placeholder="e.g. HOLLEMAN DR" autocomplete="off">
+      <datalist id="streets"></datalist>
+    </div>
+
+    <div id="detail"></div>
+
+    <div class="group" id="topwrap">
+      <div class="label" id="top-title">Most crashes</div>
+      <ol class="top" id="top"></ol>
+      <p class="note">Segments are about 0.1 mile; an intersection counts crashes within 250 ft of it, so the two are not the same size.</p>
+    </div>
+
+    <footer id="foot"></footer>
+  </aside>
+
+  <div class="mapwrap">
+    <div id="map" role="application" aria-label="Map of College Station road sites"></div>
+    <div id="tip" hidden></div>
+  </div>
+</div>
+
+<script id="map-data" type="application/json">__MAP_DATA__</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById("map-data").textContent);
+  const Y = D.years;
+  const BINS = { c: [1, 3, 10, 30], k: [1, 2, 3, 5] };
+  const FUNC = { "1": "Interstate", "2": "Freeway / expressway", "3": "Principal arterial", "4": "Minor arterial",
+                 "5": "Major collector", "6": "Minor collector", "7": "Local street" };
+  const ACCESS = { "1": "Full", "2": "Partial", "3": "None" };
+  const state = { from: 2016, to: 2025, metric: "c", sel: null };
+  const fmt = n => n.toLocaleString("en-US");
+  const tok = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  let C = {};
+  function readColors() {
+    C = { zero: tok("--road-zero"), r: [tok("--r1"), tok("--r2"), tok("--r3"), tok("--r4")], sel: tok("--sel"),
+          tamu: tok("--tamu"), cor: tok("--corridor"), city: tok("--city"), edge: tok("--city-edge") };
+  }
+  readColors();
+
+  document.getElementById("net").textContent = D.network;
+  document.getElementById("foot").innerHTML =
+    "Network " + D.network + ": roads from the TxDOT Roadway Inventory (2019) and OpenStreetMap streets as of " +
+    "31 Dec 2022 (© OpenStreetMap contributors, ODbL); city limits from the US Census (2022). Crashes: TxDOT CRIS, " +
+    "City of College Station, 2016–2025, matched to the nearest site on the crash's own street (fatal + serious: " +
+    fmt(D.summary.fsi_matched) + " of " + fmt(D.summary.fsi_geocoded) + " geocoded, " + D.summary.fsi_pct + "%). " +
+    "Totals per site only; no individual crash locations are shown.";
+
+  const yearIdx = () => [Y.indexOf(state.from), Y.indexOf(state.to)];
+  function total(site, key) {
+    const [a, b] = yearIdx(); let n = 0;
+    for (let i = a; i <= b; i++) n += site[key][i];
+    return n;
+  }
+  function colorFor(n) {
+    if (n <= 0) return null;
+    const b = BINS[state.metric]; let i = 0;
+    while (i < b.length - 1 && n >= b[i + 1]) i++;
+    return C.r[i];
+  }
+
+  // ---------- map ----------
+  const map = L.map("map", { zoomControl: true, attributionControl: true, preferCanvas: true, minZoom: 11, maxZoom: 18,
+                             zoomSnap: 0.25, wheelPxPerZoomLevel: 90 });
+  map.attributionControl.setPrefix(false);
+  map.attributionControl.addAttribution("© OpenStreetMap contributors · TxDOT · US Census");
+  const renderer = L.canvas({ padding: 0.4, tolerance: 6 });
+  const ll = c => [c[1], c[0]];
+  const boundary = L.polygon(D.boundary.map(poly => poly.map(ring => ring.map(ll))),
+    { renderer, interactive: false, weight: 1.2, dashArray: "5 4" }).addTo(map);
+  map.fitBounds(boundary.getBounds(), { padding: [12, 12] });
+  map.setMaxBounds(boundary.getBounds().pad(0.35));
+
+  const tip = document.getElementById("tip");
+  const mapEl = document.getElementById("map");
+  function showTip(e, site) {
+    const n = total(site, "c"), k = total(site, "k");
+    tip.innerHTML = "<b>" + (site.n || "Unnamed street") + "</b><br>" +
+      (site.t === "s" ? "Segment" : "Intersection") + " · " + fmt(n) + " crashes, " + fmt(k) + " fatal + serious";
+    tip.hidden = false;
+    const p = e.containerPoint, w = mapEl.clientWidth;
+    tip.style.left = Math.min(p.x + 14, w - 250) + "px";
+    tip.style.top = (p.y + 14) + "px";
+  }
+  const layers = D.sites.map(site => {
+    const layer = site.t === "s"
+      ? L.polyline(site.g.map(ll), { renderer, weight: 2, lineCap: "round" })
+      : L.circleMarker(ll(site.g), { renderer, radius: 3, weight: 1 });
+    layer.site = site;
+    layer.on("mouseover mousemove", e => showTip(e, site));
+    layer.on("mouseout", () => { tip.hidden = true; });
+    layer.on("click", () => select(site, false));
+    return layer;
+  });
+  const group = L.layerGroup(layers).addTo(map);
+
+  const $ = id => document.getElementById(id);
+  function visible(site, n) {
+    if (site.t === "s" && !$("l-seg").checked) return false;
+    if (site.t === "i" && !$("l-int").checked) return false;
+    if ($("l-x").checked && !(site.t === "i" && site.x)) return false;
+    if (!$("l-zero").checked && n === 0) return false;
+    return true;
+  }
+  function restyle() {
+    boundary.setStyle({ color: C.edge, fillColor: C.city, fillOpacity: 1 });
+    const cor = $("l-cor").checked, tamu = $("l-tamu").checked;
+    const order = [];
+    for (const layer of layers) {
+      const s = layer.site, n = total(s, state.metric), col = colorFor(n);
+      const show = visible(s, n);
+      if (!show) { if (group.hasLayer(layer)) group.removeLayer(layer); continue; }
+      if (!group.hasLayer(layer)) group.addLayer(layer);
+      const selected = state.sel === s;
+      if (s.t === "s") {
+        let color = col || C.zero, weight = col ? 2.6 : 1.1;
+        if (cor && s.cor) { color = col ? color : C.cor; weight = Math.max(weight, 3); }
+        if (tamu && s.tamu) { color = col ? color : C.tamu; weight = Math.max(weight, 2.4); }
+        layer.setStyle({ color: selected ? C.sel : color, weight: selected ? 6 : weight, opacity: 1 });
+      } else {
+        const r = n <= 0 ? 2 : Math.min(3 + Math.sqrt(n) * 1.15, 14);
+        layer.setStyle({ radius: selected ? r + 3 : r, color: selected ? C.sel : (s.x ? C.sel : C.city),
+                         weight: selected ? 2.5 : (s.x ? 1.6 : 0.8), fillColor: col || C.zero, fillOpacity: 1 });
+      }
+      if (n > 0 || selected) order.push([n, layer]);
+    }
+    order.sort((a, b) => a[0] - b[0]).forEach(([, layer]) => layer.bringToFront());   // busiest drawn on top
+    if (state.sel) layers.find(l => l.site === state.sel)?.bringToFront();
+    stats(); legend(); top(); if (state.sel) detail(state.sel);
+  }
+
+  // ---------- panel ----------
+  function stats() {
+    let crashes = 0, fsi = 0, atInt = 0;
+    for (const s of D.sites) { const n = total(s, "c"); crashes += n; fsi += total(s, "k"); if (s.t === "i") atInt += n; }
+    $("s-crashes").textContent = fmt(crashes);
+    $("s-fsi").textContent = fmt(fsi);
+    $("s-int").textContent = crashes ? Math.round(100 * atInt / crashes) + "%" : "–";
+  }
+  function legend() {
+    const b = BINS[state.metric], parts = [];
+    parts.push('<span><i style="background:' + C.zero + '"></i>0</span>');
+    b.forEach((lo, i) => {
+      const hi = b[i + 1] ? b[i + 1] - 1 : null;
+      const label = hi === null ? lo + "+" : (hi === lo ? String(lo) : lo + "–" + hi);
+      parts.push('<span><i style="background:' + C.r[i] + '"></i>' + label + "</span>");
+    });
+    $("legend").innerHTML = parts.join("") + '<span style="flex-basis:100%">' +
+      (state.metric === "c" ? "crashes" : "fatal + serious crashes") + " per site, " + state.from +
+      (state.to !== state.from ? "–" + state.to : "") + ". Dots are intersections, sized by crashes.</span>";
+  }
+  function top() {
+    const key = state.metric;
+    const rows = D.sites.map(s => [total(s, key), s]).filter(r => r[0] > 0).sort((a, b) => b[0] - a[0]).slice(0, 10);
+    $("top-title").textContent = key === "c" ? "Most crashes" : "Most fatal + serious crashes";
+    $("top").innerHTML = rows.map(([n, s], i) =>
+      '<li tabindex="0" data-id="' + s.id + '"><span class="rank">' + (i + 1) + '</span><span class="nm">' +
+      (s.n || "Unnamed street") + "<small>" + (s.t === "s" ? "segment, " + s.len.toFixed(2) + " mi" : "intersection") +
+      "</small></span><span class=\"n\">" + fmt(n) + "</span></li>").join("") ||
+      '<li><span></span><span class="nm">No crashes in these years.</span><span></span></li>';
+  }
+  $("top").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) select(byId[li.dataset.id], true); });
+  $("top").addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { const li = e.target.closest("li[data-id]"); if (li) { e.preventDefault(); select(byId[li.dataset.id], true); } }
+  });
+  const byId = {}; D.sites.forEach(s => { byId[s.id] = s; });
+
+  function bars(site) {
+    const w = 300, h = 74, pad = 14, n = Y.length, bw = (w - 2) / n;
+    const max = Math.max(1, ...site.c);
+    const [a, b] = yearIdx();
+    let out = '<svg class="bars" viewBox="0 0 ' + w + " " + (h + pad) + '" width="100%" role="img" aria-label="Crashes per year">';
+    Y.forEach((yr, i) => {
+      const hc = (site.c[i] / max) * h, hk = (site.k[i] / max) * h, x = 1 + i * bw;
+      const op = i >= a && i <= b ? 1 : 0.3;
+      out += '<rect x="' + (x + 2).toFixed(1) + '" y="' + (h - hc).toFixed(1) + '" width="' + (bw - 4).toFixed(1) +
+             '" height="' + hc.toFixed(1) + '" rx="2" fill="' + C.r[1] + '" opacity="' + op + '"><title>' + yr + ": " +
+             site.c[i] + " crashes, " + site.k[i] + " fatal + serious</title></rect>";
+      if (hk > 0) out += '<rect x="' + (x + 2).toFixed(1) + '" y="' + (h - hk).toFixed(1) + '" width="' + (bw - 4).toFixed(1) +
+             '" height="' + hk.toFixed(1) + '" rx="2" fill="' + C.r[3] + '" opacity="' + op + '"></rect>';
+      if (i === 0 || i === n - 1 || yr === 2023) out += '<text x="' + (x + bw / 2).toFixed(1) + '" y="' + (h + 11) +
+             '" text-anchor="middle">' + yr + "</text>";
+    });
+    return out + '<text x="' + (w - 1) + '" y="9" text-anchor="end">max ' + max + "/yr</text></svg>";
+  }
+  function featureRows(site) {
+    return D.features.filter(f => site.f[f.key] !== undefined).map(f => {
+      let v = site.f[f.key];
+      if (f.key === "func_class") v = (FUNC[v] || "code " + v);
+      else if (f.key === "access_control") v = (ACCESS[v] || "code " + v);
+      else if (f.key === "osm_sidewalk_share") v = Math.round(v * 100) + "%";
+      else if (typeof v === "number") v = fmt(Math.round(v * 10) / 10) + (f.unit ? " " + f.unit : "");
+      const label = f.key === "func_class" ? "Road type" : f.key === "access_control" ? "Access control" : f.label;
+      return "<tr><td>" + label + "</td><td>" + v + "</td></tr>";
+    }).join("");
+  }
+  function detail(site) {
+    const n = total(site, "c"), k = total(site, "k");
+    const chips = [site.t === "s" ? "Segment · " + site.len.toFixed(2) + " mi" : "Intersection" + (site.f.legs ? " · " + site.f.legs + " legs" : "")];
+    if (site.x) chips.push("Interchange");
+    if (site.cor) chips.push("Study corridor");
+    chips.push(site.src === "osm" ? "Road from OSM 2022" : "Road from TxDOT 2019");
+    $("detail").innerHTML = '<div class="card"><button type="button" class="close" id="close">Back to the list</button>' +
+      "<h2>" + (site.n || "Unnamed street") + "</h2>" +
+      '<div class="chips">' + chips.map(c => '<span class="chip' + (c === "Interchange" ? " x" : "") + '">' + c + "</span>").join("") +
+      (site.tamu ? '<span class="chip tamu">Texas A&amp;M street</span>' : "") + "</div>" +
+      '<div class="note"><b>' + fmt(n) + "</b> crashes, <b>" + fmt(k) + "</b> fatal + serious in " + state.from +
+      (state.to !== state.from ? "–" + state.to : "") + ". Light bars: all crashes; dark: fatal + serious.</div>" +
+      bars(site) + "<table>" + featureRows(site) + "</table>" +
+      '<div class="note">Site ' + site.id + ". Road features as known on 31 Dec 2022 (TxDOT values from 2019).</div></div>";
+    $("topwrap").hidden = true;
+    $("close").addEventListener("click", () => { state.sel = null; $("detail").innerHTML = ""; $("topwrap").hidden = false; restyle(); });
+  }
+  function select(site, fly) {
+    state.sel = site;
+    if (fly) {
+      const layer = layers.find(l => l.site === site);
+      if (site.t === "s") map.flyToBounds(layer.getBounds(), { maxZoom: 17, padding: [60, 60], duration: 0.6 });
+      else map.flyTo(layer.getLatLng(), 17, { duration: 0.6 });
+    }
+    restyle();
+  }
+
+  // ---------- controls ----------
+  ["from", "to"].forEach(id => { $(id).innerHTML = Y.map(y => "<option>" + y + "</option>").join(""); });
+  function setPeriod(from, to) {
+    state.from = Math.min(from, to); state.to = Math.max(from, to);
+    $("from").value = state.from; $("to").value = state.to;
+    document.querySelectorAll("[data-from]").forEach(b =>
+      b.setAttribute("aria-pressed", String(+b.dataset.from === state.from && +b.dataset.to === state.to)));
+    restyle();
+  }
+  document.querySelectorAll("[data-from]").forEach(b => b.addEventListener("click", () => setPeriod(+b.dataset.from, +b.dataset.to)));
+  $("from").addEventListener("change", () => setPeriod(+$("from").value, +$("to").value));
+  $("to").addEventListener("change", () => setPeriod(+$("from").value, +$("to").value));
+  document.querySelectorAll("[data-metric]").forEach(b => b.addEventListener("click", () => {
+    state.metric = b.dataset.metric;
+    document.querySelectorAll("[data-metric]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    restyle();
+  }));
+  ["l-seg", "l-int", "l-cor", "l-tamu", "l-x", "l-zero"].forEach(id => $(id).addEventListener("change", restyle));
+
+  const names = [...new Set(D.sites.filter(s => s.t === "s" && s.n).map(s => s.n))].sort();
+  $("streets").innerHTML = names.map(n => '<option value="' + n.replace(/"/g, "&quot;") + '">').join("");
+  $("search").addEventListener("change", () => {
+    const q = $("search").value.trim().toUpperCase(); if (!q) return;
+    const hits = layers.filter(l => l.site.t === "s" && l.site.n.toUpperCase() === q);
+    if (!hits.length) return;
+    const bounds = L.latLngBounds([]); hits.forEach(l => bounds.extend(l.getBounds()));
+    map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 17, duration: 0.6 });
+    const busiest = hits.map(l => l.site).sort((a, b) => total(b, "c") - total(a, "c"))[0];
+    select(busiest, false);
+  });
+
+  function onTheme() { readColors(); restyle(); }
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", onTheme);
+  new MutationObserver(onTheme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  $("m-all").setAttribute("aria-pressed", "true");
+  setPeriod(2016, 2025);
+})();
+</script>
