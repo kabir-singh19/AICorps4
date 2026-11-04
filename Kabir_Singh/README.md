@@ -1,7 +1,8 @@
-# S1 · Road Network, Features & Database — baseline v0
+# S1 · Road Network, Features & Database
 
-Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real PostGIS database
-(IF-09) to point at, and a first pass at each S1 requirement from the midterm slides.
+The S1 subsystem of TASC (Kabir). It gives the team a real PostGIS database (IF-09) to point at.
+Two networks live side by side: **`v1_2022`, the whole city** (the FSR analysis area, 402 mi;
+use this one) and `v0_2019`, the three corridors of the M2 diagnostic, kept unchanged.
 
 ## What is here
 
@@ -16,18 +17,25 @@ Starting point for the S1 subsystem of TASC (Kabir). It gives the team a real Po
 | `ingest.py osm` | Loads a `fetch_osm.py` snapshot into `osm_feature` | IF-03 |
 | `sql/06_osm_features.sql` | OSM site features (crossings, signalized intersections, sidewalks, schools, bars, restaurants), dated | IF-03 features |
 | `ingest.py corridors` | Loads the study-corridor street spellings from `corridors.py` | Corridor scope |
+| `ingest.py road-names` | Fills `road.street_name` (TxDOT `STE_NAM`) on roads already loaded, without reloading | City-wide matching |
+| `street_names.py`, `ingest.py street-keys` | One key per street spelling (typos, suffixes, directions, route names) in `street_key` | City-wide matching |
+| `fetch_boundary.py`, `ingest.py boundary` | College Station city limits (Census, 2022 vintage) into `boundary` | Analysis area |
+| `ingest.py osm-roads` | Adds the named streets TxDOT 2019 lacks, from OSM as of 2022-12-31; tags Texas A&M campus streets | IF-03, network coverage |
+| `sql/07_map_match_city.sql` | Matches every crash to the city-wide network by street name and distance, logs every miss | 95% matched |
 | `fetch_roads.py` | Downloads Brazos County roadway inventory snapshots from TxDOT | IF-02 |
 | `corridors.py` | The three corridors: TxDOT route code + every CRIS street spelling | Corridor scope |
 | `filter_corridors.py` | Writes the `*_3roads.csv` corridor files from the CRIS exports | Corridor scope |
-| `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections | Network build (due 10/20) |
+| `sql/02_build_network.sql` | 0.1-mi segments and 3+ leg intersections; optional OSM roads, city boundary, stub and junction clean-up, interchange flag | Network build (due 10/20) |
 | `sql/03_map_match.sql` | Matches corridor crashes to sites, logs every miss, prints the F&SI match rate | 95% matched (due 10/20) |
 | `sql/04_features.sql` | Fills `site_feature` (speed, lanes, AADT, class, median; intersection legs), each value dated | Feature tables with as-of dates (due 11/3) |
 | `tests/test_validate.py` | 15 tests for the crash validator (incl. guardrails), no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
-| `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 (M2, 23 Oct) |
-| `dumps/tasc_v0_2019_2026-10-28.sql.gz` | Current database copy (schema `tasc`): adds crash details and OSM features; see "For S2" | IF-09 to S2 |
+| `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_crash_scope_corridor`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 |
+| `dumps/tasc_v1_2022_2026-11-04.sql.gz` | **Current** database copy: both networks, city-wide matching and features; see "For S2" | IF-09 to S2 |
+| `dumps/tasc_v0_2019_2026-10-28.sql.gz` | 28 Oct copy (corridor network with crash details and OSM features) | IF-09 to S2 |
 | `dumps/tasc_v0_2019.sql.gz` | Frozen 18 Oct 2026 copy used for S2's M2 run `m2-corridor-001`; kept unchanged | IF-09 to S2 |
-| `tests/test_database.py` | 4 leakage + 5 S2-view contract + 4 guardrail tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
+| `tests/test_database.py` | 4 leakage + 7 S2-view contract + 7 guardrail tests against the live database (skipped if it is not running) | Leakage check blocks a seeded post-2022 feature (due 11/3) |
+| `tests/test_street_names.py` | 6 tests for the street-name keys, no database needed | City-wide matching |
 
 ## Quickstart (the run recorded below)
 
@@ -86,10 +94,50 @@ docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --
 .venv/bin/python filter_corridors.py ../../raw/data_*.csv --out ../../filtered
 ```
 
+**City-wide network `v1_2022`** (after steps 1–2 above; the run recorded below, 4 Nov 2026):
+
+```bash
+# a. Street names on the 2019 roads, the city limits, and the streets TxDOT lacks (OSM 2022)
+.venv/bin/python ingest.py road-names ../../raw/roads/roadway_brazos_2019.geojson --source roadway_inventory_2019
+.venv/bin/python fetch_boundary.py --out ../../raw/boundary
+.venv/bin/python ingest.py boundary ../../raw/boundary/college_station_2022.geojson
+.venv/bin/python fetch_osm.py --date 2022-12-31 --out ../../raw/osm --boundary "College Station" --margin-m 100 --groups road
+.venv/bin/python fetch_osm.py --date 2022-12-31 --out ../../raw/osm --boundary "College Station" --margin-m 100 --groups campus
+.venv/bin/python ingest.py osm-roads ../../raw/osm/osm_college_station_100m_2022-12-31_road.json \
+    --campus ../../raw/osm/osm_college_station_100m_2022-12-31_campus.json
+.venv/bin/python ingest.py street-keys
+
+# b. Build the network (about 5 minutes under emulation) and match crashes
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 -v as_of=2022-12-31 -v routes=ALL \
+    -v city_code=ALL -v road_source=roadway_inventory_2019 -v osm_source=osm_roads_2022-12-31 \
+    -v "boundary=College Station" -v stub_m=15 -v merge_m=15 < sql/02_build_network.sql
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 -v tol_m=45.72 \
+    -v "boundary=College Station" < sql/07_map_match_city.sql
+
+# c. City-wide OSM features (2022 for the backtest, latest for the live set), sources, features
+G=bus_stop,school,bar,restaurant,crossing,traffic_signals,street_lamp,sidewalk,major_road
+F=bus_stop_school_bar_restaurant_crossing_traffic_signals_street_lamp_sidewalk_major_road
+.venv/bin/python fetch_osm.py --date 2022-12-31 --out ../../raw/osm --boundary "College Station" --margin-m 400 --groups $G
+.venv/bin/python fetch_osm.py --date latest --out ../../raw/osm --boundary "College Station" --margin-m 400 --groups $G
+.venv/bin/python ingest.py osm ../../raw/osm/osm_college_station_400m_2022-12-31_$F.json --source osm_city_2022-12-31
+.venv/bin/python ingest.py osm ../../raw/osm/osm_college_station_400m_latest_$F.json --source osm_city_latest
+docker compose exec -T db psql -U tasc -d tasc -v s2_password="$S2_PASSWORD" < sql/05_s2_interface.sql
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 -v feature_set=backtest_2022 < sql/04_features.sql
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 -v feature_set=backtest_2022 \
+    -v osm_source=osm_city_2022-12-31 < sql/06_osm_features.sql
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 -v feature_set=current \
+    -v osm_source=osm_city_latest < sql/06_osm_features.sql
+
+# d. Tests, figures 12-14, database copy
+.venv/bin/python -m unittest discover -s tests -v
+.venv/bin/python make_figures.py --only 12,13,14
+docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --no-owner --no-privileges | gzip -9 > dumps/tasc_v1_2022_$(date +%F).sql.gz
+```
+
 ## For S2 (Param): getting and reading the database
 
 **Option 1, restore the copy (recommended, about 2 minutes).** Use the newest dump,
-`dumps/tasc_v0_2019_2026-10-28.sql.gz` (crash details, OSM features, both feature sets). The
+`dumps/tasc_v1_2022_2026-11-04.sql.gz` (both networks; `v1_2022` is the city-wide one). The
 18 Oct dump `tasc_v0_2019.sql.gz` stays as the exact input of M2 run `m2-corridor-001`. Works the same on Windows, macOS
 and Linux; run from `Kabir_Singh/` after `git pull`. Docker Desktop must be running.
 
@@ -97,7 +145,7 @@ and Linux; run from `Kabir_Singh/` after `git pull`. Docker Desktop must be runn
 docker compose up -d
 # wait until the first start has finished creating the schema:
 docker compose logs db          # look for "PostgreSQL init process complete"
-docker compose cp dumps/tasc_v0_2019_2026-10-28.sql.gz db:/tmp/tasc.sql.gz
+docker compose cp dumps/tasc_v1_2022_2026-11-04.sql.gz db:/tmp/tasc.sql.gz
 docker compose exec db sh -c "gunzip -c /tmp/tasc.sql.gz | psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc"
 docker compose cp sql/05_s2_interface.sql db:/tmp/05_s2_interface.sql
 docker compose exec db psql -U tasc -d tasc -v s2_password=CHOOSE_A_PASSWORD -f /tmp/05_s2_interface.sql
@@ -116,7 +164,7 @@ come from `fetch_roads.py 2019`. CRIS revises records over time, so a later down
 slightly from the dump; the dump is the frozen copy used for M2.
 
 **What S2 reads** (all `SELECT` only for `s2_reader`): views `s2_site_scope`, `s2_crash_scope`,
-`s2_source_registry`, and tables `site`, `site_feature`, `crash`, `crash_match`. Write attempts
+`s2_crash_scope_corridor`, `s2_source_registry`, and tables `site`, `site_feature`, `crash`, `crash_match`. Write attempts
 are refused (checked: `permission denied for table crash`).
 
 **Agreed with S2 (18 Oct 2026):**
@@ -128,6 +176,21 @@ are refused (checked: `permission denied for table crash`).
   in the area, 54 on a site, 5 without coordinates (they stay in the denominator).
 - **Intersection road names:** the corridors that meet there, e.g. "University Dr & Wellborn Rd".
 
+**City-wide network `v1_2022` (4 Nov 2026), what changes for S2:**
+- **Analysis area:** `s2_crash_scope` is now the FSR area, the College Station city limits (a crash
+  with no coordinates stays in, as before). The corridor rule above moved unchanged to
+  `s2_crash_scope_corridor`; to re-run the corridor diagnostic, set
+  `"crash_scope_view": "tasc.s2_crash_scope_corridor"` in that config. Test window 2023–2025 in the
+  city: 171 F&SI in the area (corridors: 59), 151 on a site, 17 without coordinates, 3 unmatched;
+  2016–2022 history: 296 F&SI in the area.
+- **Road names:** corridor name on the three corridors, else the street name in capitals, else the
+  TxDOT route code; '' for 34 sites on unnamed streets. Intersections: the roads meeting there.
+- **Missing values:** OSM streets have no AADT or median type (about 1,070 of 5,590 segments) and
+  speed/lanes only where OSM tags them. Not every segment has every feature.
+- **New features:** `interchange` (intersections: 1 where a freeway line passes through; 8 sites).
+- **OSM 2022 is sparse:** a 2022 zero often means "not mapped yet" (bus stops near 153 sites in 2022,
+  1,054 in 2026). The live feature set `current` has OSM features only, not the TxDOT ones yet.
+
 **Source provenance** (`s2_source_availability`; the `evidence` column has the full text):
 
 | source | role | as of | available | evidence |
@@ -136,6 +199,10 @@ are refused (checked: `permission denied for table crash`).
 | `network v0_2019` | predictor | 2019-12-31 | 2021-08-06 | Built only from the 2019 snapshot, so it carries that date |
 | `cris_history` | history | 2022-12-31 | 2022-12-31 | Crash facts dated on or before the cutoff; CRIS may add late reports after it |
 | `cris_test` | evaluation | 2025-12-31 | 2026-10-07 | Download date of the 2023–2025 files; never used for fitting |
+| `osm_2022-12-31` / `osm_latest` | predictor | 2022-12-31 / 2026-07-27 | same | ohsome full history at the snapshot time, 600 m around v0_2019 |
+| `osm_roads_2022-12-31` | predictor | 2022-12-31 | 2022-12-31 | OSM streets added where TxDOT 2019 has none; same ohsome method |
+| `network v1_2022` | predictor | 2022-12-31 | 2022-12-31 | Built from the 2019 inventory and the 2022 OSM streets inside the Census 2022 limits (the boundary's publication date was not checked; it never sets a feature value) |
+| `osm_city_2022-12-31` / `osm_city_latest` | predictor | 2022-12-31 / 2026-07-27 | same | ohsome full history at the snapshot time, within 400 m of the city limits |
 
 **Checked end to end (18 Oct 2026):** S2's own `database.load_snapshot` with
 `config/corridor_diagnostic.example.json`, connected as `s2_reader`, loaded 187 sites, 935 feature
@@ -215,6 +282,36 @@ methods B and C only.
   already loaded from a different file (duplicate across files; checked on load, not in a dry
   run). (4) `03_map_match.sql` stops with a message if `corridor_street` is empty. All 10 real
   files still dry-run at 0% bad; 28/28 tests pass.
+- **City-wide network v1_2022 (4 Nov 2026).**
+  *Names.* `road-names` matched all 5,547 stored roads to the 2019 file; 1,234 of 1,243 College Station
+  city streets got a name. `street-keys`: 3,380 spellings. Share of geocoded in-city F&SI whose
+  street name matches a network road: 84.8% exact spelling, 94.2% with keys, 98.8% with the OSM
+  streets (`figures/fig14_name_matching.png`).
+  *Area and roads.* City limits 132.5 km² of land (Census GEOID 4815976, vintage 2022-01-01).
+  `osm-roads` added 376 OSM pieces, 75.6 mi on 255 named streets (22.8 mi on the Texas A&M campus,
+  `maintainer = 'TAMU'`); unnamed OSM streets (12.6 mi) and ramps were left out, since no crash can
+  name-match them. 23 added pieces (1.1 mi) lie mostly within 40 m of a TxDOT road; all are short
+  real streets (courts, loops).
+  *Network.* 5,590 segments, 402.1 mi (TxDOT 326.4, OSM 75.7); 1,634 intersections (1,195 with 3
+  legs, 422 with 4, 17 with 5–6), 8 flagged `interchange`. Clean-up at 15 m removed 215 segments
+  shorter than 5 m (TxDOT lines drawn past the street they meet) and left no two intersections within
+  15 m (54 pairs before); against
+  an uncleaned build every intersection is kept except 4 whose extra legs were only stubs. The v0
+  build was rebuilt with the new script and compared site by site: identical. Fixed on the way:
+  `city_code=ALL` never worked.
+  *Matching* (`07_map_match_city.sql`, tol 45.72 m): **F&SI matched 427 / 434 geocoded in the city =
+  98.39%**. All crashes: 14,433 matched (9,270 to intersections, 5,059 to segments; segment distance
+  median 0.7 m, 95th percentile 10.8 m), 1,826 no coordinates, 53 outside the city, 165 outside
+  tolerance, 62 street name not found. The 7 F&SI misses: Dominik Dr ×2 and Corrington Dr (in
+  neither source), Wellborn 213 and 402 m off, SH 6 71 and 86 m off (likely frontage roads). Two
+  name fixes moved it from 97.24%: TxDOT's direction before the suffix (HOLLEMAN W DR) and its old
+  name for Holleman Dr South (N I AND G RD; 68 crashes within 20 m are reported as S HOLLEMAN DR).
+  *Features* (`backtest_2022`): func_class on all 5,590 segments; speed 4,718, lanes 4,649, AADT and
+  median 4,521; legs and interchange on all 1,634 intersections; 7 OSM features from
+  `osm_city_2022-12-31` on all sites, none constant. `current`: the same 7 from `osm_city_latest`.
+  *Checks.* 39/39 tests pass, including leakage and "every feature source is registered". The
+  v0_2019 rows of `s2_site_scope` and the corridor crash scope were compared before and after the
+  view change: identical.
 - **Not yet run:** streetlights (City GIS), HIN. `func_class` and `median_type` are TxDOT codes, not yet
   translated to plain language.
 
@@ -248,16 +345,18 @@ methods B and C only.
 
 ## Known limits of the network build
 
-- Lines are split wherever they cross on the map, so an overpass (SH 6 over a cross street) becomes a
-  false intersection. OpenStreetMap has bridge tags that can fix this later.
-- Divided roads drawn as two lines will produce two intersections close together.
+- Lines are split wherever they cross on the map, so an overpass (SH 6 over a cross street) becomes an
+  intersection. v1_2022 flags these as `interchange` (8 sites) instead of removing them, since
+  crashes near them are real ramp and merge crashes. OpenStreetMap bridge tags could separate them.
+- Only centerlines (KG): SH 6 frontage roads are not sites, so frontage crashes land on SH 6 or miss.
 - Segment attributes come from the nearest source road at the segment midpoint.
+- `GREENS PRAIRIE RD` / `GREENS PRAIRIE TRL` and similar same-name pairs share a name key; distance
+  decides between them.
 
-## Next steps (in slide order)
+## Next steps
 
-1. Get real CRIS and roadway files through the quickstart; fix what breaks.
-2. Tune the tolerance until `SELECT * FROM tasc.match_rate;` shows 95% or better, and look at what is
-   in `crash_match WHERE status = 'unmatched'`.
-3. Fill `site_feature` from `road` (lanes, speed, AADT with `as_of_date` from `aadt_year`), then add
-   OSM, streetlights and the HIN layer.
-4. Add a read-only database role for S2, S3 and S4.
+1. S2 runs B and C on `v1_2022` (and points its corridor config at `s2_crash_scope_corridor`).
+2. More training data: CRIS exports for other cities (training only; the City backtest stays
+   College Station), and more 2019 TxDOT columns (signals, lane width, turn lanes, shoulders).
+3. Streetlights (City GIS, IF-04) and the HIN layer (IF-05), when available.
+4. TxDOT road features in the live `current` set; translate func_class and median codes.
