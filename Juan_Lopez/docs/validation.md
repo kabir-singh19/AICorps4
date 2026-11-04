@@ -1,5 +1,12 @@
 # Starter validation
 
+## Populated dashboard examples — November 4, 2026
+
+- Two synthetic runs are now bundled at the user's request. Each contains all four road sites, a complete A/B/C comparison, and a memo for every site. Risks and comparison counts are invented interface fixtures, separate from the trained synthetic Example lab classifier.
+- Twenty-three backend tests pass. Two new checks cover completeness and same-run memo reads, unchanged OSM section geometry/mappings, explicit demo status, and rejection of example memos in a run relabeled as real. Example memos use `is_example=true` with `grounding_passed=false`; the UI does not claim completed grounding.
+- The frontend production build passes with the existing separate MapLibre size warning. Browser checks loaded both run choices and four ranked/mapped sites, opened the synthetic backtest table, switched runs, and opened road-specific memos. Memos automatically select the first available site when no site was selected.
+- Earlier entries documenting an empty default directory describe the earlier installation. It is now populated with the two explicitly labeled examples. Remove `backend/data/published/example-dashboard-*.json` for real-only operation.
+
 ## Example lab — November 4, 2026
 
 - Twenty-one backend tests pass, including four new example tests. They verify the score against the saved learned model, changed-input behavior, range/type validation, ranked report/prediction consistency, HTML escaping/downloads, synthetic labels, and isolation from published runs.

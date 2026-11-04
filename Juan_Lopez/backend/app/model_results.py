@@ -77,10 +77,11 @@ class Memo(Contract):
     text: str
     references: list[str] = Field(min_length=1)
     grounding_passed: bool = Field(strict=True)
+    is_example: bool = Field(default=False, strict=True)
 
     @model_validator(mode="after")
     def passed_grounding(self):
-        if not self.grounding_passed:
+        if not self.grounding_passed and not self.is_example:
             raise ValueError("Only memos marked grounding-passed may be published")
         return self
 
@@ -106,6 +107,8 @@ class PublishedRun(Contract):
             raise ValueError("Optional map-section mappings must be nonempty and unique within a run")
         if not set(self.memos).issubset(ids):
             raise ValueError("Memos must reference sites in the same run")
+        if not self.is_demo and any(memo.is_example for memo in self.memos.values()):
+            raise ValueError("Example memos are only allowed in explicitly synthetic runs")
         if self.published_at.tzinfo is None:
             raise ValueError("Published timestamp requires a timezone")
         return self

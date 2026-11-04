@@ -29,4 +29,4 @@ The example endpoints are:
 - `POST /api/v1/examples/predict`: bounded input validation and a fresh prediction.
 - `GET /api/v1/examples/report.html`: printable document; add `?download=true` for attachment download.
 
-The example routes do not write files, call paid services, or publish results into `/api/v1/runs`. The standard published-data directory remains unchanged. The Docker image already copies the artifact with `backend/app`; retraining is not performed during deployment.
+The example routes do not write files, call paid services, or publish results into `/api/v1/runs`. The Example lab routes themselves do not change published data. Separately, two bundled `example-dashboard-*.json` fixtures populate the main runs, memos, and backtest tabs at the user’s request. Their invented F&SI rates and A/B/C tables are independent interface examples, not outputs of this logistic classifier. The Docker image already copies the artifact with `backend/app`; retraining is not performed during deployment.

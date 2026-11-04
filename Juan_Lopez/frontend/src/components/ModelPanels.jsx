@@ -39,7 +39,7 @@ export function Backtest({ run }) {
     {result.loading && <p role="status">Loading backtest…</p>}
     {result.error && <p role="alert" className="api-error">{result.error}</p>}
     {run && result.data && !backtest && <p>No backtest results have been published for this run.</p>}
-    {backtest && <><p>Training cutoff: {backtest.training_cutoff}. Test window: {backtest.test_window}.</p><div className="table-scroll"><table><caption>Published comparison for {run.run_id}</caption><thead><tr><th>Method</th><th>Capture rate</th><th>95% confidence interval</th><th>Flagged miles</th><th>Test F&amp;SI count</th></tr></thead><tbody>{['A', 'B', 'C'].map(id => {
+    {backtest && <>{run.is_demo && <p className="demo-label">Example comparison — all counts and rates are invented. These are not measured results or performance claims for the team's model.</p>}<p>Training cutoff: {backtest.training_cutoff}. Test window: {backtest.test_window}.</p><div className="table-scroll"><table><caption>{run.is_demo ? 'Synthetic example comparison' : 'Published comparison'} for {run.run_id}</caption><thead><tr><th>Method</th><th>Capture rate</th><th>95% confidence interval</th><th>Flagged miles</th><th>Test F&amp;SI count</th></tr></thead><tbody>{['A', 'B', 'C'].map(id => {
       const method = backtest.methods.find(item => item.method === id);
       return <tr key={id}><th scope="row">{method ? `${id} · ${method.label}` : `Method ${id}`}</th><td>{method ? percent(method.capture_rate) : 'Not provided'}</td><td>{method ? method.confidence_interval.map(percent).join(' – ') : 'Not provided'}</td><td>{method?.flagged_mileage ?? 'Not provided'}</td><td>{method?.test_fsi_count ?? 'Not provided'}</td></tr>;
     })}</tbody></table></div></>}
@@ -47,20 +47,21 @@ export function Backtest({ run }) {
 }
 
 export function Memos({ run, sites, selectedSite, onSelectSite }) {
-  const path = selectedSite && run ? runPath(`sites/${encodeURIComponent(selectedSite.properties.site_id)}/memo`, run.run_id) : null;
+  const activeSite = selectedSite || sites[0];
+  const path = activeSite && run ? runPath(`sites/${encodeURIComponent(activeSite.properties.site_id)}/memo`, run.run_id) : null;
   const result = useApi(path);
   const memo = result.data?.memo;
   return <section className="card">
     <div className="details-heading"><h2>Countermeasure memos</h2><button disabled={!path || result.loading} onClick={result.refresh}>Refresh memo</button></div>
     <label htmlFor="memo-site">Site</label>
-    <select id="memo-site" value={selectedSite?.properties.site_id || ''} onChange={event => onSelectSite(event.target.value)} disabled={!run || !sites.length}>
-      <option value="">Select a model site</option>{sites.map(site => <option key={site.properties.site_id} value={site.properties.site_id}>{site.properties.road_name} · {site.properties.site_id}</option>)}
+    <select id="memo-site" value={activeSite?.properties.site_id || ''} onChange={event => onSelectSite(event.target.value)} disabled={!run || !sites.length}>
+      {!sites.length && <option value="">Select a model site</option>}{sites.map(site => <option key={site.properties.site_id} value={site.properties.site_id}>{site.properties.road_name} · {site.properties.site_id}</option>)}
     </select>
     {!path && <p>Select a published run and model site to read its memo.</p>}
     {result.loading && <p role="status">Loading memo…</p>}
     {result.error && <p role="alert" className="api-error">{result.error}</p>}
     {result.data?.status === 'pending' && <p>No grounded memo has been published for this site.</p>}
-    {memo && <article><h3>{memo.title}</h3><p className="memo-text">{memo.text}</p><h3>References</h3><ul>{memo.references.map((reference, index) => <li key={index}>{reference}</li>)}</ul><p className="map-note">Grounding marked passed by the publishing pipeline. Engineering review is required.</p></article>}
+    {memo && <article>{run.is_demo && <p className="demo-label">Example memo — invented scenario, with no completed grounding check or engineering approval.</p>}<h3>{memo.title}</h3><p className="memo-text">{memo.text}</p><h3>{run.is_demo ? 'Example provenance' : 'References'}</h3><ul>{memo.references.map((reference, index) => <li key={index}>{reference}</li>)}</ul><p className="map-note">{memo.is_example || run.is_demo ? 'This sample demonstrates the memo layout only. No real site inspection, grounding verification, or engineering review has been performed.' : 'Grounding marked passed by the publishing pipeline. Engineering review is required.'}</p></article>}
     <p className="map-note">Memo generation and PDF export will be enabled after the editor workflow is connected.</p><button disabled>Generate memo</button> <button disabled>Export PDF</button>
   </section>;
 }

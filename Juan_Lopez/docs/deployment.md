@@ -7,7 +7,7 @@ The Docker image builds React and serves its files through FastAPI. The browser 
 1. Connect a Render account and grant it access to `kabir-singh19/AICorps4`.
 2. Create a Blueprint using the branch containing this change. Set **Blueprint Path** to `Juan_Lopez/render.monorepo.yaml`. That file sets `rootDir: Juan_Lopez`, so the other team folders are excluded from the build context. See [Render's monorepo guide](https://render.com/docs/monorepo-support).
 3. Review the `atsc-traffic-safety` service and its Free plan, then deploy. AI is disabled initially and there is no paid AI call during build/startup.
-4. Wait for a successful deployment and open the service URL shown by Render. Verify `/api/v1/ready` returns `ready`, the map loads, and `/api/v1/runs` returns the approved published runs (an empty list on a fresh install).
+4. Wait for a successful deployment and open the service URL shown by Render. Verify `/api/v1/ready` returns `ready`, the map loads, and `/api/v1/runs` returns the approved published runs (two labeled synthetic dashboard runs are bundled for demonstration).
 5. Configure approved AI credentials separately using [ai-assistant.md](ai-assistant.md). Do not put credentials in GitHub, frontend variables, or chat messages.
 
 For a separate repository with this app at its root, use `render.yaml` instead. The [Blueprint reference](https://render.com/docs/blueprint-spec) describes these fields. Account access is required to create the service; having these files does not itself deploy a website.
@@ -31,7 +31,7 @@ Without Docker, build the frontend and run FastAPI from `backend/` with `ATSC_EN
 
 ## Data and operating limits
 
-- Only publish model runs approved for a public dashboard. The read API and CSV/GeoJSON downloads are public. The default published directory is empty; the synthetic documentation example is not bundled into it.
+- Only publish model runs approved for a public dashboard. The read API and CSV/GeoJSON downloads are public. Two labeled `example-dashboard-*.json` fixtures are bundled for the requested demonstration. Their risks, backtests, and memos are invented. Remove these files and redeploy when presenting real-only results; never relabel them as real runs.
 - The JSON adapter reads files packaged into the deployed image. Updating local files does not update Render. Publish approved files and redeploy, or implement the team's shared-database adapter. Container writes are not durable storage; this version has no model-upload endpoint or database connection.
 - Project access protects AI usage with a shared project password, signed expiring cookies, same-origin checks, and in-process request limits. This is a prototype access mechanism, not TAMU SSO, per-user authorization, or a distributed quota service. Use institutional identity and a shared quota store before a broader operational rollout.
 - The Free service can sleep while idle; initial loading can take longer. The map needs internet access and remains subject to [OpenStreetMap's tile usage policy](https://operations.osmfoundation.org/policies/tiles/). Select a suitable hosted tile service before substantial traffic.

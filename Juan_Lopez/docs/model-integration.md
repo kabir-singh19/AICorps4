@@ -4,7 +4,7 @@ Backtest and Memos navigation is enabled. The starter now reads validated publis
 
 ## First adapter: local JSON
 
-The default results directory is `backend/data/published/`. It is intentionally empty. A model producer writes one JSON file per published run there; the backend reads it on the next request. Click **Refresh runs** to discover new results. Backtest and Memos also have refresh buttons.
+The default results directory is `backend/data/published/`. It now includes two synthetic dashboard runs requested for the website demonstration. Each contains all four roads, a memo per site, and a populated A/B/C comparison. Remove `example-dashboard-*.json` for real-only operation, or use an empty `ATSC_MODEL_RESULTS_DIR`. A model producer writes one JSON file per published run there; the backend reads it on the next request. Click **Refresh runs** to discover new results. Backtest and Memos also have refresh buttons.
 
 Set `ATSC_MODEL_RESULTS_DIR` on the **backend** to read another directory. This is a temporary local integration adapter, not the final shared database. Replace `load_runs()` in `backend/app/model_results.py` with the shared database adapter when the S1/S2 schema is agreed. The browser continues using the same API.
 
@@ -16,11 +16,11 @@ Required run fields: `run_id`, `model_name`, `published_at` (with timezone), `st
 
 Each site is a GeoJSON Feature with a Point for an intersection or a LineString for a segment. Coordinates use longitude, latitude in EPSG:4326. Properties include `site_id`, `site_type`, `road_name`, `rank` (one-based), and `flagged` (boolean). Optional fields include `length_mi`, `fsi_rate`, `in_hin`, `top_factors`, and `crash_history`. Risk values require the run's descriptive `risk_unit`; zero is valid and null means not provided. Negative/non-finite risks, invalid coordinates, duplicate site IDs, and unknown fields are rejected.
 
-Optional `map_segment_id` explicitly links a model site to an existing local OpenStreetMap section, such as `1413155047-0`. It must match the local GeoJSON Feature ID, not just the road name. It is separate from the stable model `site_id`. Use it only when the site really represents that mapped section. Supplied mappings must be nonempty and unique within the run so a map click has an unambiguous result. Ranked sites can open model results even when no local map match exists. Risk overlays and arbitrary model geometry selection on the map remain future work.
+Optional `map_segment_id` explicitly links a model site to an existing local OpenStreetMap section, such as `1413155047-0`. It must match the local GeoJSON Feature ID, not just the road name. It is separate from the stable model `site_id`. Use it only when the site really represents that mapped section. Supplied mappings must be nonempty and unique within the run so a map click has an unambiguous result. Ranked sites can open model results even when no local map match exists. Published site geometry is displayed and selectable on the map.
 
 Optional `backtest` contains producer-supplied training/test labels and methods A/B/C, with `capture_rate` and 95% confidence interval endpoints expressed as fractions from 0 to 1. The UI displays percentages. Also supply flagged mileage and test F&SI count. Missing methods are displayed as not provided.
 
-Optional `memos` maps site IDs to published memo objects with `title`, plain `text`, `references`, and `grounding_passed: true`. The producer is responsible for actually performing grounding checks and engineering review. The adapter rejects a memo marked false and memo references to sites outside the run. The website displays plain text, not generated HTML. Generation, editor authorization, jobs, and PDF export remain disabled.
+Optional `memos` maps site IDs to published memo objects with `title`, plain `text`, `references`, and `grounding_passed: true`. The producer is responsible for actually performing grounding checks and engineering review. The adapter rejects a memo marked false unless it also has `is_example: true` inside an `is_demo: true` run. Example memos cannot be relabeled as real run output. Memo references to sites outside the run are rejected. The bundled demonstration memos use `is_example: true` and `grounding_passed: false`; their UI explicitly states that no grounding or engineering approval occurred. The website displays plain text, not generated HTML. Generation, editor authorization, jobs, and PDF export remain disabled.
 
 ## Validate and try an example
 

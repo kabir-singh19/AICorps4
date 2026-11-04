@@ -1,0 +1,340 @@
+{
+  "schema_version": "1.0",
+  "run_id": "example-dashboard-001",
+  "model_name": "Example run 1 \u2014 baseline fictional scenario",
+  "published_at": "2026-11-04T13:00:00-06:00",
+  "status": "published",
+  "is_demo": true,
+  "risk_unit": "synthetic F&SI events per mile per year (invented)",
+  "sites": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -96.3194187,
+            30.6368993
+          ],
+          [
+            -96.3195571,
+            30.636859
+          ],
+          [
+            -96.3204855,
+            30.6365834
+          ],
+          [
+            -96.3211557,
+            30.6363849
+          ],
+          [
+            -96.3219239,
+            30.6361594
+          ],
+          [
+            -96.3224949,
+            30.6359894
+          ],
+          [
+            -96.3228547,
+            30.6358817
+          ],
+          [
+            -96.3231762,
+            30.6357837
+          ]
+        ]
+      },
+      "properties": {
+        "site_id": "example-university",
+        "site_type": "segment",
+        "road_name": "University Drive",
+        "map_segment_id": "1413155047-0",
+        "length_mi": 0.2363,
+        "fsi_rate": 0.84,
+        "rank": 1,
+        "flagged": true,
+        "in_hin": null,
+        "top_factors": [
+          "Fictional scenario: turning and pedestrian conflicts",
+          "Illustrative risk value entered for interface testing; not model inference"
+        ],
+        "crash_history": "Synthetic historical summary: this scenario assumes recurring conflicts for demonstration. No real crash counts or records have been loaded."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -96.3149548,
+            30.6185243
+          ],
+          [
+            -96.3144652,
+            30.6189541
+          ],
+          [
+            -96.3135926,
+            30.6197218
+          ],
+          [
+            -96.3134617,
+            30.6198362
+          ],
+          [
+            -96.3129509,
+            30.6202942
+          ],
+          [
+            -96.3122423,
+            30.6209099
+          ]
+        ]
+      },
+      "properties": {
+        "site_id": "example-harvey",
+        "site_type": "segment",
+        "road_name": "Harvey Road",
+        "map_segment_id": "1363041277-0",
+        "length_mi": 0.2306,
+        "fsi_rate": 0.36,
+        "rank": 4,
+        "flagged": false,
+        "in_hin": null,
+        "top_factors": [
+          "Fictional scenario: driveway access and crossing visibility",
+          "Illustrative risk value entered for interface testing; not model inference"
+        ],
+        "crash_history": "Synthetic historical summary: this scenario assumes recurring conflicts for demonstration. No real crash counts or records have been loaded."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -96.3234514,
+            30.6186649
+          ],
+          [
+            -96.3235093,
+            30.618711
+          ],
+          [
+            -96.3236683,
+            30.6188374
+          ],
+          [
+            -96.3239663,
+            30.6190744
+          ],
+          [
+            -96.3241324,
+            30.6191964
+          ],
+          [
+            -96.3248879,
+            30.6197726
+          ],
+          [
+            -96.3254426,
+            30.6201966
+          ],
+          [
+            -96.3259321,
+            30.6205707
+          ],
+          [
+            -96.3269358,
+            30.6213435
+          ],
+          [
+            -96.3274477,
+            30.6217436
+          ],
+          [
+            -96.32791,
+            30.6221032
+          ],
+          [
+            -96.3280525,
+            30.622218
+          ],
+          [
+            -96.3288156,
+            30.6228135
+          ]
+        ]
+      },
+      "properties": {
+        "site_id": "example-texas",
+        "site_type": "segment",
+        "road_name": "Texas Avenue",
+        "map_segment_id": "1193299004-0",
+        "length_mi": 0.4288,
+        "fsi_rate": 0.68,
+        "rank": 2,
+        "flagged": true,
+        "in_hin": null,
+        "top_factors": [
+          "Fictional scenario: intersection turning conflicts",
+          "Illustrative risk value entered for interface testing; not model inference"
+        ],
+        "crash_history": "Synthetic historical summary: this scenario assumes recurring conflicts for demonstration. No real crash counts or records have been loaded."
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -96.3522577,
+            30.6200621
+          ],
+          [
+            -96.3522209,
+            30.6200216
+          ],
+          [
+            -96.3511486,
+            30.6188417
+          ],
+          [
+            -96.3503649,
+            30.6179712
+          ],
+          [
+            -96.3500972,
+            30.6176846
+          ],
+          [
+            -96.3499971,
+            30.6175669
+          ],
+          [
+            -96.3498899,
+            30.61743
+          ],
+          [
+            -96.3497958,
+            30.6172932
+          ],
+          [
+            -96.3497683,
+            30.6172506
+          ],
+          [
+            -96.3494716,
+            30.6168019
+          ]
+        ]
+      },
+      "properties": {
+        "site_id": "example-wellborn",
+        "site_type": "segment",
+        "road_name": "Wellborn Road",
+        "map_segment_id": "20732279-0",
+        "length_mi": 0.28,
+        "fsi_rate": 0.52,
+        "rank": 3,
+        "flagged": false,
+        "in_hin": null,
+        "top_factors": [
+          "Fictional scenario: approach speed and crossing visibility",
+          "Illustrative risk value entered for interface testing; not model inference"
+        ],
+        "crash_history": "Synthetic historical summary: this scenario assumes recurring conflicts for demonstration. No real crash counts or records have been loaded."
+      }
+    }
+  ],
+  "backtest": {
+    "training_cutoff": "2022-12-31 (fictional setup)",
+    "test_window": "2023\u20132025 (synthetic example; no real test performed)",
+    "methods": [
+      {
+        "method": "A",
+        "label": "Consultant HIN (example only)",
+        "capture_rate": 0.4166666666666667,
+        "confidence_interval": [
+          0.244673,
+          0.611657
+        ],
+        "flagged_mileage": 2.0,
+        "test_fsi_count": 24
+      },
+      {
+        "method": "B",
+        "label": "Negative binomial + EB (example only)",
+        "capture_rate": 0.5416666666666666,
+        "confidence_interval": [
+          0.350746,
+          0.721089
+        ],
+        "flagged_mileage": 2.0,
+        "test_fsi_count": 24
+      },
+      {
+        "method": "C",
+        "label": "ATSC ML + EB (example only)",
+        "capture_rate": 0.625,
+        "confidence_interval": [
+          0.427096,
+          0.788409
+        ],
+        "flagged_mileage": 2.0,
+        "test_fsi_count": 24
+      }
+    ]
+  },
+  "memos": {
+    "example-university": {
+      "title": "Example screening memo \u2014 University Drive",
+      "is_example": true,
+      "grounding_passed": false,
+      "text": "PURPOSE\nThis sample shows what a site memo could look like for University Drive in example-dashboard-001. All safety observations and risk values are invented. The road name and mapped section are geographic references only.\n\nILLUSTRATIVE FINDING\nThe fictional scenario assigns this section rank 1 of four, with a synthetic rate of 0.84 F&SI events per mile per year. These numbers demonstrate the interface and are not estimates of actual road safety. The scenario assumes turning and pedestrian conflicts; this has not been observed or verified.\n\nQUESTIONS FOR A FUTURE SITE REVIEW\nA real study would check crash diagrams, turning movements, pedestrian activity, sight distance, exposure, and existing traffic controls. Any possible treatment would depend on those findings and an engineering review. No treatment, cost, or safety benefit is recommended by this example.\n\nLIMITATIONS AND STATUS\nThis is a manually authored demonstration memo, not an AI-generated or grounded engineering document. No site inspection, source grounding, or approval has been completed. The revised example run changes fictional inputs only; it does not show a measured improvement.",
+      "references": [
+        "Synthetic fixture example-dashboard-001; site example-university. All risk and narrative values are invented.",
+        "Map reference: OpenStreetMap way 1413155047; geometry snapshot metadata in frontend/src/data/corridors.geojson.json. Geometry does not substantiate safety claims.",
+        "Grounding status: not performed. is_example=true permits this memo only inside an is_demo=true run."
+      ]
+    },
+    "example-harvey": {
+      "title": "Example screening memo \u2014 Harvey Road",
+      "is_example": true,
+      "grounding_passed": false,
+      "text": "PURPOSE\nThis sample shows what a site memo could look like for Harvey Road in example-dashboard-001. All safety observations and risk values are invented. The road name and mapped section are geographic references only.\n\nILLUSTRATIVE FINDING\nThe fictional scenario assigns this section rank 4 of four, with a synthetic rate of 0.36 F&SI events per mile per year. These numbers demonstrate the interface and are not estimates of actual road safety. The scenario assumes driveway access and crossing visibility; this has not been observed or verified.\n\nQUESTIONS FOR A FUTURE SITE REVIEW\nA real study would check crash diagrams, turning movements, pedestrian activity, sight distance, exposure, and existing traffic controls. Any possible treatment would depend on those findings and an engineering review. No treatment, cost, or safety benefit is recommended by this example.\n\nLIMITATIONS AND STATUS\nThis is a manually authored demonstration memo, not an AI-generated or grounded engineering document. No site inspection, source grounding, or approval has been completed. The revised example run changes fictional inputs only; it does not show a measured improvement.",
+      "references": [
+        "Synthetic fixture example-dashboard-001; site example-harvey. All risk and narrative values are invented.",
+        "Map reference: OpenStreetMap way 1363041277; geometry snapshot metadata in frontend/src/data/corridors.geojson.json. Geometry does not substantiate safety claims.",
+        "Grounding status: not performed. is_example=true permits this memo only inside an is_demo=true run."
+      ]
+    },
+    "example-texas": {
+      "title": "Example screening memo \u2014 Texas Avenue",
+      "is_example": true,
+      "grounding_passed": false,
+      "text": "PURPOSE\nThis sample shows what a site memo could look like for Texas Avenue in example-dashboard-001. All safety observations and risk values are invented. The road name and mapped section are geographic references only.\n\nILLUSTRATIVE FINDING\nThe fictional scenario assigns this section rank 2 of four, with a synthetic rate of 0.68 F&SI events per mile per year. These numbers demonstrate the interface and are not estimates of actual road safety. The scenario assumes intersection turning conflicts; this has not been observed or verified.\n\nQUESTIONS FOR A FUTURE SITE REVIEW\nA real study would check crash diagrams, turning movements, pedestrian activity, sight distance, exposure, and existing traffic controls. Any possible treatment would depend on those findings and an engineering review. No treatment, cost, or safety benefit is recommended by this example.\n\nLIMITATIONS AND STATUS\nThis is a manually authored demonstration memo, not an AI-generated or grounded engineering document. No site inspection, source grounding, or approval has been completed. The revised example run changes fictional inputs only; it does not show a measured improvement.",
+      "references": [
+        "Synthetic fixture example-dashboard-001; site example-texas. All risk and narrative values are invented.",
+        "Map reference: OpenStreetMap way 1193299004; geometry snapshot metadata in frontend/src/data/corridors.geojson.json. Geometry does not substantiate safety claims.",
+        "Grounding status: not performed. is_example=true permits this memo only inside an is_demo=true run."
+      ]
+    },
+    "example-wellborn": {
+      "title": "Example screening memo \u2014 Wellborn Road",
+      "is_example": true,
+      "grounding_passed": false,
+      "text": "PURPOSE\nThis sample shows what a site memo could look like for Wellborn Road in example-dashboard-001. All safety observations and risk values are invented. The road name and mapped section are geographic references only.\n\nILLUSTRATIVE FINDING\nThe fictional scenario assigns this section rank 3 of four, with a synthetic rate of 0.52 F&SI events per mile per year. These numbers demonstrate the interface and are not estimates of actual road safety. The scenario assumes approach speed and crossing visibility; this has not been observed or verified.\n\nQUESTIONS FOR A FUTURE SITE REVIEW\nA real study would check crash diagrams, turning movements, pedestrian activity, sight distance, exposure, and existing traffic controls. Any possible treatment would depend on those findings and an engineering review. No treatment, cost, or safety benefit is recommended by this example.\n\nLIMITATIONS AND STATUS\nThis is a manually authored demonstration memo, not an AI-generated or grounded engineering document. No site inspection, source grounding, or approval has been completed. The revised example run changes fictional inputs only; it does not show a measured improvement.",
+      "references": [
+        "Synthetic fixture example-dashboard-001; site example-wellborn. All risk and narrative values are invented.",
+        "Map reference: OpenStreetMap way 20732279; geometry snapshot metadata in frontend/src/data/corridors.geojson.json. Geometry does not substantiate safety claims.",
+        "Grounding status: not performed. is_example=true permits this memo only inside an is_demo=true run."
+      ]
+    }
+  }
+}
