@@ -1,0 +1,17 @@
+# Select this Blueprint when deploying from the team's AICorps4 repository.
+services:
+  - type: web
+    name: atsc-traffic-safety
+    runtime: docker
+    plan: free
+    rootDir: Juan_Lopez
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/ready
+    envVars:
+      - key: ATSC_ENV
+        value: production
+      - key: ATSC_SESSION_SECRET
+        generateValue: true
+      - key: ATSC_AI_ENABLED
+        value: "false"

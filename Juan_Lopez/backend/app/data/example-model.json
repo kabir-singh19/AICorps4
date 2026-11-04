@@ -1,0 +1,54 @@
+{
+  "model_id": "synthetic-logistic-v1",
+  "name": "Synthetic traffic screening classifier",
+  "algorithm": "Logistic regression",
+  "is_demo": true,
+  "training_source": "500 computer-generated records; labels generated from an invented relationship. No real crash or roadway records.",
+  "training_records": 400,
+  "holdout_records": 100,
+  "synthetic_holdout_accuracy": 0.75,
+  "random_seed": 42,
+  "features": [
+    {
+      "key": "speed_mph",
+      "label": "Posted speed",
+      "unit": "mph",
+      "min": 20,
+      "max": 65,
+      "step": 1
+    },
+    {
+      "key": "daily_vehicles",
+      "label": "Daily vehicle volume",
+      "unit": "vehicles/day",
+      "min": 1000,
+      "max": 60000,
+      "step": 1000
+    },
+    {
+      "key": "lanes",
+      "label": "Travel lanes",
+      "unit": "lanes",
+      "min": 2,
+      "max": 8,
+      "step": 1
+    },
+    {
+      "key": "crossings_per_mile",
+      "label": "Pedestrian crossing locations",
+      "unit": "per mile",
+      "min": 0,
+      "max": 12,
+      "step": 1
+    }
+  ],
+  "weights": [
+    2.7938305202490445,
+    1.927414851035158,
+    1.642139951924564,
+    1.8109229735612826
+  ],
+  "intercept": -4.327907211109191,
+  "threshold": 0.5,
+  "output": "Score for a synthetic review label; not a crash probability or F&SI rate."
+}

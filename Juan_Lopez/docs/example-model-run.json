@@ -1,0 +1,174 @@
+{
+  "schema_version": "1.0",
+  "run_id": "example-run-001",
+  "model_name": "Integration example (synthetic)",
+  "published_at": "2026-10-18T12:00:00-05:00",
+  "status": "published",
+  "is_demo": true,
+  "risk_unit": "illustrative F&SI events per mile per year",
+  "sites": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "example-site-1",
+        "site_type": "segment",
+        "road_name": "University Drive",
+        "map_segment_id": "1393772252-0",
+        "length_mi": null,
+        "fsi_rate": 0.4,
+        "rank": 1,
+        "flagged": true,
+        "in_hin": false,
+        "top_factors": [
+          "Example factor \u2014 replace with model output"
+        ],
+        "crash_history": "Illustrative test record only; not real crash history."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -96.3291727,
+            30.6331535
+          ],
+          [
+            -96.3292546,
+            30.6330832
+          ],
+          [
+            -96.3292858,
+            30.6330564
+          ],
+          [
+            -96.3296008,
+            30.6327676
+          ],
+          [
+            -96.3301262,
+            30.6322575
+          ],
+          [
+            -96.3305932,
+            30.6318334
+          ],
+          [
+            -96.3308811,
+            30.6315669
+          ],
+          [
+            -96.3313381,
+            30.6311543
+          ],
+          [
+            -96.3316463,
+            30.6308703
+          ],
+          [
+            -96.3317884,
+            30.6307437
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "example-site-2",
+        "site_type": "segment",
+        "road_name": "Harvey Road",
+        "map_segment_id": "845899334-0",
+        "length_mi": null,
+        "fsi_rate": 0.0,
+        "rank": 2,
+        "flagged": false,
+        "in_hin": false,
+        "top_factors": [
+          "Example factor \u2014 replace with model output"
+        ],
+        "crash_history": "Illustrative test record only; not real crash history."
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            -96.318782,
+            30.6151032
+          ],
+          [
+            -96.3186963,
+            30.6151857
+          ],
+          [
+            -96.3183451,
+            30.6155067
+          ],
+          [
+            -96.3179804,
+            30.6158265
+          ],
+          [
+            -96.3176971,
+            30.6160823
+          ],
+          [
+            -96.317484,
+            30.616289
+          ],
+          [
+            -96.3172215,
+            30.6165302
+          ]
+        ]
+      }
+    }
+  ],
+  "backtest": {
+    "training_cutoff": "2022-12-31",
+    "test_window": "2023\u20132025 (illustrative)",
+    "methods": [
+      {
+        "method": "A",
+        "label": "Consultant HIN",
+        "capture_rate": 0.4,
+        "confidence_interval": [
+          0.30000000000000004,
+          0.5
+        ],
+        "flagged_mileage": 2.0,
+        "test_fsi_count": 10
+      },
+      {
+        "method": "B",
+        "label": "Negative binomial + EB",
+        "capture_rate": 0.5,
+        "confidence_interval": [
+          0.4,
+          0.6
+        ],
+        "flagged_mileage": 2.0,
+        "test_fsi_count": 10
+      },
+      {
+        "method": "C",
+        "label": "ATSC ML + EB",
+        "capture_rate": 0.6,
+        "confidence_interval": [
+          0.5,
+          0.7
+        ],
+        "flagged_mileage": 2.0,
+        "test_fsi_count": 10
+      }
+    ]
+  },
+  "memos": {
+    "example-site-1": {
+      "title": "Example memo \u2014 integration test only",
+      "text": "This is synthetic text used to test loading a published memo. It contains no engineering recommendation. Replace it with a grounded, reviewed memo from the model pipeline.",
+      "references": [
+        "Illustrative reference placeholder \u2014 replace before real publication."
+      ],
+      "grounding_passed": true
+    }
+  }
+}
