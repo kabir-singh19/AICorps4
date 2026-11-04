@@ -109,6 +109,8 @@ class HostingAssistantTests(unittest.IsolatedAsyncioTestCase):
             config, question, evidence = provider.await_args.args
             self.assertEqual(config["model"], "test-provider-model")
             self.assertEqual(evidence["site"]["site_id"], "example-site-1")
+            self.assertIn("0.4", evidence["site"]["risk_display"])
+            self.assertNotIn("%", evidence["site"]["risk_display"])
             self.assertIn("published_memo", evidence)
             self.assertNotIn("geometry", evidence["site"])
 
