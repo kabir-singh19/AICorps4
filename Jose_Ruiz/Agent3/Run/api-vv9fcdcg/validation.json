@@ -1,0 +1,36 @@
+{
+  "mode": "api",
+  "contract_checks_passed": true,
+  "human_review_required": true,
+  "engineering_approval": false,
+  "semantic_grounding_verified": false,
+  "benefit_calculation_enabled": false,
+  "evidence_sha256": "ad74d451829ed2445d2d6963380a44c2db2bb5c1803d8175dd364f8d01a5088e",
+  "api": {
+    "provider_host": "chat-api.tamu.ai",
+    "requested_model": "protected.gpt-4.1",
+    "returned_model": "protected.gpt-4.1",
+    "attempts": 1,
+    "elapsed_seconds": 4.828,
+    "usage": {
+      "completion_tokens": 430,
+      "prompt_tokens": 3427,
+      "total_tokens": 3857,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": 0,
+        "audio_tokens": 0,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": 0
+      },
+      "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cached_tokens": 0
+      }
+    },
+    "cost_usd": null,
+    "cost_note": "Not calculated; provider pricing has not been configured."
+  },
+  "errors": [],
+  "memo_sha256": "634dc3029911fbb94801cf690e6c4261850814b3330913b71b4fd6159c1c714e",
+  "status": "DRAFT_PENDING_HUMAN_REVIEW"
+}

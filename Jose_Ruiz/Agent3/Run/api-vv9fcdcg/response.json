@@ -1,0 +1,32 @@
+{
+  "site_id": "SYN004_NIGHT_REAR_END",
+  "site_summary": "This example site is an urban segment with nighttime rear-end crash patterns. Treatments with direct support for rear-end crashes and aggregate evidence for all crash types at segments have been identified for review, with area and severity scopes checked against original studies where available.",
+  "candidates": [
+    {
+      "cm_id": "CM014",
+      "summary": "Replacing a two-way left-turn lane with a raised median is directly supported for rear-end crashes at urban segments. Evidence requires verification of treatment prerequisites, existing equipment, and original study crash-type modeling before applying to this crash subtype."
+    }
+  ],
+  "engineering_review": [
+    {
+      "cm_id": "CM020",
+      "summary": "Improving street lighting illuminance and uniformity is supported for all nighttime crashes in urban segments. Aggregate evidence requires engineering review since it does not specifically address rear-end crash reduction."
+    },
+    {
+      "cm_id": "CM021",
+      "summary": "Installing high-friction surface treatment on curves provides aggregate crash reduction evidence at segment locations but does not specifically support rear-end nighttime crashes and differs in severity scope."
+    },
+    {
+      "cm_id": "CM023",
+      "summary": "Converting a four-lane undivided road to two through lanes plus a center turn lane is supported by aggregate crash evidence at segments, but does not isolate effects for rear-end crashes and requires engineering review for site-specific geometry and operations."
+    },
+    {
+      "cm_id": "CM030",
+      "summary": "Installing speed humps on local roads shows aggregate crash reduction for ABC injuries but has not been verified for rear-end crash reduction, severity scope alignment, or fatal crashes, requiring engineering review."
+    },
+    {
+      "cm_id": "CM033",
+      "summary": "Upgrading standard markings to wet-reflective markings shows aggregate crash reduction for all crash types at segment sites but has not established a specific effect for rear-end crash reduction or severity scope consistency."
+    }
+  ]
+}

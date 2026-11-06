@@ -1,0 +1,12 @@
+{
+  "mode": "offline",
+  "contract_checks_passed": true,
+  "human_review_required": true,
+  "engineering_approval": false,
+  "semantic_grounding_verified": false,
+  "benefit_calculation_enabled": false,
+  "evidence_sha256": "0145821fc3cf66839364a36d2f13b24cf0afba57191447f8514f220a2f414b44",
+  "errors": [],
+  "memo_sha256": "16d5af4f8e682063e507345775b39e55e10f7d81136dfe4eea9b733092839687",
+  "status": "DRAFT_PENDING_HUMAN_REVIEW"
+}

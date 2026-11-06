@@ -1,0 +1,40 @@
+{
+  "site_id": "SYN001_PEDESTRIAN_SIGNAL",
+  "site_summary": "This example site illustrates preliminary screening. The supplied site description does not establish treatment suitability.",
+  "candidates": [
+    {
+      "cm_id": "CM001",
+      "summary": "The matcher identified direct crash-type support. Source and site applicability still require review."
+    },
+    {
+      "cm_id": "CM002",
+      "summary": "The matcher identified direct crash-type support. Source and site applicability still require review."
+    },
+    {
+      "cm_id": "CM026",
+      "summary": "The matcher identified direct crash-type support. Source and site applicability still require review."
+    }
+  ],
+  "engineering_review": [
+    {
+      "cm_id": "CM013",
+      "summary": "This option has broader or partial evidence. Its applicability to the requested crash problem requires engineering review."
+    },
+    {
+      "cm_id": "CM015",
+      "summary": "This option has broader or partial evidence. Its applicability to the requested crash problem requires engineering review."
+    },
+    {
+      "cm_id": "CM016",
+      "summary": "This option has broader or partial evidence. Its applicability to the requested crash problem requires engineering review."
+    },
+    {
+      "cm_id": "CM017",
+      "summary": "This option has broader or partial evidence. Its applicability to the requested crash problem requires engineering review."
+    },
+    {
+      "cm_id": "CM019",
+      "summary": "This option has broader or partial evidence. Its applicability to the requested crash problem requires engineering review."
+    }
+  ]
+}
