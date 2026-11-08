@@ -14,3 +14,20 @@ serves the results in a web app. Controlling documents: `docs/Team4_ATSC_ConOps_
 | `docs/` | Controlling documents and change requests | Lead |
 
 Run everything from this folder. S2 runs as a package: `python -m S2_Risk_Model_Backtest.<module>`.
+
+## Build and run
+
+```bash
+make demo     # data -> model -> memos -> web; stages are cached (integration/.stamps/)
+make serve    # web app on http://127.0.0.1:8000
+make test     # S1-S4 suites, frontend build, Playwright
+make clean    # drop the database volume, the run folder, the web bundle and build
+```
+
+Needs Docker (PostGIS), Python 3.12 (`.venv`), Node 22 and, for `make memos`, a TAMU AI Chat
+key in `~/.config/atsc/memo.env` (outside the repo; without it memos are marked `pending`).
+Logs and per-stage timings go to `integration/logs/` (`make_<stage>.log`, `make_timings.jsonl`).
+How the subsystems hand data to each other: `INTERFACES.md`. Deployment: `S4_Web_App/DEPLOY.md`.
+
+Current run: `integration/artifacts/s2-citywide-2026-11-08/` (model card, backtest, charts,
+memos). `make demo` from a clean database on 8 Nov 2026 reproduced its ranking hash exactly.

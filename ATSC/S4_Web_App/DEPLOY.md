@@ -69,3 +69,23 @@ HTML or JavaScript contains a key-like string.
 ## Status
 
 See the "Local production check" section below for what was run on 8 Nov 2026.
+
+## Local production check (8 Nov 2026)
+
+`docker build -t atsc-traffic-safety .` from `ATSC/S4_Web_App` (49 s, image 289 MB), then
+`docker run -p 10000:10000 -e ATSC_ENV=production -e ATSC_SESSION_SECRET=<random> -e ATSC_AI_ENABLED=false`:
+
+| Check | Result |
+|---|---|
+| `/api/v1/health` | `status: ok`, `artifact_runs: 1`, `assistant_enabled: false`, `invalid_files: 0` |
+| Request with `X-Forwarded-Proto: http` | `308` to the `https://` URL |
+| HTTPS response headers | `Strict-Transport-Security: max-age=31536000`, Content-Security-Policy as above |
+| `/api/v1/sites` | 7,224 features |
+| Memo PDF, CSV export | `200 application/pdf` (2 pages), `200` CSV (1.9 MB) |
+| `POST /api/v1/sites/{id}/memo` | `503` |
+| Key-like strings in served JS, LLM variables in the container env | none |
+| Container user | `atsc` (uid 10001) |
+
+**Render: not deployed.** No Render account credentials were available on the build machine, so no
+public URL exists yet. The steps in "Render" above take about five minutes for a team member who
+can log in to Render.

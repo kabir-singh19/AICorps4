@@ -1,0 +1,61 @@
+== test_s4_e2e: 2026-11-08T09:24:27-06:00
+[2m[WebServer] [22mINFO:     Started server process [70202]
+[2m[WebServer] [22mINFO:     Waiting for application startup.
+[2m[WebServer] [22mINFO:     Application startup complete.
+[2m[WebServer] [22mINFO:     Uvicorn running on http://127.0.0.1:8766 (Press CTRL+C to quit)
+
+Running 25 tests using 2 workers
+
+  ✓  1 [chromium-tablet] › app.spec.js:14:1 › map draws every site, legend, HIN toggle, no key in the page (13.6s)
+  ✓  3 [chromium-tablet] › app.spec.js:30:1 › ranked list opens a site page with history, factors and memo state (1.4s)
+  ✓  4 [chromium-tablet] › app.spec.js:44:1 › backtest page shows A, B, C with intervals for both targets (830ms)
+  ✓  2 [chromium-desktop] › app.spec.js:14:1 › map draws every site, legend, HIN toggle, no key in the page (15.8s)
+  ✓  5 [chromium-tablet] › app.spec.js:54:1 › memos page and exports (910ms)
+  ✓  6 [chromium-desktop] › app.spec.js:30:1 › ranked list opens a site page with history, factors and memo state (1.4s)
+  ✓  7 [chromium-desktop] › app.spec.js:44:1 › backtest page shows A, B, C with intervals for both targets (853ms)
+  ✓  9 [chromium-desktop] › app.spec.js:54:1 › memos page and exports (901ms)
+  ✓  8 [firefox-desktop] › app.spec.js:14:1 › map draws every site, legend, HIN toggle, no key in the page (9.9s)
+  ✓  11 [firefox-desktop] › app.spec.js:30:1 › ranked list opens a site page with history, factors and memo state (1.9s)
+  ✓  10 [firefox-tablet] › app.spec.js:14:1 › map draws every site, legend, HIN toggle, no key in the page (10.2s)
+  ✓  12 [firefox-desktop] › app.spec.js:44:1 › backtest page shows A, B, C with intervals for both targets (1.1s)
+  ✓  14 [firefox-desktop] › app.spec.js:54:1 › memos page and exports (1.0s)
+  ✓  13 [firefox-tablet] › app.spec.js:30:1 › ranked list opens a site page with history, factors and memo state (1.6s)
+  ✓  15 [firefox-tablet] › app.spec.js:44:1 › backtest page shows A, B, C with intervals for both targets (1.1s)
+  ✓  17 [firefox-tablet] › app.spec.js:54:1 › memos page and exports (1.1s)
+  ✓  16 [webkit-desktop] › app.spec.js:14:1 › map draws every site, legend, HIN toggle, no key in the page (9.1s)
+  ✓  18 [webkit-tablet] › app.spec.js:14:1 › map draws every site, legend, HIN toggle, no key in the page (9.3s)
+  ✓  19 [webkit-desktop] › app.spec.js:30:1 › ranked list opens a site page with history, factors and memo state (3.4s)
+  ✓  21 [webkit-desktop] › app.spec.js:44:1 › backtest page shows A, B, C with intervals for both targets (2.2s)
+  ✓  20 [webkit-tablet] › app.spec.js:30:1 › ranked list opens a site page with history, factors and memo state (3.3s)
+  ✓  22 [webkit-desktop] › app.spec.js:54:1 › memos page and exports (1.9s)
+  ✓  23 [webkit-tablet] › app.spec.js:44:1 › backtest page shows A, B, C with intervals for both targets (2.0s)
+  ✓  25 [webkit-tablet] › app.spec.js:54:1 › memos page and exports (2.3s)
+{"users":5,"limits_s":{"map":5,"site":2},"trials_passed":0,"pass":false,"map_s":{"median":null,"p90":null,"max":null},"site_s":{"median":0.177,"p90":0.366,"max":0.528},"timed_out":44,"note":"Timeouts (30 s) count as Infinity and fail the trial. OpenStreetMap basemap tiles stubbed; server is one uvicorn worker on the local host serving the bundled artifact; each user is a separate headless Chromium process on the same host.","run_id":"s2-citywide-2026-11-08"}
+  ✘  24 [perf] › perf.spec.js:9:1 › 5 concurrent users, map and site page timings (5.2m)
+
+
+  1) [perf] › perf.spec.js:9:1 › 5 concurrent users, map and site page timings ─────────────────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: >= [32m9[39m
+    Received:    [31m0[39m
+
+      47 |   fs.writeFileSync('results/perf.json', JSON.stringify(summary, null, 2));
+      48 |   console.log(JSON.stringify({ ...summary, trials: undefined }));
+    > 49 |   expect(passed).toBeGreaterThanOrEqual(9);
+         |                  ^
+      50 | });
+      51 |
+        at /home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js:49:18
+
+  Slow test file: [perf] › perf.spec.js (5.2m)
+  Slow test file: [chromium-desktop] › app.spec.js (19.0s)
+  Slow test file: [webkit-tablet] › app.spec.js (16.9s)
+  Slow test file: [chromium-tablet] › app.spec.js (16.7s)
+  Slow test file: [webkit-desktop] › app.spec.js (16.5s)
+  Consider splitting slow test files to speed up parallel execution
+  1 failed
+    [perf] › perf.spec.js:9:1 › 5 concurrent users, map and site page timings ──────────────────────
+  24 passed (6.0m)
+== test_s4_e2e: exit 1 after 362.4s

@@ -1,0 +1,1139 @@
+{
+  "config": {
+    "configFile": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/playwright.config.js",
+    "rootDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "results/report_make_test.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-desktop",
+        "name": "chromium-desktop",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-tablet",
+        "name": "chromium-tablet",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox-desktop",
+        "name": "firefox-desktop",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox-tablet",
+        "name": "firefox-tablet",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit-desktop",
+        "name": "webkit-desktop",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit-tablet",
+        "name": "webkit-tablet",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "perf",
+        "name": "perf",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/perf/"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.49.1",
+    "workers": 2,
+    "webServer": {
+      "command": "../../.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8766 --app-dir ../backend --workers 1",
+      "url": "http://127.0.0.1:8766/api/v1/health",
+      "reuseExistingServer": false,
+      "env": {
+        "ATSC_FRONTEND_DIST": "../frontend/dist",
+        "ATSC_ARTIFACTS_DIR": "../backend/data/artifacts"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "app.spec.js",
+      "file": "app.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 15815,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:29.842Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-7fb3b14cc250ae68e95a",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 1430,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:45.730Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-6b6928b4ab7dcfb23897",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 853,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:47.165Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-b16bd10042761ffad41f",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 18 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-desktop",
+              "projectName": "chromium-desktop",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 901,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:48.022Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-1d6ab28e516b6e9169f4",
+          "file": "app.spec.js",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-tablet",
+              "projectName": "chromium-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 13560,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:29.835Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-d18f061824d2fd28a624",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-tablet",
+              "projectName": "chromium-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 1406,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:43.462Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-add951ba0525a4731507",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-tablet",
+              "projectName": "chromium-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 830,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:44.873Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-b890d97517d44aa84ce9",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 21 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "chromium-tablet",
+              "projectName": "chromium-tablet",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 910,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:45.707Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-ee4ca2a3d58aeede2fb3",
+          "file": "app.spec.js",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-desktop",
+              "projectName": "firefox-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 9920,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:47.255Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-75e2286cbe460df6d937",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-desktop",
+              "projectName": "firefox-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 1900,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:57.649Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-d1e75ae23a90f73e586f",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-desktop",
+              "projectName": "firefox-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 1128,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:59.573Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-2be194af6d282c0921b1",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 18 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-desktop",
+              "projectName": "firefox-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 1031,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:00.705Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-650ffa6dee098a66fb74",
+          "file": "app.spec.js",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-tablet",
+              "projectName": "firefox-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 10230,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:24:49.635Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-2e1b119834cb2ef071c3",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-tablet",
+              "projectName": "firefox-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 1601,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:00.331Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-4930e4df119b045112c8",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-tablet",
+              "projectName": "firefox-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 1096,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:01.938Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-57e389cdb121cc3c0cf7",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 18 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "firefox-tablet",
+              "projectName": "firefox-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 1142,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:03.038Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-9f535d2c32d61fc477ef",
+          "file": "app.spec.js",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-desktop",
+              "projectName": "webkit-desktop",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 9061,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:02.882Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-305c7332f578f02cbfa4",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-desktop",
+              "projectName": "webkit-desktop",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 3385,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:12.060Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-f4ae7dd5dc2355fda4ef",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-desktop",
+              "projectName": "webkit-desktop",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 2183,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:15.456Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-ba669f9ca4687d9dac8e",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 18 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-desktop",
+              "projectName": "webkit-desktop",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "status": "passed",
+                  "duration": 1915,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:17.647Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-361da5e4700860bd8e29",
+          "file": "app.spec.js",
+          "line": 54,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-tablet",
+              "projectName": "webkit-tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "status": "passed",
+                  "duration": 9272,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:05.778Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-edffcb75901ccd3b7ca5",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-tablet",
+              "projectName": "webkit-tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "status": "passed",
+                  "duration": 3332,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:15.171Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-9a8e8512756050480b57",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-tablet",
+              "projectName": "webkit-tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "status": "passed",
+                  "duration": 2011,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:18.509Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-5a5ffa6cfe5479f85c0e",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 18 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "webkit-tablet",
+              "projectName": "webkit-tablet",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "status": "passed",
+                  "duration": 2266,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:20.526Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-29787d4d63f329178aea",
+          "file": "app.spec.js",
+          "line": 54,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "perf.spec.js",
+      "file": "perf.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "5 concurrent users, map and site page timings",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "perf",
+              "projectName": "perf",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "status": "failed",
+                  "duration": 309942,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n    at /home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js:49:18",
+                    "matcherResult": {
+                      "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m",
+                      "pass": false
+                    },
+                    "location": {
+                      "file": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js",
+                      "column": 18,
+                      "line": 49
+                    },
+                    "snippet": "  47 |   fs.writeFileSync('results/perf.json', JSON.stringify(summary, null, 2));\n  48 |   console.log(JSON.stringify({ ...summary, trials: undefined }));\n> 49 |   expect(passed).toBeGreaterThanOrEqual(9);\n     |                  ^\n  50 | });\n  51 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js",
+                        "column": 18,
+                        "line": 49
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n\n  47 |   fs.writeFileSync('results/perf.json', JSON.stringify(summary, null, 2));\n  48 |   console.log(JSON.stringify({ ...summary, trials: undefined }));\n> 49 |   expect(passed).toBeGreaterThanOrEqual(9);\n     |                  ^\n  50 | });\n  51 |\n    at /home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js:49:18"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "{\"users\":5,\"limits_s\":{\"map\":5,\"site\":2},\"trials_passed\":0,\"pass\":false,\"map_s\":{\"median\":null,\"p90\":null,\"max\":null},\"site_s\":{\"median\":0.177,\"p90\":0.366,\"max\":0.528},\"timed_out\":44,\"note\":\"Timeouts (30 s) count as Infinity and fail the trial. OpenStreetMap basemap tiles stubbed; server is one uvicorn worker on the local host serving the bundled artifact; each user is a separate headless Chromium process on the same host.\",\"run_id\":\"s2-citywide-2026-11-08\"}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T15:25:20.093Z",
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js",
+                    "column": 18,
+                    "line": 49
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "cc1e91386849cdb76657-52b8884c496a2c9ee1b8",
+          "file": "perf.spec.js",
+          "line": 9,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-08T15:24:28.553Z",
+    "duration": 361504.335,
+    "expected": 24,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}
