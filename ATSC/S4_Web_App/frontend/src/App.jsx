@@ -2,7 +2,7 @@ import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 
 import SiteDetails from './components/SiteDetails.jsx';
 import Assistant from './components/Assistant.jsx';
 import ExampleLab from './components/ExampleLab.jsx';
-import { ModelRuns, RankedSites, Backtest, Memos, Kpis } from './components/ModelPanels.jsx';
+import { ModelRuns, RankedSites, Backtest, BitLog, Memos, Kpis } from './components/ModelPanels.jsx';
 import { runPath, useApi } from './api.js';
 
 const RiskMap = lazy(() => import('./components/RiskMap.jsx'));
@@ -79,7 +79,7 @@ export default function App() {
         <RankedSites resource={sitesResource} run={activeRun} onSelect={openSite} />
       </>}
       {page === 'Site details' && <SiteDetails run={activeRun} siteId={selectedSiteId} onBackToMap={() => setPage('Risk map')} onOpenMemo={() => setPage('Memos')} />}
-      {page === 'Backtest' && <Backtest run={activeRun} />}
+      {page === 'Backtest' && <><Backtest run={activeRun} /><BitLog run={activeRun} /></>}
       {page === 'Memos' && <Memos run={activeRun} sites={sites} resource={sitesResource} selectedSiteId={selectedSiteId} onSelectSite={setSelectedSiteId} onOpenSite={openSite} />}
       {page === 'AI assistant' && assistantEnabled && <Assistant run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}
       {page === 'Example lab' && <ExampleLab />}

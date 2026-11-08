@@ -22,7 +22,7 @@
       [
         "json",
         {
-          "outputFile": "results/report_make_test.json"
+          "outputFile": "results/report.json"
         }
       ]
     ],
@@ -55,6 +55,38 @@
         "metadata": {},
         "id": "chromium-tablet",
         "name": "chromium-tablet",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "edge-desktop",
+        "name": "edge-desktop",
+        "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
+        "testIgnore": [
+          "/perf/"
+        ],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "edge-tablet",
+        "name": "edge-tablet",
         "testDir": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests",
         "testIgnore": [
           "/perf/"
@@ -148,8 +180,8 @@
     "version": "1.49.1",
     "workers": 2,
     "webServer": {
-      "command": "../../.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8766 --app-dir ../backend --workers 1",
-      "url": "http://127.0.0.1:8766/api/v1/health",
+      "command": "../../.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8765 --app-dir ../backend --workers 1",
+      "url": "http://127.0.0.1:8765/api/v1/health",
       "reuseExistingServer": false,
       "env": {
         "ATSC_FRONTEND_DIST": "../frontend/dist",
@@ -184,12 +216,12 @@
                 {
                   "workerIndex": 0,
                   "status": "passed",
-                  "duration": 15815,
+                  "duration": 8069,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:29.842Z",
+                  "startTime": "2026-11-08T17:42:36.614Z",
                   "attachments": []
                 }
               ],
@@ -221,12 +253,12 @@
                 {
                   "workerIndex": 0,
                   "status": "passed",
-                  "duration": 1430,
+                  "duration": 1567,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:45.730Z",
+                  "startTime": "2026-11-08T17:42:44.753Z",
                   "attachments": []
                 }
               ],
@@ -248,7 +280,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "backtest: 0 violations, 25 rules passed"
+                  "description": "backtest: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -258,12 +290,12 @@
                 {
                   "workerIndex": 0,
                   "status": "passed",
-                  "duration": 853,
+                  "duration": 934,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:47.165Z",
+                  "startTime": "2026-11-08T17:42:46.324Z",
                   "attachments": []
                 }
               ],
@@ -285,7 +317,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "memos: 0 violations, 18 rules passed"
+                  "description": "memos: 0 violations, 25 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -295,12 +327,12 @@
                 {
                   "workerIndex": 0,
                   "status": "passed",
-                  "duration": 901,
+                  "duration": 1244,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:48.022Z",
+                  "startTime": "2026-11-08T17:42:47.262Z",
                   "attachments": []
                 }
               ],
@@ -309,7 +341,7 @@
           ],
           "id": "a510cc93a867214a2ea0-1d6ab28e516b6e9169f4",
           "file": "app.spec.js",
-          "line": 54,
+          "line": 58,
           "column": 1
         },
         {
@@ -322,7 +354,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "map: 0 violations, 26 rules passed"
+                  "description": "map: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -332,12 +364,12 @@
                 {
                   "workerIndex": 1,
                   "status": "passed",
-                  "duration": 13560,
+                  "duration": 8074,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:29.835Z",
+                  "startTime": "2026-11-08T17:42:36.613Z",
                   "attachments": []
                 }
               ],
@@ -369,12 +401,12 @@
                 {
                   "workerIndex": 1,
                   "status": "passed",
-                  "duration": 1406,
+                  "duration": 1743,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:43.462Z",
+                  "startTime": "2026-11-08T17:42:44.753Z",
                   "attachments": []
                 }
               ],
@@ -396,7 +428,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "backtest: 0 violations, 25 rules passed"
+                  "description": "backtest: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -406,12 +438,12 @@
                 {
                   "workerIndex": 1,
                   "status": "passed",
-                  "duration": 830,
+                  "duration": 956,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:44.873Z",
+                  "startTime": "2026-11-08T17:42:46.501Z",
                   "attachments": []
                 }
               ],
@@ -433,7 +465,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "memos: 0 violations, 21 rules passed"
+                  "description": "memos: 0 violations, 25 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -443,12 +475,12 @@
                 {
                   "workerIndex": 1,
                   "status": "passed",
-                  "duration": 910,
+                  "duration": 1104,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:45.707Z",
+                  "startTime": "2026-11-08T17:42:47.460Z",
                   "attachments": []
                 }
               ],
@@ -457,7 +489,303 @@
           ],
           "id": "a510cc93a867214a2ea0-ee4ca2a3d58aeede2fb3",
           "file": "app.spec.js",
-          "line": 54,
+          "line": 58,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 26 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-desktop",
+              "projectName": "edge-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 8104,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:49.122Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-f48f2781c64f1a487dc4",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 29 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-desktop",
+              "projectName": "edge-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 1601,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:57.401Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-e663dbc3446e52819ad0",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 27 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-desktop",
+              "projectName": "edge-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 1119,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:59.008Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-98b4187f0af761710c61",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-desktop",
+              "projectName": "edge-desktop",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "passed",
+                  "duration": 1257,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:43:00.132Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-6d519d74638d1430268a",
+          "file": "app.spec.js",
+          "line": 58,
+          "column": 1
+        },
+        {
+          "title": "map draws every site, legend, HIN toggle, no key in the page",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "map: 0 violations, 27 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-tablet",
+              "projectName": "edge-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 7919,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:49.183Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-cf195b1498b85058fe3a",
+          "file": "app.spec.js",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "ranked list opens a site page with history, factors and memo state",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "site: 0 violations, 28 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-tablet",
+              "projectName": "edge-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 1573,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:57.293Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-811657a87ffc34223071",
+          "file": "app.spec.js",
+          "line": 30,
+          "column": 1
+        },
+        {
+          "title": "backtest page shows A, B, C with intervals for both targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "backtest: 0 violations, 27 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-tablet",
+              "projectName": "edge-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 1111,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:58.871Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-17dcd4a3bddda7750862",
+          "file": "app.spec.js",
+          "line": 44,
+          "column": 1
+        },
+        {
+          "title": "memos page and exports",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 60000,
+              "annotations": [
+                {
+                  "type": "axe",
+                  "description": "memos: 0 violations, 25 rules passed"
+                }
+              ],
+              "expectedStatus": "passed",
+              "projectId": "edge-tablet",
+              "projectName": "edge-tablet",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "status": "passed",
+                  "duration": 1262,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-11-08T17:42:59.985Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a510cc93a867214a2ea0-1492eb44e5d2c0bc3098",
+          "file": "app.spec.js",
+          "line": 58,
           "column": 1
         },
         {
@@ -478,14 +806,14 @@
               "projectName": "firefox-desktop",
               "results": [
                 {
-                  "workerIndex": 2,
+                  "workerIndex": 4,
                   "status": "passed",
-                  "duration": 9920,
+                  "duration": 9228,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:47.255Z",
+                  "startTime": "2026-11-08T17:43:01.962Z",
                   "attachments": []
                 }
               ],
@@ -515,14 +843,14 @@
               "projectName": "firefox-desktop",
               "results": [
                 {
-                  "workerIndex": 2,
+                  "workerIndex": 4,
                   "status": "passed",
-                  "duration": 1900,
+                  "duration": 1891,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:57.649Z",
+                  "startTime": "2026-11-08T17:43:11.624Z",
                   "attachments": []
                 }
               ],
@@ -544,7 +872,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "backtest: 0 violations, 25 rules passed"
+                  "description": "backtest: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -552,14 +880,14 @@
               "projectName": "firefox-desktop",
               "results": [
                 {
-                  "workerIndex": 2,
+                  "workerIndex": 4,
                   "status": "passed",
-                  "duration": 1128,
+                  "duration": 1335,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:59.573Z",
+                  "startTime": "2026-11-08T17:43:13.520Z",
                   "attachments": []
                 }
               ],
@@ -581,7 +909,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "memos: 0 violations, 18 rules passed"
+                  "description": "memos: 0 violations, 25 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -589,14 +917,14 @@
               "projectName": "firefox-desktop",
               "results": [
                 {
-                  "workerIndex": 2,
+                  "workerIndex": 4,
                   "status": "passed",
-                  "duration": 1031,
+                  "duration": 1393,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:00.705Z",
+                  "startTime": "2026-11-08T17:43:14.859Z",
                   "attachments": []
                 }
               ],
@@ -605,7 +933,7 @@
           ],
           "id": "a510cc93a867214a2ea0-650ffa6dee098a66fb74",
           "file": "app.spec.js",
-          "line": 54,
+          "line": 58,
           "column": 1
         },
         {
@@ -618,7 +946,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "map: 0 violations, 26 rules passed"
+                  "description": "map: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -626,14 +954,14 @@
               "projectName": "firefox-tablet",
               "results": [
                 {
-                  "workerIndex": 3,
+                  "workerIndex": 5,
                   "status": "passed",
-                  "duration": 10230,
+                  "duration": 9414,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:24:49.635Z",
+                  "startTime": "2026-11-08T17:43:02.093Z",
                   "attachments": []
                 }
               ],
@@ -663,14 +991,14 @@
               "projectName": "firefox-tablet",
               "results": [
                 {
-                  "workerIndex": 3,
+                  "workerIndex": 5,
                   "status": "passed",
-                  "duration": 1601,
+                  "duration": 1839,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:00.331Z",
+                  "startTime": "2026-11-08T17:43:12.290Z",
                   "attachments": []
                 }
               ],
@@ -692,7 +1020,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "backtest: 0 violations, 25 rules passed"
+                  "description": "backtest: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -700,14 +1028,14 @@
               "projectName": "firefox-tablet",
               "results": [
                 {
-                  "workerIndex": 3,
+                  "workerIndex": 5,
                   "status": "passed",
-                  "duration": 1096,
+                  "duration": 1354,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:01.938Z",
+                  "startTime": "2026-11-08T17:43:14.134Z",
                   "attachments": []
                 }
               ],
@@ -729,7 +1057,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "memos: 0 violations, 18 rules passed"
+                  "description": "memos: 0 violations, 25 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -737,14 +1065,14 @@
               "projectName": "firefox-tablet",
               "results": [
                 {
-                  "workerIndex": 3,
+                  "workerIndex": 5,
                   "status": "passed",
-                  "duration": 1142,
+                  "duration": 1509,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:03.038Z",
+                  "startTime": "2026-11-08T17:43:15.493Z",
                   "attachments": []
                 }
               ],
@@ -753,7 +1081,7 @@
           ],
           "id": "a510cc93a867214a2ea0-9f535d2c32d61fc477ef",
           "file": "app.spec.js",
-          "line": 54,
+          "line": 58,
           "column": 1
         },
         {
@@ -774,14 +1102,14 @@
               "projectName": "webkit-desktop",
               "results": [
                 {
-                  "workerIndex": 4,
+                  "workerIndex": 6,
                   "status": "passed",
-                  "duration": 9061,
+                  "duration": 10434,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:02.882Z",
+                  "startTime": "2026-11-08T17:43:17.336Z",
                   "attachments": []
                 }
               ],
@@ -811,14 +1139,14 @@
               "projectName": "webkit-desktop",
               "results": [
                 {
-                  "workerIndex": 4,
+                  "workerIndex": 6,
                   "status": "passed",
-                  "duration": 3385,
+                  "duration": 4103,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:12.060Z",
+                  "startTime": "2026-11-08T17:43:27.859Z",
                   "attachments": []
                 }
               ],
@@ -840,7 +1168,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "backtest: 0 violations, 25 rules passed"
+                  "description": "backtest: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -848,14 +1176,14 @@
               "projectName": "webkit-desktop",
               "results": [
                 {
-                  "workerIndex": 4,
+                  "workerIndex": 6,
                   "status": "passed",
-                  "duration": 2183,
+                  "duration": 2936,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:15.456Z",
+                  "startTime": "2026-11-08T17:43:31.966Z",
                   "attachments": []
                 }
               ],
@@ -877,7 +1205,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "memos: 0 violations, 18 rules passed"
+                  "description": "memos: 0 violations, 25 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -885,14 +1213,14 @@
               "projectName": "webkit-desktop",
               "results": [
                 {
-                  "workerIndex": 4,
+                  "workerIndex": 6,
                   "status": "passed",
-                  "duration": 1915,
+                  "duration": 2704,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:17.647Z",
+                  "startTime": "2026-11-08T17:43:34.907Z",
                   "attachments": []
                 }
               ],
@@ -901,7 +1229,7 @@
           ],
           "id": "a510cc93a867214a2ea0-361da5e4700860bd8e29",
           "file": "app.spec.js",
-          "line": 54,
+          "line": 58,
           "column": 1
         },
         {
@@ -914,7 +1242,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "map: 0 violations, 26 rules passed"
+                  "description": "map: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -922,14 +1250,14 @@
               "projectName": "webkit-tablet",
               "results": [
                 {
-                  "workerIndex": 5,
+                  "workerIndex": 7,
                   "status": "passed",
-                  "duration": 9272,
+                  "duration": 10391,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:05.778Z",
+                  "startTime": "2026-11-08T17:43:18.149Z",
                   "attachments": []
                 }
               ],
@@ -959,14 +1287,14 @@
               "projectName": "webkit-tablet",
               "results": [
                 {
-                  "workerIndex": 5,
+                  "workerIndex": 7,
                   "status": "passed",
-                  "duration": 3332,
+                  "duration": 4189,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:15.171Z",
+                  "startTime": "2026-11-08T17:43:28.619Z",
                   "attachments": []
                 }
               ],
@@ -988,7 +1316,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "backtest: 0 violations, 25 rules passed"
+                  "description": "backtest: 0 violations, 27 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -996,14 +1324,14 @@
               "projectName": "webkit-tablet",
               "results": [
                 {
-                  "workerIndex": 5,
+                  "workerIndex": 7,
                   "status": "passed",
-                  "duration": 2011,
+                  "duration": 2848,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:18.509Z",
+                  "startTime": "2026-11-08T17:43:32.814Z",
                   "attachments": []
                 }
               ],
@@ -1025,7 +1353,7 @@
               "annotations": [
                 {
                   "type": "axe",
-                  "description": "memos: 0 violations, 18 rules passed"
+                  "description": "memos: 0 violations, 23 rules passed"
                 }
               ],
               "expectedStatus": "passed",
@@ -1033,14 +1361,14 @@
               "projectName": "webkit-tablet",
               "results": [
                 {
-                  "workerIndex": 5,
+                  "workerIndex": 7,
                   "status": "passed",
-                  "duration": 2266,
+                  "duration": 2354,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-11-08T15:25:20.526Z",
+                  "startTime": "2026-11-08T17:43:35.666Z",
                   "attachments": []
                 }
               ],
@@ -1049,79 +1377,7 @@
           ],
           "id": "a510cc93a867214a2ea0-29787d4d63f329178aea",
           "file": "app.spec.js",
-          "line": 54,
-          "column": 1
-        }
-      ]
-    },
-    {
-      "title": "perf.spec.js",
-      "file": "perf.spec.js",
-      "column": 0,
-      "line": 0,
-      "specs": [
-        {
-          "title": "5 concurrent users, map and site page timings",
-          "ok": false,
-          "tags": [],
-          "tests": [
-            {
-              "timeout": 600000,
-              "annotations": [],
-              "expectedStatus": "passed",
-              "projectId": "perf",
-              "projectName": "perf",
-              "results": [
-                {
-                  "workerIndex": 6,
-                  "status": "failed",
-                  "duration": 309942,
-                  "error": {
-                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m",
-                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n    at /home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js:49:18",
-                    "matcherResult": {
-                      "message": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m",
-                      "pass": false
-                    },
-                    "location": {
-                      "file": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js",
-                      "column": 18,
-                      "line": 49
-                    },
-                    "snippet": "  47 |   fs.writeFileSync('results/perf.json', JSON.stringify(summary, null, 2));\n  48 |   console.log(JSON.stringify({ ...summary, trials: undefined }));\n> 49 |   expect(passed).toBeGreaterThanOrEqual(9);\n     |                  ^\n  50 | });\n  51 |"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js",
-                        "column": 18,
-                        "line": 49
-                      },
-                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m9\u001b[39m\nReceived:    \u001b[31m0\u001b[39m\n\n  47 |   fs.writeFileSync('results/perf.json', JSON.stringify(summary, null, 2));\n  48 |   console.log(JSON.stringify({ ...summary, trials: undefined }));\n> 49 |   expect(passed).toBeGreaterThanOrEqual(9);\n     |                  ^\n  50 | });\n  51 |\n    at /home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js:49:18"
-                    }
-                  ],
-                  "stdout": [
-                    {
-                      "text": "{\"users\":5,\"limits_s\":{\"map\":5,\"site\":2},\"trials_passed\":0,\"pass\":false,\"map_s\":{\"median\":null,\"p90\":null,\"max\":null},\"site_s\":{\"median\":0.177,\"p90\":0.366,\"max\":0.528},\"timed_out\":44,\"note\":\"Timeouts (30 s) count as Infinity and fail the trial. OpenStreetMap basemap tiles stubbed; server is one uvicorn worker on the local host serving the bundled artifact; each user is a separate headless Chromium process on the same host.\",\"run_id\":\"s2-citywide-2026-11-08\"}\n"
-                    }
-                  ],
-                  "stderr": [],
-                  "retry": 0,
-                  "startTime": "2026-11-08T15:25:20.093Z",
-                  "attachments": [],
-                  "errorLocation": {
-                    "file": "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/e2e/tests/perf.spec.js",
-                    "column": 18,
-                    "line": 49
-                  }
-                }
-              ],
-              "status": "unexpected"
-            }
-          ],
-          "id": "cc1e91386849cdb76657-52b8884c496a2c9ee1b8",
-          "file": "perf.spec.js",
-          "line": 9,
+          "line": 58,
           "column": 1
         }
       ]
@@ -1129,11 +1385,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-11-08T15:24:28.553Z",
-    "duration": 361504.335,
-    "expected": 24,
+    "startTime": "2026-11-08T17:42:35.199Z",
+    "duration": 62878.705,
+    "expected": 32,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }

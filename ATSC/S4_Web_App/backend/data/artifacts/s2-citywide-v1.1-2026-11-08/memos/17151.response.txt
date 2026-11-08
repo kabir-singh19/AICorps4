@@ -1,0 +1,17 @@
+{
+  "site_id": "17151",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{ka_3y}} fatal or suspected serious injury crashes occurred, with {{kabc_3y}} KABCO injury crashes and {{total_3y}} total crashes. The intersection saw a high number of left-turn opposing crashes ({{left_turn_opposing_3y}}), rear-end crashes ({{rear_end_3y}}), and night crashes ({{night_3y}}). Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged for high crash frequency and severity, with elevated fatal or serious injury crash rate ({{fsi_rate}} per mile per year) and high traffic exposure ({{aadt}} vehicles/day). The site is a four-leg, signalized intersection on a state route, ranked {{rank_city_actionable}} among actionable city sites.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for all severities, including KABCO injury crashes. The CMF entry {{cmf:267}} is a direct crash-type match for four-leg urban signalized intersections with high left-turn opposing crash counts, but requires engineering review for traffic volumes and geometry."
+    },
+    {
+      "cm_id": "CM019",
+      "rationale": "Modifying change plus clearance intervals to studied ITE 1985 practice is supported by broader evidence for all severities. The CMF entry {{cmf:380}} is a direct crash-type match for signalized intersections, but requires engineering review for area setting and confirmation of current signal timing."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The library lacks audit-approved CMFs for fatal or serious injury crashes, and does not provide planning-level unit cost or service life for these entries.",
+  "next_steps": "Conduct engineering review to verify traffic volumes, intersection geometry, and signal timing prerequisites for both treatments. Confirm whether left-turn lane installation and signal timing modifications are feasible given current equipment and roadway constraints. Complete source verification for CMF applicability."
+}

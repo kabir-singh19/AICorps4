@@ -178,6 +178,28 @@ export function Backtest({ run }) {
   </section>;
 }
 
+// FSR 3.2.5.1.1.3: built-in test results for the run, retrievable by operators.
+export function BitLog({ run }) {
+  const result = useApi(run ? runPath('bit', run.run_id) : null);
+  const b = result.data;
+  return <section className="card" data-testid="bit-log" aria-label="Built-in test log">
+    <h2>Built-in test (BIT) log</h2>
+    {result.loading && <p role="status">Loading test log…</p>}
+    {result.error && <p role="alert" className="api-error">{result.error}</p>}
+    {b && <>
+      <div className="kpis inner">
+        <div className="kpi"><span className="kpi-label">Seeded faults detected</span><span className="kpi-value">{b.campaign ? `${b.campaign.detected} / ${b.campaign.faults}` : 'n/a'}</span><span className="kpi-note">pass at 19 or more</span></div>
+        <div className="kpi"><span className="kpi-label">False alarms in clean runs</span><span className="kpi-value">{b.campaign ? `${b.campaign.false_alarms} / ${b.campaign.good_runs}` : 'n/a'}</span><span className="kpi-note">pass at 1 or fewer</span></div>
+        <div className="kpi"><span className="kpi-label">Model output checks</span><span className="kpi-value">{b.model_checks.passed} / {b.model_checks.runs}</span><span className="kpi-note">runs passed</span></div>
+      </div>
+      {b.suite_log.length > 0 && <div className="table-scroll"><table className="data-table compact"><caption>Last <code>atsc bit</code> run</caption>
+        <thead><tr><th scope="col">Test</th><th scope="col">Result</th><th scope="col">Details</th><th scope="col">Time (UTC)</th></tr></thead>
+        <tbody>{b.suite_log.map((r, k) => <tr key={k}><th scope="row">{r.test}</th><td><span className={`pill ${r.result === 'pass' ? 'pill-on' : 'pill-up'}`}>{r.result}</span></td><td>{r.details}</td><td>{r.timestamp}</td></tr>)}</tbody></table></div>}
+      {b.campaign && <details className="table-view"><summary>Show the {b.campaign.faults} seeded faults</summary><ul className="small">{b.campaign.seeded_faults.map((f, k) => <li key={k}>{f.detected ? '✓' : '✗'} {f.fault}</li>)}</ul></details>}
+    </>}
+  </section>;
+}
+
 export function Memos({ run, sites, resource, selectedSiteId, onSelectSite, onOpenSite }) {
   const withMemo = sites.filter(s => s.properties.memo_status !== 'none').sort((a, b) => (a.properties.rank_city_actionable ?? 1e9) - (b.properties.rank_city_actionable ?? 1e9));
   const active = withMemo.find(s => s.properties.site_id === selectedSiteId) || withMemo[0];

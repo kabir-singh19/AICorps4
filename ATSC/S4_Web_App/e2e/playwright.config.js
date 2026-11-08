@@ -20,6 +20,8 @@ export default defineConfig({
   projects: [
     { name: 'chromium-desktop', use: { ...devices['Desktop Chrome'], ...desktop }, testIgnore: /perf/ },
     { name: 'chromium-tablet', use: { ...devices['Desktop Chrome'], ...tablet }, testIgnore: /perf/ },
+    { name: 'edge-desktop', use: { ...devices['Desktop Edge'], channel: 'msedge', ...desktop }, testIgnore: /perf/ },
+    { name: 'edge-tablet', use: { ...devices['Desktop Edge'], channel: 'msedge', ...tablet }, testIgnore: /perf/ },
     { name: 'firefox-desktop', use: { ...devices['Desktop Firefox'], ...desktop }, testIgnore: /perf/ },
     { name: 'firefox-tablet', use: { ...devices['Desktop Firefox'], ...tablet }, testIgnore: /perf/ },
     { name: 'webkit-desktop', use: { ...devices['Desktop Safari'], ...desktop }, testIgnore: /perf/ },

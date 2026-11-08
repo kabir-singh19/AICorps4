@@ -1,0 +1,434 @@
+{
+  "matched_test_crashes_only": true,
+  "models": {
+    "ML-EB": {
+      "ka": {
+        "deciles": [
+          {
+            "decile": 1,
+            "observed": 0.0,
+            "predicted": 0.022421153711111474,
+            "sites": 666
+          },
+          {
+            "decile": 2,
+            "observed": 0.0,
+            "predicted": 0.05034322171373162,
+            "sites": 666
+          },
+          {
+            "decile": 3,
+            "observed": 0.0,
+            "predicted": 0.10888330253799694,
+            "sites": 665
+          },
+          {
+            "decile": 4,
+            "observed": 1.0,
+            "predicted": 0.21290786951421337,
+            "sites": 666
+          },
+          {
+            "decile": 5,
+            "observed": 1.0,
+            "predicted": 0.41406861027295305,
+            "sites": 665
+          },
+          {
+            "decile": 6,
+            "observed": 5.0,
+            "predicted": 0.9284174015308373,
+            "sites": 666
+          },
+          {
+            "decile": 7,
+            "observed": 4.0,
+            "predicted": 1.4253790089477318,
+            "sites": 665
+          },
+          {
+            "decile": 8,
+            "observed": 3.0,
+            "predicted": 2.5987221737131256,
+            "sites": 666
+          },
+          {
+            "decile": 9,
+            "observed": 21.0,
+            "predicted": 6.896278828257472,
+            "sites": 665
+          },
+          {
+            "decile": 10,
+            "observed": 116.0,
+            "predicted": 99.19138831920318,
+            "sites": 666
+          }
+        ],
+        "observed_total": 151.0,
+        "predicted_total": 111.84880988940236,
+        "ratio_predicted_to_observed": 0.7407205952940553
+      },
+      "kabc": {
+        "deciles": [
+          {
+            "decile": 1,
+            "observed": 2.0,
+            "predicted": 0.28914480686908794,
+            "sites": 666
+          },
+          {
+            "decile": 2,
+            "observed": 3.0,
+            "predicted": 0.6523500408356822,
+            "sites": 666
+          },
+          {
+            "decile": 3,
+            "observed": 0.0,
+            "predicted": 1.4392610373959687,
+            "sites": 665
+          },
+          {
+            "decile": 4,
+            "observed": 5.0,
+            "predicted": 2.8925464760257693,
+            "sites": 666
+          },
+          {
+            "decile": 5,
+            "observed": 9.0,
+            "predicted": 5.942171719187346,
+            "sites": 665
+          },
+          {
+            "decile": 6,
+            "observed": 15.0,
+            "predicted": 12.760015860745476,
+            "sites": 666
+          },
+          {
+            "decile": 7,
+            "observed": 25.0,
+            "predicted": 21.202529283889877,
+            "sites": 665
+          },
+          {
+            "decile": 8,
+            "observed": 52.0,
+            "predicted": 43.706158186507835,
+            "sites": 666
+          },
+          {
+            "decile": 9,
+            "observed": 132.0,
+            "predicted": 114.87540666573265,
+            "sites": 665
+          },
+          {
+            "decile": 10,
+            "observed": 1577.0,
+            "predicted": 1629.346953482031,
+            "sites": 666
+          }
+        ],
+        "observed_total": 1820.0,
+        "predicted_total": 1833.1065375592207,
+        "ratio_predicted_to_observed": 1.007201394263308
+      }
+    },
+    "SPF+EB": {
+      "ka": {
+        "deciles": [
+          {
+            "decile": 1,
+            "observed": 0.0,
+            "predicted": 0.1129500158332677,
+            "sites": 666
+          },
+          {
+            "decile": 2,
+            "observed": 0.0,
+            "predicted": 0.14719839121933773,
+            "sites": 666
+          },
+          {
+            "decile": 3,
+            "observed": 0.0,
+            "predicted": 0.18279804529066224,
+            "sites": 665
+          },
+          {
+            "decile": 4,
+            "observed": 2.0,
+            "predicted": 0.26064663962829626,
+            "sites": 666
+          },
+          {
+            "decile": 5,
+            "observed": 3.0,
+            "predicted": 0.4373440852004848,
+            "sites": 665
+          },
+          {
+            "decile": 6,
+            "observed": 4.0,
+            "predicted": 0.9607133568892842,
+            "sites": 666
+          },
+          {
+            "decile": 7,
+            "observed": 5.0,
+            "predicted": 1.5347959293435223,
+            "sites": 665
+          },
+          {
+            "decile": 8,
+            "observed": 4.0,
+            "predicted": 3.32069671491952,
+            "sites": 666
+          },
+          {
+            "decile": 9,
+            "observed": 15.0,
+            "predicted": 7.509990029726044,
+            "sites": 665
+          },
+          {
+            "decile": 10,
+            "observed": 118.0,
+            "predicted": 96.60744173555398,
+            "sites": 666
+          }
+        ],
+        "observed_total": 151.0,
+        "predicted_total": 111.07457494360438,
+        "ratio_predicted_to_observed": 0.7355932115470488
+      },
+      "kabc": {
+        "deciles": [
+          {
+            "decile": 1,
+            "observed": 1.0,
+            "predicted": 1.4586715735913838,
+            "sites": 666
+          },
+          {
+            "decile": 2,
+            "observed": 5.0,
+            "predicted": 1.897921963452057,
+            "sites": 666
+          },
+          {
+            "decile": 3,
+            "observed": 2.0,
+            "predicted": 2.343391850268614,
+            "sites": 665
+          },
+          {
+            "decile": 4,
+            "observed": 4.0,
+            "predicted": 3.324197059996977,
+            "sites": 666
+          },
+          {
+            "decile": 5,
+            "observed": 19.0,
+            "predicted": 6.023647160114569,
+            "sites": 665
+          },
+          {
+            "decile": 6,
+            "observed": 11.0,
+            "predicted": 11.79170831098947,
+            "sites": 666
+          },
+          {
+            "decile": 7,
+            "observed": 34.0,
+            "predicted": 24.37003852042298,
+            "sites": 665
+          },
+          {
+            "decile": 8,
+            "observed": 46.0,
+            "predicted": 59.763515272280046,
+            "sites": 666
+          },
+          {
+            "decile": 9,
+            "observed": 144.0,
+            "predicted": 138.53676123737966,
+            "sites": 665
+          },
+          {
+            "decile": 10,
+            "observed": 1554.0,
+            "predicted": 1582.7645024315264,
+            "sites": 666
+          }
+        ],
+        "observed_total": 1820.0,
+        "predicted_total": 1832.2743553800221,
+        "ratio_predicted_to_observed": 1.0067441513077044
+      }
+    },
+    "Stack": {
+      "ka": {
+        "deciles": [
+          {
+            "decile": 1,
+            "observed": 0.0,
+            "predicted": 0.02787864336470685,
+            "sites": 666
+          },
+          {
+            "decile": 2,
+            "observed": 0.0,
+            "predicted": 0.06259716792771208,
+            "sites": 666
+          },
+          {
+            "decile": 3,
+            "observed": 0.0,
+            "predicted": 0.1353863765861413,
+            "sites": 665
+          },
+          {
+            "decile": 4,
+            "observed": 1.0,
+            "predicted": 0.26473136218609217,
+            "sites": 666
+          },
+          {
+            "decile": 5,
+            "observed": 1.0,
+            "predicted": 0.5139806051352991,
+            "sites": 665
+          },
+          {
+            "decile": 6,
+            "observed": 5.0,
+            "predicted": 1.206047942748392,
+            "sites": 666
+          },
+          {
+            "decile": 7,
+            "observed": 2.0,
+            "predicted": 1.8882221589463883,
+            "sites": 665
+          },
+          {
+            "decile": 8,
+            "observed": 5.0,
+            "predicted": 3.316091634604799,
+            "sites": 666
+          },
+          {
+            "decile": 9,
+            "observed": 20.0,
+            "predicted": 8.346560876896543,
+            "sites": 665
+          },
+          {
+            "decile": 10,
+            "observed": 117.0,
+            "predicted": 119.9932313858611,
+            "sites": 666
+          }
+        ],
+        "observed_total": 151.0,
+        "predicted_total": 135.75472815425718,
+        "ratio_predicted_to_observed": 0.8990379347964051
+      },
+      "kabc": {
+        "deciles": [
+          {
+            "decile": 1,
+            "observed": 2.0,
+            "predicted": 0.35952498499064706,
+            "sites": 666
+          },
+          {
+            "decile": 2,
+            "observed": 3.0,
+            "predicted": 0.8111373023769515,
+            "sites": 666
+          },
+          {
+            "decile": 3,
+            "observed": 0.0,
+            "predicted": 1.7895887824182415,
+            "sites": 665
+          },
+          {
+            "decile": 4,
+            "observed": 5.0,
+            "predicted": 3.587815849040644,
+            "sites": 666
+          },
+          {
+            "decile": 5,
+            "observed": 9.0,
+            "predicted": 7.332672814793062,
+            "sites": 665
+          },
+          {
+            "decile": 6,
+            "observed": 13.0,
+            "predicted": 15.8627720835699,
+            "sites": 666
+          },
+          {
+            "decile": 7,
+            "observed": 26.0,
+            "predicted": 26.92273109050987,
+            "sites": 665
+          },
+          {
+            "decile": 8,
+            "observed": 56.0,
+            "predicted": 57.60784127264897,
+            "sites": 666
+          },
+          {
+            "decile": 9,
+            "observed": 123.0,
+            "predicted": 146.17309010432302,
+            "sites": 665
+          },
+          {
+            "decile": 10,
+            "observed": 1583.0,
+            "predicted": 1998.8389162477313,
+            "sites": 666
+          }
+        ],
+        "observed_total": 1820.0,
+        "predicted_total": 2259.286090532403,
+        "ratio_predicted_to_observed": 1.2413659838090125
+      }
+    }
+  },
+  "severity": {
+    "bins": [
+      {
+        "bin": 0,
+        "known_crashes": 4088,
+        "mean_prediction": 0.02675543522299447,
+        "observed_fsi_fraction": 0.03644814090019569
+      },
+      {
+        "bin": 1,
+        "known_crashes": 26,
+        "mean_prediction": 0.12386049771629434,
+        "observed_fsi_fraction": 0.07692307692307693
+      }
+    ],
+    "brier_score": 0.035770660567965386,
+    "known_crashes": 4114,
+    "quantity": "P(K or A | known-severity crash) from ML-EB severity shares vs 2023-2025 observed",
+    "status": "ok"
+  },
+  "window": "2023-2025"
+}

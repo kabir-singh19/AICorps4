@@ -1,0 +1,5 @@
+{"test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:18+00:00", "test": "data validation (S1 ingest checks)", "result": "pass", "details": "OK"}
+{"test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:20+00:00", "test": "model outputs (S2 checks: rates, EB weights, ranking, leakage)", "result": "pass", "details": "50 passed in 0.72s"}
+{"test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:20+00:00", "test": "memo grounding (S3 seeded memos)", "result": "pass", "details": "11 passed, 55 subtests passed in 0.11s"}
+{"test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:22+00:00", "test": "API health (S4)", "result": "pass", "details": "23 passed, 1 skipped, 1 warning in 1.68s"}
+{"test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:22+00:00", "test": "seeded-fault campaign (s2-citywide-v1.1-2026-11-08)", "result": "pass", "details": "20/20 faults detected, 0 false alarms in 20 clean runs"}

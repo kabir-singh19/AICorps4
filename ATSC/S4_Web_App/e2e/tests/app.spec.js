@@ -48,6 +48,10 @@ test('backtest page shows A, B, C with intervals for both targets', async ({ pag
   await expect(bt).toContainText("HIN's own share");
   await page.getByLabel('Crash severity scored').selectOption('KABC');
   await expect(bt.locator('caption')).toContainText('KABC');
+  // FSR 3.2.5.1.1.3: BIT results retrievable from the operator interface
+  const bit = page.getByTestId('bit-log');
+  await expect(bit).toContainText('Seeded faults detected');
+  await expect(bit.locator('tbody tr').first()).toBeVisible();
   await axe(page, 'backtest');
 });
 

@@ -1,0 +1,17 @@
+{
+  "site_id": "16334",
+  "crash_profile": "FM2818 & LONGMIRE DR is a signalized four-leg intersection with {{total_3y}} crashes from {{window_start}} to {{window_end}}, including {{ka_3y}} fatal or serious injury, {{b_3y}} minor injury, and {{c_3y}} possible injury crashes. Rear-end crashes are most frequent ({{rear_end_3y}}), followed by left-turn opposing ({{left_turn_opposing_3y}}) and angle crashes ({{angle_3y}}). Night and wet conditions contributed to {{night_3y}} and {{wet_3y}} crashes, respectively. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to the model estimate of {{fsi_rate}} fatal or serious injuries per mile per year, high traffic exposure ({{aadt}} vehicles/day), four-leg signalized geometry, and a concentration of crashes including fatal or serious injury. The intersection is within the High Injury Network and ranks {{rank_city_actionable}} among actionable city sites.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for urban signalized intersections with similar traffic volumes. The cited CMF {{cmf:267}} is an aggregate for all crash types and severities, not a direct match for left-turn opposing or fatal/serious injury crashes, so engineering review is needed."
+    },
+    {
+      "cm_id": "CM019",
+      "rationale": "Modifying change plus clearance intervals to studied ITE 1985 practice is supported by broader evidence for signalized intersections. The cited CMF {{cmf:380}} applies to all crash types and severities, not specifically fatal/serious injury or rear-end crashes, so engineering review is needed."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The library lacks audit-approved CMFs for fatal or serious injury crashes, planning-level unit costs, and service life values for these treatments.",
+  "next_steps": "Conduct engineering review for left-turn lane feasibility and signal timing modifications, including assessment of intersection geometry, traffic volumes, and existing equipment. Confirm crash patterns and severity scope for each countermeasure. Pedestrian and bicycle safety should be considered if counts become available."
+}

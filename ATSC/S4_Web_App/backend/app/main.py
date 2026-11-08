@@ -13,11 +13,38 @@ from .examples import router as examples_router
 from .artifact_runs import load_artifact_runs, find_artifact_run, site_detail, backtest_summary, ranking_csv
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import RedirectResponse
+import json
+import logging
 import os
+import sys
+import time
+
+# FSR 3.2.3.2.2: one structured JSON log line per API request (stdout; the container runtime keeps it).
+access_log = logging.getLogger("atsc.access")
+if not access_log.handlers:
+    _h = logging.StreamHandler(sys.stdout)
+    _h.setFormatter(logging.Formatter("%(message)s"))
+    access_log.addHandler(_h)
+    access_log.setLevel(logging.INFO)
+    access_log.propagate = False
 
 app = FastAPI(title="ATSC API", version="0.3.0", openapi_url="/api/v1/openapi.json", docs_url="/api/v1/docs")
 app.middleware("http")(security_headers)
 app.add_middleware(GZipMiddleware, minimum_size=1024)
+
+
+@app.middleware("http")
+async def request_log(request: Request, call_next):
+    t0 = time.monotonic()
+    status = 500
+    try:
+        response = await call_next(request)
+        status = response.status_code
+        return response
+    finally:
+        access_log.info(json.dumps({"ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "event": "api_request",
+                                    "method": request.method, "path": request.url.path, "status": status,
+                                    "ms": round((time.monotonic() - t0) * 1000, 1)}))
 
 
 @app.middleware("http")
@@ -235,5 +262,26 @@ def backtest(run_id: str):
         return {"run_id": run_id, "status": "available", "backtest": backtest_summary(art)}
     run = find_run(run_id)
     return {"run_id": run.run_id, "status": "available" if run.backtest else "pending", "backtest": run.backtest.model_dump() if run.backtest else None}
+
+@app.get("/api/v1/bit")
+def bit_log(run_id: str):
+    """FSR 3.2.5.1.1.3: built-in test results for a run (model checks, seeded-fault campaign, suite log)."""
+    art = artifact_or_none(run_id)
+    if art is None:
+        find_run(run_id)
+        raise ApiError(404, "bit_not_found", "No built-in test log is stored for this run.")
+    def read(name, lines=False):
+        f = art.path / name
+        if not f.exists():
+            return None
+        return [json.loads(x) for x in f.read_text().splitlines() if x.strip()] if lines else json.loads(f.read_text())
+    checks = read("bit.json") or []
+    campaign = read("bit_campaign.json")
+    return {"run_id": run_id,
+            "model_checks": {"runs": len(checks), "passed": sum(c.get("result") == "pass" for c in checks),
+                             "tests": sorted({c.get("test") for c in checks})},
+            "campaign": None if campaign is None else {k: campaign.get(k) for k in ("criteria", "faults", "detected", "false_alarms", "result")}
+                        | {"good_runs": len(campaign.get("good_runs", [])), "seeded_faults": campaign.get("seeded_faults", [])},
+            "suite_log": read("bit_log.jsonl", lines=True) or []}
 
 mount_frontend(app)

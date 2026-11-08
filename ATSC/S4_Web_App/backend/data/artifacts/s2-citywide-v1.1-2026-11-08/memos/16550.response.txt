@@ -1,0 +1,17 @@
+{
+  "site_id": "16550",
+  "crash_profile": "From {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this signalized three-leg intersection, with {{ka_3y}} fatal or suspected serious injuries and {{kabc_3y}} KABCO injuries. Rear-end crashes were most frequent ({{rear_end_3y}}), followed by run-off-road ({{run_off_road_3y}}), angle ({{angle_3y}}), and left-turn opposing ({{left_turn_opposing_3y}}). Night and wet conditions contributed to some crashes ({{night_3y}}, {{wet_3y}}). Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to the model estimate of fatal or serious injury crash rate ({{fsi_rate}}), high traffic exposure ({{aadt}} vehicles/day), concentration of marked crossings, and proximity to other crash sites. The intersection is in the city's high-injury network and ranks {{rank_city_actionable}} among actionable sites.",
+  "countermeasures": [
+    {
+      "cm_id": "CM013",
+      "rationale": "Adding retroreflective sheeting to signal backplates is supported by broader evidence for all crash types and severities, but the CMF entry {{cmf:1410}} is not a direct crash-type match for rear-end crashes and does not isolate fatal or serious injury reductions. Engineering review is required."
+    },
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for all crash types and KABCO severities, but the CMF entry {{cmf:267}} is not a direct match for left-turn opposing crashes or fatal/serious injuries. Engineering review is required."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either treatment. The CMF evidence audit does not approve a numerical benefit calculation, and the library lacks planning-level unit cost and service life entries. The available CMF severity scopes do not isolate fatal or serious injury reductions.",
+  "next_steps": "Conduct engineering review to verify prerequisites for each treatment, including intersection geometry, traffic volumes, and existing equipment. Confirm applicability to the predominant crash types and assess operational impacts. Review pedestrian and bicycle activity if data becomes available."
+}

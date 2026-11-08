@@ -1,0 +1,17 @@
+{
+  "site_id": "17188",
+  "crash_profile": "From {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this unsignalized 4-leg intersection, including {{ka_3y}} fatal or serious injuries (K+A), {{kabc_3y}} KABCO injuries, and {{angle_3y}} angle crashes. Rear-end, run-off-road, and head-on crashes were also recorded. Night and wet conditions contributed to some crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "The site is flagged due to its model-estimated fatal or serious injury crash rate of {{fsi_rate}} per mile per year, high traffic exposure ({{aadt}} vehicles/day), 4-leg intersection geometry, proximity to other crash sites, and inclusion in the High Injury Network. It ranks {{rank_city_actionable}} among actionable city sites.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "Broader evidence supports this systemic signing and marking improvement package for all crash types and KABCO severities, citing CMF {{cmf:8867}}. The entry is not a direct match for fatal or serious injuries and requires engineering review to confirm prerequisites and applicability."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Broader evidence supports flashing beacons at stop-controlled intersections for all crash types and severities, citing CMF {{cmf:446}}. The entry is not a direct match for fatal or serious injuries and requires engineering review to confirm prerequisites and installation details."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The evidence audit does not approve a library entry for numerical benefit calculation, and there is no planning-level unit cost or service life available. The CMF severity scopes do not match K and A only.",
+  "next_steps": "Conduct engineering review to confirm site prerequisites for both treatments, including intersection geometry, traffic volumes, and existing equipment. Assess whether the treatments address the predominant crash types and severities observed. Coordinate with TxDOT for jurisdictional considerations."
+}

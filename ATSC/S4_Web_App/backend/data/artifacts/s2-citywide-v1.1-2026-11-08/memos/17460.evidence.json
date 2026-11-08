@@ -1,0 +1,411 @@
+{
+  "site_id": "17460",
+  "run_id": "s2-citywide-v1.1-2026-11-08",
+  "tool_order": [
+    "get_site_profile",
+    "get_crash_breakdown",
+    "match_countermeasures",
+    "compute_benefit"
+  ],
+  "tool_results": [
+    {
+      "tool": "get_site_profile",
+      "args": {
+        "site_id": "17460",
+        "run_id": "s2-citywide-v1.1-2026-11-08"
+      },
+      "output": {
+        "site_id": "17460",
+        "run_id": "s2-citywide-v1.1-2026-11-08",
+        "site_type": "intersection",
+        "road_name": "ROCK PRAIRE RD & SH0006",
+        "jurisdiction": "City/TxDOT",
+        "signalized": false,
+        "length_mi": 0.0473,
+        "rank": 16,
+        "rank_city_actionable": 11,
+        "flagged": true,
+        "in_hin": true,
+        "fsi_rate": 8.409913,
+        "annual_fsi": 0.398197,
+        "annual_kabc": 5.35482,
+        "eb_weight": 0.116258,
+        "aadt": 81018.0,
+        "aadt_imputed": false,
+        "speed_limit": null,
+        "num_lanes": null,
+        "legs": 4.0,
+        "median_type": null,
+        "top_factors": [
+          {
+            "rank": 1,
+            "text": "traffic exposure (81,018 vehicles/day)",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 2,
+            "text": "4-leg intersection",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 3,
+            "text": "26 crashes on sites within 250 m in the last 3 years",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 4,
+            "text": "on a state route (TxDOT)",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 5,
+            "text": "TxDOT traffic count available",
+            "direction": "lowers risk"
+          }
+        ],
+        "model": "S2 method C (ML-EB), forecast year 2026"
+      }
+    },
+    {
+      "tool": "get_crash_breakdown",
+      "args": {
+        "site_id": "17460",
+        "years": "2023-2025"
+      },
+      "output": {
+        "total": 32,
+        "k": 0,
+        "a": 0,
+        "b": 9,
+        "c": 5,
+        "o": 18,
+        "u": 0,
+        "angle": 10,
+        "rear_end": 13,
+        "run_off_road": 3,
+        "opposite_direction": 2,
+        "head_on": 0,
+        "left_turn_opposing": 2,
+        "sideswipe": 3,
+        "night": 8,
+        "wet": 3,
+        "years": "2023-2025",
+        "ka": 0,
+        "kabc": 14,
+        "pedestrian": null,
+        "bicycle": null,
+        "notes": [
+          "Pedestrian and bicycle counts are not available: the delivered CRIS exports have no pedestrian or bicycle field.",
+          "run_off_road counts all single-vehicle crashes (CRIS manner of collision 'one motor vehicle'); it is a proxy, not a roadway-departure flag.",
+          "head_on = opposite direction, both going straight; left_turn_opposing = opposite direction with a left-turning vehicle (not head-on).",
+          "night = dark lighted, dark not lighted or dark unknown lighting; wet = wet or standing water."
+        ]
+      }
+    },
+    {
+      "tool": "match_countermeasures",
+      "args": {
+        "site": {
+          "site_id": "17460",
+          "site_type": "unsignalized intersection",
+          "crash_patterns": [
+            "angle",
+            "rear_end"
+          ],
+          "area_type": "urban",
+          "time_of_day": "unknown",
+          "severity_scope": "K;A",
+          "example": false
+        }
+      },
+      "output": {
+        "candidates": [],
+        "engineering_review": [
+          {
+            "cm_id": "CM018",
+            "treatment": "Apply systemic signing and marking improvement package",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: unsignalized intersection.",
+              "Area setting is compatible with the recorded study setting.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Three-/four-leg stop-controlled intersections; 2-4 lanes; major AADT 641-41731; minor AADT 102-8436. Package includes paired warning/STOP signs, reflective posts, and renewed stop/yield bars and other markings.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.899,
+              "cmf_id": "8867",
+              "crash_types": "All",
+              "severity_scope": "K;A;B;C",
+              "star_rating": 4,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=8867",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Le et al., 2017; Safety Effects of Low-Cost Systemic Safety Improvements at Signalized and Stop-Controlled Intersections",
+              "limitations": "Empirical Bayes before-after, South Carolina; 434 sites. Applies to the package, not one sign or marking by itself."
+            }
+          },
+          {
+            "cm_id": "CM029",
+            "treatment": "Provide flashing beacons at stop-controlled intersections",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: unsignalized intersection.",
+              "Area setting is compatible with the recorded study setting.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=All. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg stop-controlled roadway intersection on two-lane roads. Major-road ADT 250-42520; minor-road ADT 90-13270. Standard and actuated beacons were studied; confirm the chosen installation.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.95,
+              "cmf_id": "446",
+              "crash_types": "All",
+              "severity_scope": "All",
+              "star_rating": 4,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=446",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Srinivasan et al., 2008; Safety Evaluation of Flashing Beacons at Stop Controlled Intersections",
+              "limitations": "Empirical Bayes study. Adjusted SE 0.04. HSM explicitly recommends caution because uncertainty includes no effect or an increase. Aggregate scope; not an angle-only estimate. Not an RRFB pedestrian-crossing treatment."
+            }
+          }
+        ],
+        "excluded": [
+          {
+            "cm_id": "CM007",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM008",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM009",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM010",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM011",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM012",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM013",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM014",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM015",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM016",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM017",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM019",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM020",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM021",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM022",
+            "reason": "Process entry without a selected treatment CMF."
+          },
+          {
+            "cm_id": "CM023",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM024",
+            "reason": "Process entry without a selected treatment CMF."
+          },
+          {
+            "cm_id": "CM025",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM027",
+            "reason": "Known area type conflicts with the study setting."
+          },
+          {
+            "cm_id": "CM028",
+            "reason": "Known area type conflicts with the study setting."
+          },
+          {
+            "cm_id": "CM030",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM031",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM032",
+            "reason": "Known area type conflicts with the study setting."
+          },
+          {
+            "cm_id": "CM033",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM034",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM035",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM036",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM037",
+            "reason": "No overlap with CMF-supported crash types: Dry weather."
+          }
+        ],
+        "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. Direct means crash-type support only, not verified site suitability. Broader/partial evidence is listed separately for engineering review.",
+        "rule": "crash patterns = manner-of-collision groups with at least 2 crashes and 25% of the site's crashes in the window; night when at least a third of crashes were in the dark; otherwise 'all'"
+      }
+    },
+    {
+      "tool": "compute_benefit",
+      "args": {
+        "site_id": "17460",
+        "cm_ids": [
+          "CM018",
+          "CM029"
+        ]
+      },
+      "output": [
+        {
+          "cm_id": "CM018",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (K;A;B;C) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        },
+        {
+          "cm_id": "CM029",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (All) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        }
+      ]
+    }
+  ],
+  "numbers": {
+    "ka_3y": 0,
+    "kabc_3y": 14,
+    "total_3y": 32,
+    "k_3y": 0,
+    "a_3y": 0,
+    "b_3y": 9,
+    "c_3y": 5,
+    "o_3y": 18,
+    "angle_3y": 10,
+    "rear_end_3y": 13,
+    "run_off_road_3y": 3,
+    "head_on_3y": 0,
+    "left_turn_opposing_3y": 2,
+    "sideswipe_3y": 3,
+    "night_3y": 8,
+    "wet_3y": 3,
+    "rank": 16,
+    "fsi_rate": 8.409913,
+    "annual_fsi": 0.398197,
+    "annual_kabc": 5.35482,
+    "eb_weight": 0.116258,
+    "length_mi": 0.0473,
+    "window_start": "2023",
+    "window_end": "2025",
+    "rank_city_actionable": 11,
+    "aadt": 81018.0,
+    "legs": 4.0
+  },
+  "citations": {
+    "8867": {
+      "cm_id": "CM018",
+      "cmf": 0.899,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=8867",
+      "treatment": "Apply systemic signing and marking improvement package",
+      "study_reference": "Le et al., 2017; Safety Effects of Low-Cost Systemic Safety Improvements at Signalized and Stop-Controlled Intersections"
+    },
+    "446": {
+      "cm_id": "CM029",
+      "cmf": 0.95,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=446",
+      "treatment": "Provide flashing beacons at stop-controlled intersections",
+      "study_reference": "Srinivasan et al., 2008; Safety Evaluation of Flashing Beacons at Stop Controlled Intersections"
+    }
+  },
+  "allowed_cm_ids": [
+    "CM018",
+    "CM029"
+  ],
+  "candidate_cm_ids": [],
+  "tool_seconds": 0.005
+}

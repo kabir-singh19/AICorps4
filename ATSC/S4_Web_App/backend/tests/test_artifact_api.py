@@ -110,6 +110,31 @@ class ArtifactContract(unittest.TestCase):
         r = self.client.get(path, **kw)
         return r
 
+    def test_bit_log_endpoint(self):
+        if not getattr(self, "tmp", None):
+            self.skipTest("writes BIT files; runs on the temp fixture only")
+        run = Path(self.tmp) / self.run_id
+        (run / "bit.json").write_text(json.dumps([{"test": "ranges", "result": "pass", "details": {}}] * 3))
+        (run / "bit_campaign.json").write_text(json.dumps({"faults": 20, "detected": 20, "false_alarms": 0, "result": "pass",
+            "criteria": {}, "good_runs": [1] * 20, "seeded_faults": [{"fault": "swapped lat/lon", "detected": True}]}))
+        (run / "bit_log.jsonl").write_text(json.dumps({"test_run_id": "bit-1", "timestamp": "t", "test": "API health",
+                                                       "result": "pass", "details": "ok"}) + "\n")
+        try:
+            b = self.get(f"/api/v1/bit?run_id={self.run_id}").json()
+            self.assertEqual(b["model_checks"], {"runs": 3, "passed": 3, "tests": ["ranges"]})
+            self.assertEqual((b["campaign"]["detected"], b["campaign"]["good_runs"]), (20, 20))
+            self.assertEqual(b["suite_log"][0]["test"], "API health")
+        finally:
+            for f in ("bit.json", "bit_campaign.json", "bit_log.jsonl"):
+                (run / f).unlink()
+        self.assertEqual(self.get(f"/api/v1/bit?run_id={self.run_id}").json()["campaign"], None)
+
+    def test_request_log_is_json(self):
+        with self.assertLogs("atsc.access", "INFO") as cm:
+            self.get("/api/v1/health")
+        rec = json.loads(cm.records[-1].getMessage())
+        self.assertEqual((rec["event"], rec["path"], rec["status"]), ("api_request", "/api/v1/health", 200))
+
     def test_health_and_runs(self):
         h = self.get("/api/v1/health").json()
         self.assertTrue({"status", "db", "llm", "version"} <= set(h))

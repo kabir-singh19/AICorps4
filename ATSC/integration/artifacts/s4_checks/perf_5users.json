@@ -1,0 +1,304 @@
+{
+  "users": 5,
+  "trials": [
+    {
+      "trial": 1,
+      "pass": false,
+      "max_map_s": 6.253,
+      "max_site_s": 0.768,
+      "users": [
+        {
+          "map": 6.253,
+          "site": 0.235
+        },
+        {
+          "map": 6.139,
+          "site": 0.325
+        },
+        {
+          "map": 5.697,
+          "site": 0.33
+        },
+        {
+          "map": 4.461,
+          "site": 0.768
+        },
+        {
+          "map": 6.199,
+          "site": 0.24
+        }
+      ]
+    },
+    {
+      "trial": 2,
+      "pass": false,
+      "max_map_s": 6.273,
+      "max_site_s": 0.716,
+      "users": [
+        {
+          "map": 6.273,
+          "site": 0.303
+        },
+        {
+          "map": 5.826,
+          "site": 0.716
+        },
+        {
+          "map": 6.236,
+          "site": 0.346
+        },
+        {
+          "map": 6.26,
+          "site": 0.327
+        },
+        {
+          "map": 6.27,
+          "site": 0.328
+        }
+      ]
+    },
+    {
+      "trial": 3,
+      "pass": false,
+      "max_map_s": 6.615,
+      "max_site_s": 0.847,
+      "users": [
+        {
+          "map": 5.967,
+          "site": 0.164
+        },
+        {
+          "map": 6.183,
+          "site": 0.202
+        },
+        {
+          "map": 5.058,
+          "site": 0.847
+        },
+        {
+          "map": 6.615,
+          "site": 0.16
+        },
+        {
+          "map": 5.105,
+          "site": 0.338
+        }
+      ]
+    },
+    {
+      "trial": 4,
+      "pass": false,
+      "max_map_s": 6.207,
+      "max_site_s": 0.186,
+      "users": [
+        {
+          "map": 5.781,
+          "site": 0.167
+        },
+        {
+          "map": 5.962,
+          "site": 0.186
+        },
+        {
+          "map": 5.92,
+          "site": 0.172
+        },
+        {
+          "map": 5.723,
+          "site": 0.171
+        },
+        {
+          "map": 6.207,
+          "site": 0.166
+        }
+      ]
+    },
+    {
+      "trial": 5,
+      "pass": false,
+      "max_map_s": 6.613,
+      "max_site_s": 0.562,
+      "users": [
+        {
+          "map": 5.548,
+          "site": 0.562
+        },
+        {
+          "map": 6.613,
+          "site": 0.158
+        },
+        {
+          "map": 5.22,
+          "site": 0.294
+        },
+        {
+          "map": 5.977,
+          "site": 0.316
+        },
+        {
+          "map": 6.266,
+          "site": 0.235
+        }
+      ]
+    },
+    {
+      "trial": 6,
+      "pass": false,
+      "max_map_s": 6.073,
+      "max_site_s": 0.321,
+      "users": [
+        {
+          "map": 6.023,
+          "site": 0.167
+        },
+        {
+          "map": 5.477,
+          "site": 0.321
+        },
+        {
+          "map": 6.073,
+          "site": 0.171
+        },
+        {
+          "map": 5.912,
+          "site": 0.175
+        },
+        {
+          "map": 5.908,
+          "site": 0.224
+        }
+      ]
+    },
+    {
+      "trial": 7,
+      "pass": false,
+      "max_map_s": 7.392,
+      "max_site_s": 0.703,
+      "users": [
+        {
+          "map": 7.308,
+          "site": 0.47
+        },
+        {
+          "map": 6.779,
+          "site": 0.703
+        },
+        {
+          "map": 7.392,
+          "site": 0.334
+        },
+        {
+          "map": 7.047,
+          "site": 0.372
+        },
+        {
+          "map": 7.193,
+          "site": 0.485
+        }
+      ]
+    },
+    {
+      "trial": 8,
+      "pass": false,
+      "max_map_s": 6.28,
+      "max_site_s": 0.777,
+      "users": [
+        {
+          "map": 6.28,
+          "site": 0.165
+        },
+        {
+          "map": 5.984,
+          "site": 0.161
+        },
+        {
+          "map": 5.002,
+          "site": 0.358
+        },
+        {
+          "map": 4.938,
+          "site": 0.777
+        },
+        {
+          "map": 5.482,
+          "site": 0.407
+        }
+      ]
+    },
+    {
+      "trial": 9,
+      "pass": false,
+      "max_map_s": 6.021,
+      "max_site_s": 0.56,
+      "users": [
+        {
+          "map": 5.511,
+          "site": 0.404
+        },
+        {
+          "map": 5.956,
+          "site": 0.17
+        },
+        {
+          "map": 5.514,
+          "site": 0.394
+        },
+        {
+          "map": 6.021,
+          "site": 0.176
+        },
+        {
+          "map": 5.493,
+          "site": 0.56
+        }
+      ]
+    },
+    {
+      "trial": 10,
+      "pass": false,
+      "max_map_s": 6.386,
+      "max_site_s": 0.907,
+      "users": [
+        {
+          "map": 6.316,
+          "site": 0.197
+        },
+        {
+          "map": 6.386,
+          "site": 0.194
+        },
+        {
+          "map": 6.201,
+          "site": 0.216
+        },
+        {
+          "map": 4.598,
+          "site": 0.907
+        },
+        {
+          "map": 5.266,
+          "site": 0.857
+        }
+      ]
+    }
+  ],
+  "limits_s": {
+    "map": 5,
+    "site": 2
+  },
+  "trials_passed": 0,
+  "pass": false,
+  "map_s": {
+    "median": 5.984,
+    "p90": 6.779,
+    "max": 7.392
+  },
+  "site_s": {
+    "median": 0.316,
+    "p90": 0.768,
+    "max": 0.907
+  },
+  "timed_out": 0,
+  "note": "Timeouts (30 s) count as Infinity and fail the trial. OpenStreetMap basemap tiles stubbed; server is one uvicorn worker on the local host serving the bundled artifact; each user is a separate headless Chromium process on the same host.",
+  "run_id": "s2-citywide-2026-11-08"
+}
