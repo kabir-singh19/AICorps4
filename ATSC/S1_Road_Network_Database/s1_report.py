@@ -55,6 +55,16 @@ def main(argv=None):
             GROUP BY 1 ORDER BY 1""", (a.network, a.hin_version))
         lamps = rows(cur, """SELECT source, count(*) AS street_lamps FROM tasc.osm_feature
                              WHERE grp = 'street_lamp' GROUP BY 1 ORDER BY 1""")
+        lighting = rows(cur, """SELECT feature_set, osm_source, lamp_points, lit_tagged_roads, sites_with_lamp,
+                                       dropped_constant FROM tasc.lighting_gap WHERE network_version = %s
+                                ORDER BY feature_set""", (a.network,))
+        segs = rows(cur, """SELECT count(*) AS segments,
+                                   count(*) FILTER (WHERE length_m BETWEEN 80.4672 AND 241.4016) AS in_range,
+                                   round(min(length_m)::numeric / 1609.344, 4) AS min_mi,
+                                   round(max(length_m)::numeric / 1609.344, 4) AS max_mi
+                            FROM tasc.site WHERE network_version = %s AND site_type = 'segment'""", (a.network,))
+        folds = rows(cur, """SELECT action, count(*) AS pieces, round(sum(length_m)::numeric / 1609.344, 2) AS miles
+                             FROM tasc.site_fold WHERE network_version = %s GROUP BY 1 ORDER BY 2 DESC""", (a.network,))
     m = match[0] if match else {}
     total_mi = sum(float(r["network_mi"] or 0) for r in hin)
     hin_mi = sum(float(r["hin_mi"] or 0) for r in hin)
@@ -81,10 +91,16 @@ def main(argv=None):
                          "hin_share_of_network_length": hin_mi / total_mi if total_mi else None},
         "streetlights_if_04": (
             {"status": "delivered", "file": a.streetlight_file} if a.streetlight_file else
-            {"status": "not delivered", "detail": "No City streetlight GIS layer was in the data folder. Per ICD "
-             "Table 5 the fallback is OSM lighting; OSM street_lamp points are stored in tasc.osm_feature but "
-             "too sparse to build a feature (counts below), so no lighting feature is used.",
-             "osm_street_lamp_points": lamps}),
+            {"status": "city GIS not delivered; ICD fallback applied",
+             "detail": "Per ICD IF-04 the fallback is OSM lighting (sql/11_lighting.sql): osm_street_lamps_50m and "
+             "osm_lit_share are built as dated site features; a feature that is constant everywhere is dropped "
+             "and the gap is logged in tasc.lighting_gap.",
+             "osm_street_lamp_points": lamps, "lighting_gap": lighting}),
+        "site_definition_fsr_3_2_1_2": {
+            "rule": "segments 0.1 mi +/- 0.05 mi; links under 0.05 mi folded into the adjacent intersection "
+                    "(inside its 250 ft zone) or joined to the next segment (sql/10_short_links.sql)",
+            "segments": segs[0] if segs else None, "folded": folds,
+            "result": "PASS" if segs and segs[0]["segments"] == segs[0]["in_range"] else "FAIL"},
         "sources": sources,
     }
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)

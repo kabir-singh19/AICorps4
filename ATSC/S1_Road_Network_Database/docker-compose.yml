@@ -10,7 +10,8 @@ services:
       POSTGRES_PASSWORD: tasc        # dev only; change before anything leaves your laptop
     ports:
       - "5432:5432"
-    mem_limit: 2g                    # the 2 GB cap from the container budget slide
+    mem_limit: 2g                    # ICD Table 2: db gets 1 vCPU and 2 GB
+    cpus: 1.0
     volumes:
       - tasc_pgdata:/var/lib/postgresql/data
       - ./sql/init:/docker-entrypoint-initdb.d:ro   # runs 01_schema.sql on first start only

@@ -476,17 +476,17 @@
       },
       {
         "site_type": "segment",
-        "sites": 5590,
-        "in_hin": 1260,
-        "network_mi": 402.131191732841,
-        "hin_mi": 96.06986396609821
+        "sites": 5022,
+        "in_hin": 1160,
+        "network_mi": 382.41966573889835,
+        "hin_mi": 92.95511761135411
       }
     ],
-    "hin_share_of_network_length": 0.2389017960833115
+    "hin_share_of_network_length": 0.24307096611192675
   },
   "streetlights_if_04": {
-    "status": "not delivered",
-    "detail": "No City streetlight GIS layer was in the data folder. Per ICD Table 5 the fallback is OSM lighting; OSM street_lamp points are stored in tasc.osm_feature but too sparse to build a feature (counts below), so no lighting feature is used.",
+    "status": "city GIS not delivered; ICD fallback applied",
+    "detail": "Per ICD IF-04 the fallback is OSM lighting (sql/11_lighting.sql): osm_street_lamps_50m and osm_lit_share are built as dated site features; a feature that is constant everywhere is dropped and the gap is logged in tasc.lighting_gap.",
     "osm_street_lamp_points": [
       {
         "source": "osm_2022-12-31",
@@ -504,7 +504,46 @@
         "source": "osm_latest",
         "street_lamps": 79
       }
+    ],
+    "lighting_gap": [
+      {
+        "feature_set": "backtest_2022",
+        "osm_source": "osm_city_2022-12-31",
+        "lamp_points": 68,
+        "lit_tagged_roads": 0,
+        "sites_with_lamp": 3,
+        "dropped_constant": [
+          "osm_lit_share"
+        ]
+      }
     ]
+  },
+  "site_definition_fsr_3_2_1_2": {
+    "rule": "segments 0.1 mi +/- 0.05 mi; links under 0.05 mi folded into the adjacent intersection (inside its 250 ft zone) or joined to the next segment (sql/10_short_links.sql)",
+    "segments": {
+      "segments": 5022,
+      "in_range": 5022,
+      "min_mi": 0.05,
+      "max_mi": 0.146
+    },
+    "folded": [
+      {
+        "action": "inside the influence zone of this intersection",
+        "pieces": 548,
+        "miles": 19.27
+      },
+      {
+        "action": "isolated short piece, folded into the nearest site",
+        "pieces": 10,
+        "miles": 0.44
+      },
+      {
+        "action": "joined to the next segment of the same road",
+        "pieces": 10,
+        "miles": 0.24
+      }
+    ],
+    "result": "PASS"
   },
   "sources": [
     {
