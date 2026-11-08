@@ -7,3 +7,5 @@ pytest>=8,<10
 pytest-cov>=5,<8
 matplotlib>=3.8,<4
 jupyter>=1,<2
+lightgbm>=4.5,<5
+statsmodels>=0.14,<1

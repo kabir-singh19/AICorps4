@@ -7,12 +7,15 @@ import numpy as np
 BATCH = 100
 
 
-def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_only=True):
+def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_only=True, severities=None, pairs=None):
     """Resample the same crashes for every method and paired difference.
 
     Each resample draws test crashes with replacement and recounts how many fall on each method's
     flagged sites. Every method sees the same draws, so B-A and C-A are paired comparisons.
+    severities overrides fsi_only with an explicit set (for example {"K","A","B","C"} for KABC);
+    pairs adds more (method, baseline) differences to B-A and C-A.
     """
+    keep = set(severities) if severities is not None else ({"K", "A"} if fsi_only else None)
     if not isinstance(resamples, int) or isinstance(resamples, bool) or resamples < 1000:
         raise ValueError("at least 1000 bootstrap resamples required")
     seen, events = set(), []
@@ -21,7 +24,7 @@ def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_onl
         if cid in seen:
             raise ValueError("duplicate test crash IDs")
         seen.add(cid)
-        if row["in_analysis_area"] and (not fsi_only or row["severity"] in {"K", "A"}):
+        if row["in_analysis_area"] and (keep is None or row["severity"] in keep):
             events.append(None if row.get("site_id") is None else str(row["site_id"]))
     names = sorted(flagged_methods)
     if any(None in flagged_methods[m] for m in names):
@@ -41,8 +44,9 @@ def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_onl
         size = min(BATCH, resamples - first)
         picks = rng.integers(0, n, size=(size, n))
         draws[first:first + size] = captured[picks].sum(axis=1) / n
-    comparisons = [f"{m}-A" for m in ("B", "C") if m in names and "A" in names]
     column = {m: i for i, m in enumerate(names)}
+    pair_list = [(m, "A") for m in ("B", "C") if m in names and "A" in names]
+    pair_list += [tuple(p) for p in (pairs or []) if tuple(p) not in pair_list]
 
     def interval(values):
         low, high = np.percentile(values, [2.5, 97.5])
@@ -54,13 +58,14 @@ def bootstrap_capture(crashes, flagged_methods, resamples=1000, seed=42, fsi_onl
         methods[m] = {"capture": float(point[i]), "ci_low": low, "ci_high": high, "n_test_fsi": n,
                       "captured_crashes": int(captured[:, i].sum())}
     differences = {}
-    for c in comparisons:
-        low, high = interval(draws[:, column[c[0]]] - draws[:, column["A"]])
-        differences[c] = {"difference": methods[c[0]]["capture"] - methods["A"]["capture"],
-                          "ci_low": low, "ci_high": high}
+    for a, b in pair_list:
+        low, high = interval(draws[:, column[a]] - draws[:, column[b]])
+        differences[f"{a}-{b}"] = {"difference": methods[a]["capture"] - methods[b]["capture"],
+                                   "ci_low": low, "ci_high": high}
+    target = ("fsi" if fsi_only else "total") if severities is None else "".join(sorted(keep, key="KABCOU".index))
     return {"status": "ok", "n_test_fsi": n, "unmatched_crashes": sum(s is None for s in events),
             "methods": methods, "differences": differences, "resamples": resamples,
-            "seed": seed, "target": "fsi" if fsi_only else "total", "bootstrap_unit": "individual crash"}
+            "seed": seed, "target": target, "bootstrap_unit": "individual crash"}
 
 
 def evaluate(predictions, test_crashes, hin_ids, resamples=1000, seed=42):

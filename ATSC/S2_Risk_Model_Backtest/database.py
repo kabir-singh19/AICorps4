@@ -116,6 +116,38 @@ def load_snapshot(db_config, feature_names, history_start=2016, history_end=2022
                         "history": history, "test_crashes": test})
 
 
+CRASH_FLAGS = ("angle", "rear_end", "single_vehicle", "opposite_direction", "sideswipe", "night", "wet")
+
+
+def load_context(db_config, last_crash_date):
+    """Site context and matched crash records for the citywide pipeline (read-only).
+
+    Crashes are returned only up to last_crash_date. The backtest passes 2022-12-31, so no
+    post-cutoff crash can reach a predictor; the 2026 forecast passes 2025-12-31.
+    """
+    import psycopg
+    from psycopg.rows import dict_row
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        raise ValueError("DATABASE_URL environment variable is required")
+    version = db_config["network_version"]
+    context_view = relation(db_config.get("site_context_view", "tasc.s2_site_context"))
+    crash_view = relation(db_config.get("crash_detail_view", "tasc.s2_crash_detail"))
+    from psycopg import sql
+    with psycopg.connect(url, row_factory=dict_row) as conn:
+        conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
+        context = conn.execute(sql.SQL("""
+            SELECT site_id::text AS site_id, site_type, route_name, jurisdiction, aadt_major, aadt_minor,
+                   approach_segments, x_m, y_m, lon, lat, geojson
+            FROM {} WHERE network_version=%s ORDER BY site_id""").format(context_view), (version,)).fetchall()
+        crashes = conn.execute(sql.SQL("""
+            SELECT crash_id, crash_date, crash_year, severity, site_id::text AS site_id, {}
+            FROM {} WHERE network_version=%s AND match_status='matched' AND crash_date <= %s
+            ORDER BY crash_id""").format(sql.SQL(", ").join(sql.Identifier(f) for f in CRASH_FLAGS), crash_view),
+            (version, last_crash_date)).fetchall()
+    return _json_value({"context": context, "crashes": crashes, "last_crash_date": str(last_crash_date)})
+
+
 def _fill_absent_features(sites, features, feature_names, network_version, metadata):
     """Add an explicit null record for every selected feature S1 does not store for a site.
 
