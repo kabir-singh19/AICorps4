@@ -4,6 +4,32 @@ The project, the AI Traffic-Safety Consultant (ATSC), lives in [ATSC/](ATSC/READ
 integration pipeline (`ATSC/Makefile`), and the controlling documents in `ATSC/docs/`.
 `Initial_Research/` holds early background notes.
 
+## Run the website on a new machine (Ubuntu)
+
+Paste this into a terminal. It installs Docker and git, pulls the latest code from GitHub (or
+clones it the first time), builds the web app, and serves it at http://localhost:10000. The
+model run and memos are already in the repo, so nothing else needs to run.
+
+```bash
+sudo apt update && sudo apt install -y docker.io git
+sudo systemctl enable --now docker.socket docker.service
+cd ~/Desktop
+[ -d AICorps4 ] && git -C AICorps4 pull || git clone https://github.com/kabir-singh19/AICorps4.git
+cd AICorps4/ATSC/S4_Web_App
+sudo docker build -t atsc .
+sudo docker rm -f atsc-demo 2>/dev/null
+sudo docker run -d --name atsc-demo --restart unless-stopped -p 10000:10000 \
+  -e ATSC_ENV=production -e ATSC_SESSION_SECRET="$(openssl rand -hex 32)" \
+  -e ATSC_AI_ENABLED=false atsc
+```
+
+To update after new commits, run the same block again. The container restarts on its own after
+a reboot.
+
+- "Cannot connect to the Docker daemon": run `sudo systemctl start docker.socket docker.service`.
+- Stop and remove: `sudo docker rm -f atsc-demo`. Remove Docker too: `sudo apt purge -y docker.io`.
+- The full pipeline (database, model, memos) is in [ATSC/README.md](ATSC/README.md#build-and-run).
+
 Notes from the 9/11 kickoff meeting. Project ideas are in [IDEAS.md](Initial_Research/IDEAS.md).
 
 ## Project: AI Consulting Tool (Teams 1 & 4)
