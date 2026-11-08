@@ -1,0 +1,17 @@
+{
+  "site_id": "17898",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{ka_3y}} fatal or serious injury crashes and {{kabc_3y}} KABCO injury crashes occurred at this signalized four-leg intersection. The most frequent crash types were left-turn opposing, rear-end, and run-off-road. Night and wet conditions were noted in several crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to a model-estimated fatal or serious injury crash rate of {{fsi_rate}} per mile and {{annual_fsi}} per year. High traffic exposure ({{aadt}} vehicles/day), multiple marked crossings, four-leg geometry, and a concentration of crashes within {{length_mi}} miles also contributed. The site ranks {{rank_city_actionable}} among actionable city intersections and is included in the high-injury network.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for all severities at four-leg urban signalized intersections. The cited CMF {{cmf:267}} is an aggregate match for all crash types, but does not directly establish a reduction for fatal or serious injury crashes and requires engineering review."
+    },
+    {
+      "cm_id": "CM013",
+      "rationale": "Adding 3-inch yellow retroreflective sheeting to signal backplates is supported by broader evidence for all severities at urban signalized intersections. The cited CMF {{cmf:1410}} is an aggregate match for all crash types, but does not directly establish a reduction for fatal or serious injury crashes and requires engineering review."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for any countermeasure. The library lacks audit-approved CMFs for fatal or serious injury crashes, planning-level unit costs, and service life values for these treatments.",
+  "next_steps": "Review site geometry, traffic volumes, and existing equipment to confirm eligibility for the proposed countermeasures. Conduct engineering review to assess feasibility and applicability, especially for left-turn lane provision and signal backplate enhancements. Confirm prerequisites and coordinate with TxDOT as needed."
+}

@@ -85,7 +85,18 @@ export default function RiskMap({ run, resource, sites, selectedSiteId, onSelect
     map.setPaintProperty('segments', 'line-color', colorExpression(breaks));
     map.setPaintProperty('intersections', 'circle-color', colorExpression(breaks));
     setReady(false);
-    map.once('idle', () => setReady(true));
+    // Ready: the site layer's data is loaded and a frame including it has been drawn (basemap
+    // tiles are not waited for).
+    let done = false;
+    const onData = event => {
+      if (done || event.sourceId !== 'sites' || !map.isSourceLoaded('sites')) return;
+      done = true;
+      map.once('render', () => setReady(true));
+      map.triggerRepaint();
+    };
+    map.on('sourcedata', onData);
+    onData({ sourceId: 'sites' });
+    return () => { done = true; map.off('sourcedata', onData); };
   }, [sites, loaded, breaks, flaggedOnly]);
 
   useEffect(() => {
@@ -115,7 +126,8 @@ export default function RiskMap({ run, resource, sites, selectedSiteId, onSelect
       <label><input type="checkbox" checked={flaggedOnly} onChange={e => setFlaggedOnly(e.target.checked)} /> Flagged sites only</label>
       {error && <button onClick={() => setRetry(v => v + 1)}>Retry map</button>}
     </div>
-    <div ref={container} className="map" data-testid="risk-map" data-ready={ready ? 'true' : 'false'} data-sites={n} role="img" aria-label={`Map of ${n} road sites colored by expected fatal and serious-injury crashes per mile per year; ${nFlagged} flagged sites drawn with a thick dark outline.`} />
+    <p id="map-description" className="sr-only">{`Map of ${n} road sites colored by expected fatal and serious-injury crashes per mile per year; ${nFlagged} flagged sites drawn with a thick dark outline. The ranked list below the map has the same sites in table form.`}</p>
+    <div ref={container} className="map" data-testid="risk-map" data-ready={ready ? 'true' : 'false'} data-sites={n} aria-describedby="map-description" />
     {n > 0 && <div className="map-legend" aria-label="Map legend">
       <strong>K+A crashes per mile per year</strong>
       {COLORS.map((c, i) => <span key={c}><i style={{ background: c }} aria-hidden="true" />{i === 0 ? `under ${fmt(breaks[0])}` : i === 4 ? `${fmt(breaks[3])} or more` : `${fmt(breaks[i - 1])} to ${fmt(breaks[i])}`}</span>)}

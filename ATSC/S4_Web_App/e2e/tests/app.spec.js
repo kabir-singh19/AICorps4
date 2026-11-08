@@ -44,7 +44,7 @@ test('ranked list opens a site page with history, factors and memo state', async
 test('backtest page shows A, B, C with intervals for both targets', async ({ page }) => {
   await page.goto('/?page=backtest');
   const bt = page.getByTestId('backtest');
-  await expect(bt.locator('tbody tr')).toHaveCount(4, { timeout: 15_000 });
+  await expect(bt.locator('tbody tr')).toHaveCount(5, { timeout: 15_000 });
   await expect(bt).toContainText("HIN's own share");
   await page.getByLabel('Crash severity scored').selectOption('KABC');
   await expect(bt.locator('caption')).toContainText('KABC');

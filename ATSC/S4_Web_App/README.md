@@ -5,14 +5,18 @@ Owner: Juan Lopez. React/Vite + MapLibre frontend and FastAPI backend, following
 ## Files
 
 - `frontend/src/App.jsx`: navigation, published model run selection, and site selection.
-- `frontend/src/components/RiskMap.jsx`: interactive OpenStreetMap basemap focused on University Drive, Harvey Road, Texas Avenue, and Wellborn Road, with individual corridor focus controls.
-- `frontend/src/components/SiteDetails.jsx`: mapped road details and matched model site results.
-- `frontend/src/components/ModelPanels.jsx`: model run selector, ranked sites, backtest table, and published memos.
+- `frontend/src/components/RiskMap.jsx`: MapLibre map of every site in the run: segments colored by expected K+A crashes per mile per year, intersections as circles, flagged sites outlined, MPO HIN toggle.
+- `frontend/src/components/SiteDetails.jsx`: site page: prediction, attributes, crash history by year, top 5 SHAP factors, memo status and PDF.
+- `frontend/src/components/ModelPanels.jsx`: run selector, searchable ranked list with exports, backtest table and capture curve, memos.
 - `frontend/src/components/Assistant.jsx`: project access, evidence selection, and AI draft answers.
 - `frontend/src/components/ExampleLab.jsx`: interactive synthetic ML example and printable/downloadable report.
 - `frontend/src/data/corridors.geojson.json`: attributed OpenStreetMap road geometry for the central College Station corridor sections.
 - `frontend/src/api.js`: same-origin API requests.
-- `backend/app/main.py`: health, schema, and model-result read endpoints.
+- `backend/app/main.py`: health, runs, sites, site detail, memo, memo PDF, backtest and export endpoints.
+- `backend/app/artifact_runs.py`: read-only adapter for S2/S3 run artifacts (`backend/data/artifacts/<run_id>/`), SHA-256 checked against the manifest.
+- `backend/app/memo_pdf.py`: memo PDF export (IF-11).
+- `e2e/`: Playwright tests (Chromium, Firefox, WebKit at desktop and tablet sizes, axe scan, 5-user load).
+- `DEPLOY.md`: what the image contains, Render steps, HTTPS and key handling, endpoint list.
 - `backend/app/model_results.py`: validated model-output contract and temporary local JSON adapter.
 - `backend/app/assistant.py`: server-side provider adapter and published-evidence assembly.
 - `backend/app/access.py`: expiring project-access cookies and prototype usage limits.

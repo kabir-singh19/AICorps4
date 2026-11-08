@@ -1,0 +1,127 @@
+{
+  "as_of": {
+    "backtest_features_and_history": "2022-12-31",
+    "forecast_crash_history": "2025-12-31",
+    "forecast_year": 2026,
+    "network": "2022-12-31",
+    "osm": "2022-12-31",
+    "test_window": "2023-2025",
+    "txdot_inventory": "2019-12-31 (available 2021-08-06)"
+  },
+  "commit": "4154e60dbed5e0aeb2998896df46ce813250bfd1",
+  "config_hash": "7825839edc1b00b399d06a90059fa6d48be309bc74ad3194bd4a056630bd3055",
+  "created": "2026-11-08T15:05:01.732757+00:00",
+  "data_versions": {
+    "boundary": "Census places 2022 vintage",
+    "cris": "CRIS Query exports, College Station, 2016-2025, downloaded 2026-10-07",
+    "hin": "MPO CSAP Fig. 3.9 high-injury network, digitized 2026-11-04",
+    "inventory": "TxDOT Roadway Inventory 2019 snapshot (available 2021-08-06)",
+    "network": "S1 v1_2022: 0.1 mi segments and 3+ leg intersections, College Station city limits",
+    "osm": "OpenStreetMap as of 2022-12-31 (ohsome)"
+  },
+  "dirty_worktree": false,
+  "duration_seconds": 667.6,
+  "files": {
+    "backtest.json": "2fc4ccf24bbc778c4b919af13d1f270cc3fc0d718ca3775310049964ff5a6ea1",
+    "bit.json": "cdcb3d3d6d9b170f69d586cadb14a990e8d904a887a6f3bba2cfddf8e697629c",
+    "bit_campaign.json": "e400f20284cc0267ab43ed1275a7998704363cbf65093f59a9ae925041bbb0a6",
+    "calibration.json": "8af1c7049aaf1a001f64062a09735d706cbcea91efd92d96ba25d76aac876c5a",
+    "calibration_ka.png": "b280c199a70db43527a9575e74dbe6b1bab2ce3fa3b22e4a1d3bd5c3705c2b37",
+    "capture_vs_share.png": "1998f94ed45d0de41309cb3089c096b97324efa4e64c939664db2f0a6d6f14c3",
+    "config.json": "d9d22f992f59bb85dad22388da343688deed525c44b2be703358163c4c4a6c93",
+    "explanations.json": "f9b04791f48374d33aa63d010401141dcd2ce2fdd54db6359b82a1f1b08c4794",
+    "model_card.md": "170777ff7427bcbb8a0e82efb66abdfdc199dd0fb0109a464b841d04b5dd5f6d",
+    "models/lightgbm_lg_intersection_seed0.txt": "4e6822aa24fdbc6acf69b16a3e84a8cd5aa8e43de3cd7033618b7603f7a18516",
+    "models/lightgbm_lg_intersection_seed1.txt": "b2b3d021150cc725b85a15a2132ded0d13b8801732187ec2a451544bc19fbd34",
+    "models/lightgbm_lg_intersection_seed2.txt": "f4df1a249430d02b5639c290daa3dd079b40940347c6d7406089dad2aae83b3b",
+    "models/lightgbm_lg_segment_seed0.txt": "c2531b7c46d8b116c9f01c8621f0f86053fb88e2fcc5238d57d0d8cffe464ef6",
+    "models/lightgbm_lg_segment_seed1.txt": "4d6da7852d44f092e904ba1aaab8410e48dbf32ae68893469f0bd2dccb9ee8d0",
+    "models/lightgbm_lg_segment_seed2.txt": "b4743c6cea96cb067131328c35cf989f7cc6f2ae56a534f9ffe0f795ab783e7d",
+    "models/lightgbm_lt_intersection_seed0.txt": "edcac70d5e506540e7eefb8521d5870b790df6170d6e6173cc4018efa1a6460e",
+    "models/lightgbm_lt_intersection_seed1.txt": "2942b78a6f9fcab96f883c9e286b68138d1869ddda82608f356ddb226a52c4f3",
+    "models/lightgbm_lt_intersection_seed2.txt": "f057ec1930e6e48a4e264d4610fa5a107c68c9dc39e894e68b88e882d01e1dcb",
+    "models/lightgbm_lt_segment_seed0.txt": "8f55f185de5613855ddbabe29f43a4a72f4f242eb72c100767ee4377d53b7d39",
+    "models/lightgbm_lt_segment_seed1.txt": "4975977a32e49f9ace31dd3453e1e1fabe70a8d5981ab31d8a82ae9cf8275849",
+    "models/lightgbm_lt_segment_seed2.txt": "455d33773fb131937325e8272bf09a49d6f18d6e4c54efb9b75e6b474188ed6d",
+    "models/lightgbm_me_intersection_seed0.txt": "0b21efea8251df78ac76acc50ea65f9e329d2e693089d736089d055cb379dde4",
+    "models/lightgbm_me_intersection_seed1.txt": "02b28114c610fa54665f620f10ff7347d629472adb33836ad1db50aceda02e26",
+    "models/lightgbm_me_intersection_seed2.txt": "1718469d3367410639707194a591b910e80bccb296d223336235f28171f76adb",
+    "models/lightgbm_me_segment_seed0.txt": "08eb1b90487feafde6f809ab9422a05186736565f4a8d379d52055385211e630",
+    "models/lightgbm_me_segment_seed1.txt": "8fbde1e066f5bac88412fcda351f7809375cb38eecb39ad6ee7e723ac6930458",
+    "models/lightgbm_me_segment_seed2.txt": "6bfc995bb528122e2969c77c835d06fcd0bbc878ede342aedb42c14539f4bd13",
+    "models/model_state_intersection.json": "0a79ec5f584882d8afb6dd6345e40f350315ce59fdd047486d48cbdb68aa499b",
+    "models/model_state_segment.json": "beef48b5278663cbc897f9725219d5c16dd65505fe02c96c7c1a1640c7c88fa7",
+    "ranking.csv": "850d6b369859487c3c87631b481e399569555c4a7321120a5c8594d8951891aa",
+    "site_history.json": "724241d137ee9280d522f3fab536dd02266f80385e8ee5696ef9295d45eb31de",
+    "sites.geojson": "2c079708deca0417743aefeee4c982e912c685c8de1737c52a853c1bd7f6aa99"
+  },
+  "files_not_in_git": [
+    "models/"
+  ],
+  "forecast": {
+    "flagged": 774,
+    "flagged_intersections": 392,
+    "flagged_segments": 382,
+    "flagged_share": 0.10998595915225423
+  },
+  "hin_version": "csap_fig3.9_digitized_2026-11-04",
+  "independent_refit_reproduced": true,
+  "input_hash": "053cb89a9a54cb3696a7982a4d59c46b8199d5ec8c95b16ea158c3882eaa926c",
+  "methods": {
+    "A": "HIN (published MPO CSAP high-injury network)",
+    "B": "SPF+EB",
+    "C": "ML-EB"
+  },
+  "network_version": "v1_2022",
+  "ranking_hash": "044da876680fead6a269b8e524ad78af575848ffda386c75805928b778a874aa",
+  "reload_verified": true,
+  "run_id": "s2-citywide-2026-11-08",
+  "runtime": {
+    "lightgbm": "4.7.0",
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "python": "3.12.3",
+    "scipy": "1.18.1",
+    "statsmodels": "0.15.0"
+  },
+  "schema_version": 1,
+  "stages": [
+    {
+      "seconds": 23.38,
+      "stage": "snapshot_and_leakage_gate"
+    },
+    {
+      "seconds": 0.57,
+      "stage": "context"
+    },
+    {
+      "seconds": 9.82,
+      "stage": "backtest_fit"
+    },
+    {
+      "seconds": 0.79,
+      "stage": "backtest_score"
+    },
+    {
+      "seconds": 21.25,
+      "stage": "forecast_fit"
+    },
+    {
+      "seconds": 9.85,
+      "stage": "forecast_score_explain_bit"
+    },
+    {
+      "seconds": 0.77,
+      "stage": "export_models_and_reload"
+    },
+    {
+      "seconds": 19.76,
+      "stage": "independent_refit_check"
+    },
+    {
+      "seconds": 580.18,
+      "stage": "bit_campaign"
+    }
+  ],
+  "subsystem": "S2"
+}

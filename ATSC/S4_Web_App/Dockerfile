@@ -13,6 +13,8 @@ COPY backend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt && useradd --uid 10001 --create-home atsc
 COPY --chown=atsc:atsc backend/app ./app
 COPY --chown=atsc:atsc backend/data/published ./data/published
+# Read-only S2/S3 run artifact (no models/), bundled by `make web`; the app needs no database.
+COPY --chown=atsc:atsc backend/data/artifacts ./data/artifacts
 COPY --from=frontend --chown=atsc:atsc /build/frontend/dist /app/frontend/dist
 USER atsc
 EXPOSE 10000

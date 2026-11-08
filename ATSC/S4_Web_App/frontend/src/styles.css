@@ -71,3 +71,4 @@ figcaption{font-size:13px;color:#52645e;display:flex;flex-wrap:wrap;align-items:
 .factors li{margin:8px 0;line-height:1.5}.factors .up{color:#9b2424;font-weight:600}.factors .down{color:#1d6b43;font-weight:600}
 .memo pre{background:#f7f9f8;border:1px solid #d9e1de;border-radius:8px;padding:16px;font-family:inherit;font-size:14px;line-height:1.6}
 @media(max-width:760px){.filters{grid-template-columns:1fr}.filters label,.filters input,.filters select{grid-row:auto}}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
