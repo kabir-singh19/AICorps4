@@ -1,84 +1,118 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { runPath, useApi } from '../api.js';
 
-const num = (v, d = 2) => (v === null || v === undefined ? 'Not available' : Number(v).toFixed(d));
-const yesNo = v => (v === null || v === undefined ? 'Not available' : v ? 'Yes' : 'No');
+const num = (v, d = 2) => (v === null || v === undefined ? 'n/a' : Number(v).toFixed(d));
+const yesNo = v => (v === null || v === undefined ? 'n/a' : v ? 'Yes' : 'No');
+// Severity tiers on one hue (validated ordinal steps): K+A dark, B+C light.
+const KA = '#1c5cab', BC = '#86b6ef';
+
+const yearRows = h => h.by_year.map(r => ({ year: r.year, ka: (r.K ?? 0) + (r.A ?? 0), bc: (r.B ?? 0) + (r.C ?? 0), total: r.total ?? 0 }));
 
 function HistoryChart({ rows }) {
-  const max = Math.max(1, ...rows.map(r => r.kabc ?? 0));
-  const w = 34, h = 120;
-  return <figure className="history-chart">
-    <svg viewBox={`0 0 ${rows.length * w + 40} ${h + 34}`} role="img" aria-label="Matched crashes by year: bars show K+A+B+C injury crashes, the dark part is K+A.">
-      <line x1="30" y1={h} x2={rows.length * w + 36} y2={h} stroke="#9aa8a2" />
-      <text x="26" y="12" textAnchor="end" fontSize="10" fill="#52645e">{max}</text>
-      <text x="26" y={h} textAnchor="end" fontSize="10" fill="#52645e">0</text>
-      {rows.map((r, i) => {
-        const x = 36 + i * w, kabc = r.kabc ?? 0, ka = r.ka ?? 0;
-        return <g key={r.year}>
-          <rect x={x} y={h - (kabc / max) * h} width={w - 10} height={(kabc / max) * h} fill="#f4b183" />
-          <rect x={x} y={h - (ka / max) * h} width={w - 10} height={(ka / max) * h} fill="#9b2424" />
-          <text x={x + (w - 10) / 2} y={h + 14} textAnchor="middle" fontSize="10" fill="#52645e">{String(r.year).slice(2)}</text>
-          <title>{`${r.year}: ${kabc} injury crashes (K+A+B+C), ${ka} K+A, ${r.total ?? 0} total`}</title>
-        </g>;
-      })}
-    </svg>
-    <figcaption><span className="swatch" style={{ background: '#9b2424' }} /> K+A <span className="swatch" style={{ background: '#f4b183' }} /> B+C injury crashes. Years 2016 to 2025; 2023 to 2025 is the backtest test window.</figcaption>
+  const [hover, setHover] = useState(null);
+  const max = Math.max(1, ...rows.map(r => r.ka + r.bc));
+  const W = 560, H = 230, L = 34, T = 24, B = 30, gap = 6;
+  const bw = (W - L - 8) / rows.length - gap;
+  const y = v => T + (1 - v / max) * (H - T - B);
+  const ticks = [0, Math.ceil(max / 2), max];
+  const testX = L + rows.findIndex(r => r.year >= 2023) * (bw + gap) - gap / 2;
+  return <figure className="chart">
+    <figcaption className="chart-title">Injury crashes matched to this site, by year</figcaption>
+    <div className="chart-box">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Matched crashes by year: each bar is the injury crashes (K+A+B+C), the dark part is K+A. The table below lists the values.">
+        {testX > L && <rect x={testX} y={T} width={W - 8 - testX} height={H - T - B} className="band" />}
+        {testX > L && <text x={testX + 4} y={T - 8} className="tick">2023 to 2025: test window</text>}
+        {ticks.map(t => <g key={t}><line x1={L} x2={W - 8} y1={y(t)} y2={y(t)} className="grid" /><text x={L - 6} y={y(t) + 4} className="tick" textAnchor="end">{t}</text></g>)}
+        {rows.map((r, i) => { const x = L + i * (bw + gap) + gap / 2, tot = r.ka + r.bc;
+          return <g key={r.year} onMouseEnter={() => setHover({ r, x: x + bw / 2, yv: tot })} onMouseLeave={() => setHover(null)}>
+            <rect x={x - 2} y={T} width={bw + 4} height={H - T - B} fill="transparent" />
+            {r.bc > 0 && <rect x={x} y={y(tot)} width={bw} height={Math.max(0, y(r.ka) - y(tot) - (r.ka ? 2 : 0))} rx="4" fill={BC} />}
+            {r.ka > 0 && <rect x={x} y={y(r.ka)} width={bw} height={y(0) - y(r.ka)} rx="4" fill={KA} />}
+            <text x={x + bw / 2} y={H - B + 16} className="tick" textAnchor="middle">{String(r.year).slice(2)}</text>
+          </g>; })}
+      </svg>
+      {hover && <div className="tooltip" style={{ left: `${(hover.x / W) * 100}%`, top: `${(y(hover.yv) / H) * 100}%` }}>
+        <strong>{hover.r.year}</strong><span>{hover.r.ka} K+A</span><span>{hover.r.bc} B+C</span><span>{hover.r.total} crashes of any severity</span></div>}
+    </div>
+    <div className="legend"><span><i style={{ background: KA }} aria-hidden="true" />K+A (fatal or serious)</span><span><i style={{ background: BC }} aria-hidden="true" />B+C (minor or possible injury)</span></div>
+    <details className="table-view"><summary>Show as table</summary><div className="table-scroll"><table className="data-table compact"><thead><tr><th scope="col">Year</th>{rows.map(r => <th key={r.year} scope="col">{r.year}</th>)}</tr></thead>
+      <tbody><tr><th scope="row">K+A</th>{rows.map(r => <td key={r.year}>{r.ka}</td>)}</tr><tr><th scope="row">B+C</th>{rows.map(r => <td key={r.year}>{r.bc}</td>)}</tr><tr><th scope="row">All</th>{rows.map(r => <td key={r.year}>{r.total}</td>)}</tr></tbody></table></div></details>
   </figure>;
 }
 
-const yearRows = h => h.by_year.map(r => ({ year: r.year, ka: (r.K ?? 0) + (r.A ?? 0), kabc: (r.K ?? 0) + (r.A ?? 0) + (r.B ?? 0) + (r.C ?? 0), total: r.total ?? 0 }));
+function Stat({ label, value, note }) {
+  return <div className="kpi"><span className="kpi-label">{label}</span><span className="kpi-value">{value}</span>{note && <span className="kpi-note">{note}</span>}</div>;
+}
 
 export default function SiteDetails({ run, siteId, onBackToMap, onOpenMemo }) {
   const isArtifact = run && !run.is_demo;
   const res = useApi(isArtifact && siteId ? runPath(`sites/${encodeURIComponent(siteId)}`, run.run_id) : null);
-  if (!siteId) return <section className="card"><h2>Select a site</h2><p>Click a road segment or intersection on the map, or pick one from the ranked list.</p><button onClick={onBackToMap}>Go to map</button></section>;
-  if (!isArtifact) return <section className="card"><h2>Site {siteId}</h2><p>Site pages need a published model run. Select one above.</p></section>;
+  if (!siteId) return <section className="card empty"><h2>Select a site</h2><p>Click a road segment or intersection on the map, or pick one from the ranked list.</p><button onClick={onBackToMap}>Go to the map</button></section>;
+  if (!isArtifact) return <section className="card"><h2>Site {siteId}</h2><p>Site pages need a published model run.</p></section>;
   if (res.loading) return <p role="status">Loading site {siteId}…</p>;
   if (res.error) return <p role="alert" className="api-error">{res.error}</p>;
   const d = res.data;
   if (!d) return null;
-  const a = d.attributes, p = d.prediction, h = d.crash_history;
+  const a = d.attributes, p = d.prediction, h = d.crash_history, l3 = h.last_3_years;
   const pdf = `/api/v1/sites/${encodeURIComponent(siteId)}/memo.pdf?run_id=${encodeURIComponent(run.run_id)}`;
-  return <>
-    <section className="card" aria-label="Site summary" data-testid="site-detail">
-      <div className="details-heading"><div><p className="eyebrow">{a.site_type?.toUpperCase()} · {siteId}</p><h2>{a.road_name || 'Unnamed road'}</h2></div><button onClick={onBackToMap}>Back to map</button></div>
-      <dl className="details-grid">
-        <div><dt>Expected K+A crashes per mile per year (2026)</dt><dd className="big">{num(p.fsi_rate, 3)}</dd></div>
-        <div><dt>Expected K+A crashes per year</dt><dd>{num(p.annual_fsi, 3)}</dd></div>
-        <div><dt>Citywide rank</dt><dd>{p.rank} of {run.site_count}</dd></div>
-        <div><dt>Rank among City-actionable sites</dt><dd>{p.rank_city_actionable ?? 'Not City-actionable'}</dd></div>
-        <div><dt>Flagged (top 11% of length)</dt><dd>{yesNo(p.flagged)}</dd></div>
-        <div><dt>In the MPO high-injury network</dt><dd>{yesNo(p.in_hin)}</dd></div>
-        <div><dt>Jurisdiction</dt><dd>{a.jurisdiction}{a.route_name ? ` (${a.route_name})` : ''}</dd></div>
-        <div><dt>Length used for the rate</dt><dd>{num(a.length_mi, 3)} mi{a.site_type === 'intersection' ? ' (250 ft influence zone)' : ''}</dd></div>
-        <div><dt>AADT</dt><dd>{a.aadt ? Math.round(a.aadt).toLocaleString() : 'Not available'}{a.aadt_imputed ? ' (imputed class median)' : ''}</dd></div>
-        <div><dt>Posted speed</dt><dd>{a.speed_limit ? `${a.speed_limit} mph` : 'Not available'}</dd></div>
-        <div><dt>{a.site_type === 'intersection' ? 'Legs / signalized' : 'Lanes / class'}</dt><dd>{a.site_type === 'intersection' ? `${a.legs ?? '?'} legs · ${yesNo(a.signalized)}` : `${a.num_lanes ?? '?'} lanes · ${a.func_class ?? 'unknown class'}`}</dd></div>
-        <div><dt>Location</dt><dd>{num(a.lat, 5)}, {num(a.lon, 5)}</dd></div>
-      </dl>
-      <details><summary>Model details (method C, ML-EB)</summary><dl className="details-grid">
-        <div><dt>Model crashes per year (μ)</dt><dd>{num(p.mu, 3)}</dd></div><div><dt>Overdispersion k</dt><dd>{num(p.k, 3)}</dd></div>
-        <div><dt>EB weight on the model</dt><dd>{num(p.eb_weight, 3)}</dd></div><div><dt>EB crashes per year</dt><dd>{num(p.n_eb, 3)}</dd></div>
-        <div><dt>P(K or A given a crash)</dt><dd>{num(p.p_fsi, 4)}</dd></div><div><dt>Method B (SPF+EB) rate / rank</dt><dd>{num(p.fsi_rate_spf_eb, 3)} / {p.rank_spf_eb}</dd></div>
-      </dl></details>
+  const types = [['angle', l3.angle_3y], ['rear-end', l3.rear_end_3y], ['single-vehicle', l3.single_vehicle_3y], ['opposite-direction', l3.opposite_direction_3y], ['night', l3.night_3y], ['wet surface', l3.wet_3y]];
+  return <div className="site-page" data-testid="site-detail">
+    <section className="card site-hero" aria-label="Site summary">
+      <div className="card-head">
+        <div><p className="eyebrow">{a.site_type} · site {siteId}</p><h2 className="site-title">{a.road_name || 'Unnamed road'}</h2>
+          <div className="badges">{p.flagged && <span className="pill pill-on">Flagged</span>}{p.in_hin && <span className="pill pill-hin">On MPO HIN</span>}<span className="pill pill-off">{a.jurisdiction}{a.route_name ? ` · ${a.route_name}` : ''}</span>{d.memo_status === 'draft' && <span className="pill pill-on">Memo drafted</span>}</div></div>
+        <button className="ghost" onClick={onBackToMap}>← Back to map</button>
+      </div>
+      <div className="kpis inner">
+        <Stat label="K+A crashes per mile per year" value={num(p.fsi_rate, 2)} note="2026 forecast, method C" />
+        <Stat label="K+A crashes per year" value={num(p.annual_fsi, 2)} note={`over ${num(a.length_mi, 3)} mi${a.site_type === 'intersection' ? ' (250 ft zone)' : ''}`} />
+        <Stat label="Citywide rank" value={p.rank} note={`of ${run.site_count.toLocaleString()} sites`} />
+        <Stat label="City-actionable rank" value={p.rank_city_actionable ?? 'n/a'} note={p.rank_city_actionable ? 'City or City/TxDOT' : 'not City-actionable'} />
+      </div>
     </section>
-    <section className="card" aria-label="Crash history">
-      <h2>Crash history (matched crashes)</h2>
-      <HistoryChart rows={yearRows(h)} />
-      <p>Last three years (2023 to 2025): {h.last_3_years.ka_3y} K+A, {h.last_3_years.kabc_3y} injury (K+A+B+C), {h.last_3_years.tot_3y} total. Angle {h.last_3_years.angle_3y ?? 0}, rear-end {h.last_3_years.rear_end_3y ?? 0}, single-vehicle {h.last_3_years.single_vehicle_3y ?? 0}, opposite-direction {h.last_3_years.opposite_direction_3y ?? 0}, night {h.last_3_years.night_3y ?? 0}, wet {h.last_3_years.wet_3y ?? 0}.</p>
+    <div className="two-col">
+      <section className="card" aria-label="Crash history">
+        <h2>Crash history</h2>
+        <HistoryChart rows={yearRows(h)} />
+        <p className="small">2023 to 2025: <strong>{l3.ka_3y}</strong> K+A, <strong>{l3.kabc_3y}</strong> injury, <strong>{l3.tot_3y}</strong> total crashes.</p>
+        <div className="type-chips">{types.map(([k, v]) => <span key={k} className="type-chip"><b>{v ?? 0}</b> {k}</span>)}</div>
+      </section>
+      <section className="card" aria-label="Why this site ranks here">
+        <h2>Why it ranks here</h2>
+        <p className="muted small">The five factors that moved this site's prediction most (SHAP).</p>
+        {d.shap_factors.length ? <ol className="factors">{d.shap_factors.map(f => <li key={f.rank}><span className={`pill ${f.direction === 'raises risk' ? 'pill-up' : 'pill-down'}`}>{f.direction === 'raises risk' ? '▲ raises' : '▼ lowers'}</span><span>{f.text}</span></li>)}</ol>
+          : <p>Factors are computed for flagged sites only.</p>}
+      </section>
+    </div>
+    <div className="two-col">
+      <section className="card" aria-label="Site attributes">
+        <h2>Road attributes</h2>
+        <dl className="details-grid">
+          <div><dt>AADT</dt><dd>{a.aadt ? Math.round(a.aadt).toLocaleString() : 'n/a'}{a.aadt_imputed ? ' (class median)' : ''}</dd></div>
+          <div><dt>Posted speed</dt><dd>{a.speed_limit ? `${a.speed_limit} mph` : 'n/a'}</dd></div>
+          {a.site_type === 'intersection' ? <><div><dt>Legs</dt><dd>{a.legs ?? 'n/a'}</dd></div><div><dt>Signalized</dt><dd>{yesNo(a.signalized)}</dd></div></>
+            : <><div><dt>Lanes</dt><dd>{a.num_lanes ?? 'n/a'}</dd></div><div><dt>Functional class</dt><dd>{a.func_class ?? 'n/a'}</dd></div></>}
+          <div><dt>Median</dt><dd>{a.median_type ?? 'n/a'}</dd></div>
+          <div><dt>Location</dt><dd>{num(a.lat, 5)}, {num(a.lon, 5)}</dd></div>
+        </dl>
+      </section>
+      <section className="card" aria-label="Model details">
+        <h2>Model details</h2>
+        <dl className="details-grid">
+          <div><dt>Model crashes per year (μ)</dt><dd>{num(p.mu, 3)}</dd></div><div><dt>Overdispersion k</dt><dd>{num(p.k, 3)}</dd></div>
+          <div><dt>EB weight on the model</dt><dd>{num(p.eb_weight, 3)}</dd></div><div><dt>EB crashes per year</dt><dd>{num(p.n_eb, 3)}</dd></div>
+          <div><dt>P(K or A | crash)</dt><dd>{num(p.p_fsi, 4)}</dd></div><div><dt>Method B rate / rank</dt><dd>{num(p.fsi_rate_spf_eb, 2)} / {p.rank_spf_eb}</dd></div>
+        </dl>
+      </section>
+    </div>
+    <section className="card memo-cta" aria-label="Countermeasure memo">
+      <div><h2>Countermeasure memo</h2>
+        {d.memo_status === 'none' && <p className="muted">No memo for this site. Memos are drafted for the top 25 City-actionable sites.</p>}
+        {d.memo_status === 'pending' && <p>Memo pending: the LLM service was unreachable when the batch ran.</p>}
+        {d.memo_status === 'blocked' && <p className="api-error">The drafted memo failed a grounding or completeness check and is withheld.</p>}
+        {d.memo_status === 'draft' && <p className="muted">Draft: passed every automated check; not yet reviewed by an engineer.</p>}
+      </div>
+      {d.memo_status === 'draft' && <div className="download-links"><button onClick={onOpenMemo}>Read memo</button><a className="button-link primary" href={pdf} download>Download PDF</a></div>}
     </section>
-    <section className="card" aria-label="Why this site ranks here">
-      <h2>Top factors behind the prediction</h2>
-      {d.shap_factors.length ? <ol className="factors">{d.shap_factors.map(f => <li key={f.rank}><span className={f.direction === 'raises risk' ? 'up' : 'down'}>{f.direction === 'raises risk' ? '▲ raises risk' : '▼ lowers risk'}</span> {f.text}</li>)}</ol>
-        : <p>Factors are computed for flagged sites only.</p>}
-    </section>
-    <section className="card" aria-label="Countermeasure memo">
-      <h2>Countermeasure memo</h2>
-      {d.memo_status === 'none' && <p>No memo for this site. Memos are drafted for the top 25 City-actionable sites.</p>}
-      {d.memo_status === 'pending' && <p>Memo pending: the LLM service was unreachable when the batch ran.</p>}
-      {d.memo_status === 'blocked' && <p className="api-error">The drafted memo failed a grounding or completeness check and is withheld.</p>}
-      {d.memo_status === 'draft' && <div className="download-links"><button onClick={onOpenMemo}>Read memo</button><a className="button-link" href={pdf} download>Download memo PDF</a></div>}
-      {d.memo_status === 'draft' && <p className="map-note">Draft: passed every automated check, not yet reviewed by an engineer.</p>}
-    </section>
-  </>;
+  </div>;
 }

@@ -2,12 +2,20 @@ import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 
 import SiteDetails from './components/SiteDetails.jsx';
 import Assistant from './components/Assistant.jsx';
 import ExampleLab from './components/ExampleLab.jsx';
-import { ModelRuns, RankedSites, Backtest, Memos } from './components/ModelPanels.jsx';
+import { ModelRuns, RankedSites, Backtest, Memos, Kpis } from './components/ModelPanels.jsx';
 import { runPath, useApi } from './api.js';
 
 const RiskMap = lazy(() => import('./components/RiskMap.jsx'));
 const emptySites = { type: 'FeatureCollection', features: [] };
 const PAGE_KEYS = { map: 'Risk map', site: 'Site details', backtest: 'Backtest', memos: 'Memos', assistant: 'AI assistant', example: 'Example lab' };
+const INTRO = {
+  'Risk map': 'Every College Station road segment and intersection, ranked by expected fatal and serious-injury (K+A) crashes per mile per year in 2026.',
+  'Site details': 'Why one site ranks where it does: its prediction, crash history and the factors behind the model.',
+  'Backtest': 'How well each method, trained only on data known by the end of 2022, found the K+A crashes of 2023 to 2025.',
+  'Memos': 'Countermeasure memos for the highest-ranked City-actionable sites. Drafts: every number comes from a tool result, and an engineer must review them.',
+  'AI assistant': 'Ask questions about published results.',
+  'Example lab': 'A synthetic example of the modeling steps, for teaching only.',
+};
 
 function initialState() {
   const params = new URLSearchParams(window.location.search);
@@ -41,7 +49,7 @@ export default function App() {
     setPage('Site details');
   }, []);
   useEffect(() => {
-    if (previousPage.current !== page) heading.current?.focus();
+    if (previousPage.current !== page) { heading.current?.focus(); window.scrollTo(0, 0); }
     previousPage.current = page;
     const params = new URLSearchParams();
     const key = Object.keys(PAGE_KEYS).find(k => PAGE_KEYS[k] === page);
@@ -53,17 +61,29 @@ export default function App() {
   }, [page, selectedSiteId, preferredRunId]);
   return <>
     <a className="skip" href="#content">Skip to content</a>
-    <header><span className="brand">ATSC</span><div><strong>AI Traffic-Safety Consultant</strong><p>Texas A&amp;M capstone · College Station</p></div><span className="badge">Research preview</span></header>
-    <div className="layout"><nav aria-label="Main navigation">{pages.map(name => <button key={name} aria-current={page === name ? 'page' : undefined} onClick={() => setPage(name)}>{name}</button>)}</nav>
-      <main id="content"><p className="eyebrow">TRAFFIC SAFETY / {page.toUpperCase()}</p><h1 ref={heading} tabIndex={-1}>{page}</h1>
+    <header className="topbar">
+      <div className="topbar-inner">
+        <div className="brand-block"><span className="brand" aria-hidden="true">ATSC</span><div><strong>AI Traffic-Safety Consultant</strong><span>College Station, Texas · Texas A&amp;M ECEN 403 Team 4</span></div></div>
+        <span className="badge">Research preview</span>
+      </div>
+      <nav aria-label="Main navigation"><div className="tabs">{pages.map(name => <button key={name} aria-current={page === name ? 'page' : undefined} onClick={() => setPage(name)}>{name}</button>)}</div></nav>
+    </header>
+    <main id="content">
+      <div className="page-head">
+        <div><h1 ref={heading} tabIndex={-1}>{page}</h1><p className="lede">{INTRO[page]}</p></div>
         {page !== 'Example lab' && <ModelRuns resource={runsResource} runs={runs} activeRun={activeRun} onChange={id => { setPreferredRunId(id); setSelectedSiteId(null); }} onRefresh={() => { runsResource.refresh(); sitesResource.refresh(); }} />}
-        {page === 'Risk map' && <><Suspense fallback={<p role="status">Loading the interactive map…</p>}><RiskMap run={activeRun} resource={sitesResource} sites={sitesResource.data || emptySites} selectedSiteId={selectedSiteId} onSelectSite={openSite} /></Suspense><RankedSites resource={sitesResource} run={activeRun} onSelect={openSite} /></>}
-        {page === 'Site details' && <SiteDetails run={activeRun} siteId={selectedSiteId} onBackToMap={() => setPage('Risk map')} onOpenMemo={() => setPage('Memos')} />}
-        {page === 'Backtest' && <Backtest run={activeRun} />}
-        {page === 'Memos' && <Memos run={activeRun} sites={sites} selectedSiteId={selectedSiteId} onSelectSite={setSelectedSiteId} onOpenSite={openSite} />}
-        {page === 'AI assistant' && assistantEnabled && <Assistant run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}
-        {page === 'Example lab' && <ExampleLab />}
-        <footer>Planning-level outputs require review by qualified traffic engineers.</footer>
-      </main></div>
+      </div>
+      {page === 'Risk map' && <>
+        <Kpis run={activeRun} sites={sites} />
+        <Suspense fallback={<p role="status">Loading the interactive map…</p>}><RiskMap run={activeRun} resource={sitesResource} sites={sitesResource.data || emptySites} selectedSiteId={selectedSiteId} onSelectSite={openSite} /></Suspense>
+        <RankedSites resource={sitesResource} run={activeRun} onSelect={openSite} />
+      </>}
+      {page === 'Site details' && <SiteDetails run={activeRun} siteId={selectedSiteId} onBackToMap={() => setPage('Risk map')} onOpenMemo={() => setPage('Memos')} />}
+      {page === 'Backtest' && <Backtest run={activeRun} />}
+      {page === 'Memos' && <Memos run={activeRun} sites={sites} resource={sitesResource} selectedSiteId={selectedSiteId} onSelectSite={setSelectedSiteId} onOpenSite={openSite} />}
+      {page === 'AI assistant' && assistantEnabled && <Assistant run={activeRun} sites={sites} selectedSite={selectedSite} onSelectSite={setSelectedSiteId} />}
+      {page === 'Example lab' && <ExampleLab />}
+      <footer>Planning-level outputs. Every recommendation needs review by a qualified traffic engineer. Map data &copy; OpenStreetMap contributors; crashes from TxDOT CRIS.</footer>
+    </main>
   </>;
 }
