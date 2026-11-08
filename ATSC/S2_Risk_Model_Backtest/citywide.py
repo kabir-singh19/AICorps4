@@ -356,6 +356,25 @@ def ranking_table(sites, fut, preds, frame_c, frame_b, expl, cfg):
     return t.sort_values("rank").reset_index(drop=True)
 
 
+def site_history(context):
+    """Matched crashes per site and year (2016 to the forecast cutoff), by severity and type, for S4."""
+    import pandas as pd
+    c = pd.DataFrame(context["crashes"])
+    fields = ["total", "K", "A", "B", "C", "O", "U", "angle", "rear_end", "single_vehicle", "opposite_direction",
+              "sideswipe", "night", "wet"]
+    for sev in "KABCOU":
+        c[sev] = (c.severity == sev).astype(int)
+    c["total"] = 1
+    for f in fields[7:]:
+        c[f] = c[f].astype(bool).astype(int)
+    g = c.groupby(["site_id", "crash_year"])[fields].sum()
+    sites = {}
+    for (sid, year), row in g.iterrows():
+        sites.setdefault(str(sid), {})[str(int(year))] = [int(v) for v in row.to_numpy()]
+    return {"fields": fields, "years": [int(c.crash_year.min()), int(c.crash_year.max())],
+            "last_crash_date": context["last_crash_date"], "matched_crashes_only": True, "sites": sites}
+
+
 def ranking_hash(table):
     cols = ["site_id", "rank", "fsi_rate", "flagged"]
     return json_hash(table[cols].astype({"flagged": bool}).to_dict("records"))
@@ -764,6 +783,7 @@ def main(argv=None):
         write_geojson(tmp / "sites.geojson", table, ctx_fc)
         write_json(tmp / "backtest.json", bt)
         write_json(tmp / "explanations.json", expl)
+        (tmp / "site_history.json").write_text(json.dumps(site_history(ctx_fc), separators=(",", ":")) + "\n")
         write_json(tmp / "calibration.json", cal)
         write_json(tmp / "bit.json", bit_records)
         figures(tmp, bt, cal)
