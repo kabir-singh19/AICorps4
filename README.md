@@ -19,7 +19,8 @@ Paste into a terminal:
 
 ```bash
 sudo apt update && sudo apt install -y docker.io git
-sudo systemctl enable --now docker.socket docker.service
+sudo systemctl daemon-reload; sudo systemctl reset-failed docker.socket docker.service
+sudo systemctl enable docker.socket docker.service && sudo systemctl restart docker.socket docker.service
 cd ~/Desktop
 [ -d AICorps4 ] && git -C AICorps4 pull || git clone https://github.com/kabir-singh19/AICorps4.git
 cd AICorps4/ATSC/S4_Web_App
@@ -30,7 +31,7 @@ sudo docker run -d --name atsc-demo --restart unless-stopped -p 10000:10000 \
   -e ATSC_AI_ENABLED=false atsc
 ```
 
-- "Cannot connect to the Docker daemon": run `sudo systemctl start docker.socket docker.service`.
+- "Cannot connect to the Docker daemon": run `sudo systemctl restart docker.socket docker.service`, then paste the whole block again.
 - Stop and remove: `sudo docker rm -f atsc-demo`. Remove Docker too: `sudo apt purge -y docker.io`.
 
 ### macOS (Intel or Apple Silicon)
