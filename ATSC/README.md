@@ -38,5 +38,6 @@ Operator commands (ICD Table 13) are in `./atsc` (run `./atsc -h`): `ingest`, `n
 `integration/logs/atsc.jsonl` and exits non-zero on failure. Logs are kept 90 days.
 Change requests: `docs/change_requests/`. Forms for the ECEN 404 human checks: `docs/handoff/`.
 
-Current run: `integration/artifacts/s2-citywide-2026-11-08/` (model card, backtest, charts,
-memos). `make demo` from a clean database on 8 Nov 2026 reproduced its ranking hash exactly.
+Current run: `integration/artifacts/s2-citywide-v1.1-2026-11-08/` (model card, backtest, charts,
+memos), on the network with short links folded (every segment 0.05-0.15 mi). Reload and an
+independent refit reproduced its ranking hash. The earlier run `s2-citywide-2026-11-08` is kept for reference.
