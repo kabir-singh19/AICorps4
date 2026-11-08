@@ -11,7 +11,7 @@ class MemoTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         site = json.loads((m.ROOT / 'example_sites.json').read_text())[0]
-        cls.ev = m.match_site(site, m.load_library())
+        cls.ev = m.match_site(site, m.load_library(m.ROOT / 'fixtures' / 'countermeasure_library_2026-11-03.csv'))
 
     def setUp(self):
         self.draft = m.offline_draft(self.ev)

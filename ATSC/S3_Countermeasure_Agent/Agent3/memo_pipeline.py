@@ -161,7 +161,8 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def completion_response(response):
-    if response.headers.get_content_type() != 'text/event-stream':
+    headers = getattr(response, 'headers', None)
+    if headers is None or headers.get_content_type() != 'text/event-stream':
         return json.load(response)
 
     # TAMU can return streamed chunks even when a single response was requested.
@@ -198,7 +199,8 @@ def completion_response(response):
         {'message': {'content': ''.join(parts)}, 'finish_reason': finish}]}
 
 
-def call_api(evidence, attempts, timeout, *, probe=False):
+def call_api(evidence, attempts, timeout, *, probe=False, system=None, user=None, temperature=None):
+    """POST one chat completion. system/user override the example-site prompt (site_agent.py)."""
     endpoint = os.environ.get('MEMO_API_URL', '').strip()
     key = os.environ.get('MEMO_API_KEY', '').strip()
     model = os.environ.get('MEMO_MODEL', '').strip()
@@ -213,8 +215,10 @@ def call_api(evidence, attempts, timeout, *, probe=False):
     if u.hostname == 'chat-api.tamu.ai' and u.path == '/openai/chat/completions':
         endpoint += '?bypass_system_prompt=false'
     payload = {'model': model, 'messages': [
-        {'role': 'system', 'content': SYSTEM},
-        {'role': 'user', 'content': json.dumps(evidence, ensure_ascii=False)}]}
+        {'role': 'system', 'content': SYSTEM if system is None else system},
+        {'role': 'user', 'content': json.dumps(evidence, ensure_ascii=False) if user is None else user}]}
+    if temperature is not None:
+        payload['temperature'] = temperature
     if probe:
         payload['messages'] = [{'role': 'user', 'content': 'Reply with the word OK.'}]
     headers = {'Accept': 'application/json', 'Authorization': 'Bearer ' + key,

@@ -1,11 +1,17 @@
 import unittest
+from pathlib import Path
+
 from countermeasure_matcher import load_library, match_site
+
+FIXTURE = Path(__file__).resolve().parent / 'fixtures' / 'countermeasure_library_2026-11-03.csv'
 
 
 class MatcherTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.rows = load_library()
+        # Written against the 3 Nov 2026 library (34 rows, before e8d001d removed the pedestrian
+        # entries); the production 30-row library is covered by test_site_agent.py.
+        cls.rows = load_library(FIXTURE)
 
     def match(self, **changes):
         site = dict(site_id='TEST', example=True, site_type='signalized intersection',
