@@ -1,5 +1,9 @@
 # AI Corps: Group 4
 
+The project, the AI Traffic-Safety Consultant (ATSC), lives in [ATSC/](ATSC/README.md): subsystems S1 to S4, the
+integration pipeline (`ATSC/Makefile`), and the controlling documents in `ATSC/docs/`.
+`Initial_Research/` holds early background notes.
+
 Notes from the 9/11 kickoff meeting. Project ideas are in [IDEAS.md](Initial_Research/IDEAS.md).
 
 ## Project: AI Consulting Tool (Teams 1 & 4)

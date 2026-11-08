@@ -1,4 +1,4 @@
--- S1 -> S2 integration views (IF-09), adopted from Param_Shelar/docs/s1_views_proposal.sql.
+-- S1 -> S2 integration views (IF-09), adopted from ATSC/S2_Risk_Model_Backtest/docs/s1_views_proposal.sql.
 -- Run after the network, matching and features exist. Safe to re-run.
 --   psql "$DATABASE_URL" -v s2_password="$S2_PASSWORD" -f sql/05_s2_interface.sql
 -- s2_password is optional; without it the read-only role is created but cannot log in.

@@ -8,7 +8,7 @@ PDF, **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, which ho
 - **ICD**, the Interface Control Document, Rev – Draft (interfaces IF-01 to IF-12, tables, commands)
 - **EVP**, the Execution and Validation Plan, Rev – Draft (milestones, backtest protocol, tests)
 
-The PDF is not in the repo. Section numbers below (for example "FSR 3.2.1.7") point into it.
+A copy is in `ATSC/docs/Team4_ATSC_ConOps_FSR_ICD_EVP_rev2-1.pdf`. Section numbers below (for example "FSR 3.2.1.7") point into it.
 When the PDF and older files in this repo disagree, the PDF wins. Within the PDF, the FSR text
 takes precedence over the ICD and EVP (FSR 2.3).
 
@@ -36,10 +36,10 @@ Each subsystem has one owner. Subsystems exchange data **only** through the shar
 
 | Subsystem | Owner | Repo folder | Responsibility |
 |---|---|---|---|
-| S1 Road Network, Features, and Database | Kabir Singh | `Kabir_Singh/` | Ingest IF-01 to IF-05, build the network, map-match crashes, store features with as-of dates, enforce the leakage cutoff, own the PostgreSQL/PostGIS schema. Kabir is also custodian of the ICD. |
-| S2 Risk Model and Backtest | Param Shelar (also team leader) | `Param_Shelar/` | Methods A, B, C; EB; severity model; SHAP; flagging; backtest with bootstrap; sensitivity; model card; artifacts |
-| S3 Countermeasure Agent | Jose Ruiz Garcia | (none yet) | IF-06 countermeasure library, IF-10 tools, IF-07 LLM calls, prompts, grounding checks, cost logging |
-| S4 Web Application and Deployment | Juan Lopez | (none yet) | FastAPI (IF-08), React/MapLibre frontend, exports (IF-11), containers, hosting. Juan is also the City liaison. |
+| S1 Road Network, Features, and Database | Kabir Singh | `ATSC/S1_Road_Network_Database/` | Ingest IF-01 to IF-05, build the network, map-match crashes, store features with as-of dates, enforce the leakage cutoff, own the PostgreSQL/PostGIS schema. Kabir is also custodian of the ICD. |
+| S2 Risk Model and Backtest | Param Shelar (also team leader) | `ATSC/S2_Risk_Model_Backtest/` | Methods A, B, C; EB; severity model; SHAP; flagging; backtest with bootstrap; sensitivity; model card; artifacts |
+| S3 Countermeasure Agent | Jose Ruiz Garcia | `ATSC/S3_Countermeasure_Agent/` | IF-06 countermeasure library, IF-10 tools, IF-07 LLM calls, prompts, grounding checks, cost logging |
+| S4 Web Application and Deployment | Juan Lopez | `ATSC/S4_Web_App/` | FastAPI (IF-08), React/MapLibre frontend, exports (IF-11), containers, hosting. Juan is also the City liaison. |
 
 Other people involved:
 - **Client:** City of College Station; contact Sam Rivera (IT).
@@ -52,14 +52,14 @@ editing that owner's code.
 
 ## Repository layout
 
-- `Kabir_Singh/` is the S1 baseline. It has `docker-compose.yml` (PostgreSQL 16 + PostGIS),
+- `ATSC/S1_Road_Network_Database/` is the S1 baseline. It has `docker-compose.yml` (PostgreSQL 16 + PostGIS),
   `sql/init/01_schema.sql` (schema `tasc`, leakage trigger), `ingest.py`,
   `sql/02_build_network.sql`, `sql/03_map_match.sql`, and `tests/`. Its README lists what has
   and has not actually been run.
-- `Param_Shelar/` is S2: NB-SPF (B), Poisson XGBoost (C), EB, severity, ranking, SHAP,
+- `ATSC/S2_Risk_Model_Backtest/` is S2: NB-SPF (B), Poisson XGBoost (C), EB, severity, ranking, SHAP,
   paired bootstrap backtest, run bundles with exact replay, and the `cli.py train|backtest|bit`
   commands. Tested on synthetic data only; no City model has been trained. Real runs need the S1
-  views drafted in `Param_Shelar/docs/s1_views_proposal.sql`. Docs live in `Param_Shelar/docs/`:
+  views drafted in `ATSC/S2_Risk_Model_Backtest/docs/s1_views_proposal.sql`. Docs live in `ATSC/S2_Risk_Model_Backtest/docs/`:
   - `requirements.md`
   - `interfaces.md` (S1 schema mapping and open interface decisions)
   - `backtest_protocol.md`
@@ -161,7 +161,7 @@ There are roughly 100 F&SI crashes per year in Brazos County, so about 300 in th
 
 S1's actual schema uses schema `tasc` and singular names (`tasc.site`, `tasc.crash`,
 `tasc.crash_match`, `tasc.site_crash_year`, `tasc.site_feature`, `tasc.feature_set`). The S2
-result tables do not exist yet. See `Param_Shelar/docs/interfaces.md` for the mapping.
+result tables do not exist yet. See `ATSC/S2_Risk_Model_Backtest/docs/interfaces.md` for the mapping.
 
 **Site feature properties (ICD Table 9):**
 - `site_id`
@@ -205,7 +205,7 @@ The shared `atsc` CLI does not exist yet.
   all seeds.
 - **Input validation (FSR 3.2.3.1.2):** check counts, required fields, coordinate bounds, dates,
   and severity codes, and stop the pipeline if **more than 2%** of records fail.
-  `Kabir_Singh/ingest.py` implements this (`> 0.02`; exactly 2% passes). EVP Table 8 still
+  `ATSC/S1_Road_Network_Database/ingest.py` implements this (`> 0.02`; exactly 2% passes). EVP Table 8 still
   says "3% bad records stops"; the FSR's 2% governs.
 - **Map-matching:** at least 95% of geocoded F&SI crashes matched, and every unmatched crash
   logged with its reason. Coordinates are noisy, so the tolerance is generous but logged.
@@ -272,6 +272,6 @@ Do not describe empty or placeholder tests as validation evidence.
 - Write plainly, and state what has and has not actually been run. Never claim results, match
   rates, or capture rates that were not computed from real data.
 - Keep subsystem boundaries. When an interface decision is open (see "Decisions to resolve" in
-  `Param_Shelar/docs/interfaces.md`), surface it instead of picking an answer silently.
+  `ATSC/S2_Risk_Model_Backtest/docs/interfaces.md`), surface it instead of picking an answer silently.
 - Record requirement changes in the repo. Changing a "shall" requires approval from the team
   leader, the sponsor, and the City.

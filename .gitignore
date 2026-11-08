@@ -1,0 +1,31 @@
+# Environments and caches
+.venv/
+**/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+node_modules/
+.DS_Store
+
+# Secrets (LLM keys, database passwords) never enter git
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+ATSC/integration/secrets/
+
+# Raw data stays outside the repo (CRIS CSVs, OSM extracts, TxDOT inventory, Drive caches)
+*.osm.pbf
+ATSC/data/
+**/cris/*.csv
+*.parquet
+
+# Model binaries and large intermediates from integration runs
+ATSC/integration/cache/
+ATSC/integration/artifacts/*/models/
+*.pkl
+*.ubj
+*.webm.part

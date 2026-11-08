@@ -4,7 +4,7 @@ services:
     name: atsc-traffic-safety
     runtime: docker
     plan: free
-    rootDir: Juan_Lopez
+    rootDir: ATSC/S4_Web_App
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /api/v1/ready

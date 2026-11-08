@@ -1,6 +1,6 @@
 -- PROPOSAL from S2 for S1 (Kabir) to review. Not run, and not part of the S1 schema until S1
 -- adopts it. These are the read-only views S2's database.py reads (see docs/interfaces.md),
--- written against Kabir_Singh/sql/init/01_schema.sql as of 14 Oct 2026.
+-- written against ATSC/S1_Road_Network_Database/sql/init/01_schema.sql as of 14 Oct 2026.
 --
 -- They describe the CORRIDOR network (v0_2019) for an M2 diagnostic run. A full-city network
 -- needs a different in_analysis_area rule (the College Station boundary, not corridor names).

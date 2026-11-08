@@ -5,7 +5,7 @@ The Docker image builds React and serves its files through FastAPI. The browser 
 ## Deploy the team repository
 
 1. Connect a Render account and grant it access to `kabir-singh19/AICorps4`.
-2. Create a Blueprint using the branch containing this change. Set **Blueprint Path** to `Juan_Lopez/render.monorepo.yaml`. That file sets `rootDir: Juan_Lopez`, so the other team folders are excluded from the build context. See [Render's monorepo guide](https://render.com/docs/monorepo-support).
+2. Create a Blueprint using the branch containing this change. Set **Blueprint Path** to `ATSC/S4_Web_App/render.monorepo.yaml`. That file sets `rootDir: ATSC/S4_Web_App`, so the other team folders are excluded from the build context. See [Render's monorepo guide](https://render.com/docs/monorepo-support).
 3. Review the `atsc-traffic-safety` service and its Free plan, then deploy. AI is disabled initially and there is no paid AI call during build/startup.
 4. Wait for a successful deployment and open the service URL shown by Render. Verify `/api/v1/ready` returns `ready`, the map loads, and `/api/v1/runs` returns the approved published runs (two labeled synthetic dashboard runs are bundled for demonstration).
 5. Configure approved AI credentials separately using [ai-assistant.md](ai-assistant.md). Do not put credentials in GitHub, frontend variables, or chat messages.
@@ -14,7 +14,7 @@ For a separate repository with this app at its root, use `render.yaml` instead. 
 
 ## Manual service alternative
 
-Create a Render **Web Service**, select the repository and branch, choose **Docker**, set **Root Directory** to `Juan_Lopez`, **Dockerfile Path** to `./Dockerfile`, **Docker Build Context** to `.`, and **Health Check Path** to `/api/v1/ready`. Set `ATSC_ENV=production`, a random `ATSC_SESSION_SECRET` of at least 32 characters, and `ATSC_AI_ENABLED=false`. Do not supply a custom start command: the image honors Render's port.
+Create a Render **Web Service**, select the repository and branch, choose **Docker**, set **Root Directory** to `ATSC/S4_Web_App`, **Dockerfile Path** to `./Dockerfile`, **Docker Build Context** to `.`, and **Health Check Path** to `/api/v1/ready`. Set `ATSC_ENV=production`, a random `ATSC_SESSION_SECRET` of at least 32 characters, and `ATSC_AI_ENABLED=false`. Do not supply a custom start command: the image honors Render's port.
 
 ## Local production check
 

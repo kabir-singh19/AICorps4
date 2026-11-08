@@ -148,7 +148,7 @@ docker compose exec -T db pg_dump -U tasc -d tasc -n tasc --clean --if-exists --
 **Option 1, restore the copy (recommended, about 2 minutes).** Use the newest dump,
 `dumps/tasc_v1_2022_2026-11-04.sql.gz` (both networks; `v1_2022` is the city-wide one). The
 18 Oct dump `tasc_v0_2019.sql.gz` stays as the exact input of M2 run `m2-corridor-001`. Works the same on Windows, macOS
-and Linux; run from `Kabir_Singh/` after `git pull`. Docker Desktop must be running.
+and Linux; run from `ATSC/S1_Road_Network_Database/` after `git pull`. Docker Desktop must be running.
 
 ```bash
 docker compose up -d

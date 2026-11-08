@@ -10,7 +10,7 @@ are still pending. See [validation.md](docs/validation.md) for measured checks a
 
 ## M2 corridor diagnostic (run `m2-corridor-001`, 20 Oct 2026)
 
-Input: `Kabir_Singh/dumps/tasc_v0_2019.sql.gz` (network v0_2019, 185 segments + 2 intersections,
+Input: `ATSC/S1_Road_Network_Database/dumps/tasc_v0_2019.sql.gz` (network v0_2019, 185 segments + 2 intersections,
 18.07 flagging miles) read as `s2_reader`; config `config/corridor_diagnostic.example.json`.
 Scope `corridor_diagnostic`: three corridors, not the FSR 3.2.1.1 network, not the City backtest.
 Code: commit 1e495a1 (fingerprint `db5e49dd…`); replay and backtest reproduced exactly.
@@ -34,7 +34,7 @@ loads the MPO HIN layer ([proposal](docs/s1_hin_view_proposal.sql); config templ
 From the repository root:
 
 ```bash
-cd Param_Shelar
+cd ATSC/S2_Risk_Model_Backtest
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
@@ -70,7 +70,7 @@ python cli.py train --run-id backtest-001 --config config/default.json --snapsho
 
 For a database run, copy `config/database.example.json` to `config/local.json`, replace its explicit
 placeholders, set `DATABASE_URL` in the environment, and run against S1's views
-(`Kabir_Singh/sql/05_s2_interface.sql`). For the M2 diagnostic on the S1 corridor network, start
+(`ATSC/S1_Road_Network_Database/sql/05_s2_interface.sql`). For the M2 diagnostic on the S1 corridor network, start
 from `config/corridor_diagnostic.example.json` instead:
 
 ```bash

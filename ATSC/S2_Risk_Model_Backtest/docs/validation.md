@@ -1,11 +1,11 @@
 # Validation record
 
-Work scope: Param_Shelar only.
+Work scope: S2 only.
 
 ## Third pass: M2 corridor run on S1's database (20 October 2026)
 
 Environment: Ubuntu 24.04, Python 3.12.3, xgboost 3.4.1, Docker 29.1.3 with
-`postgis/postgis:16-3.4`. Database restored from `Kabir_Singh/dumps/tasc_v0_2019.sql.gz` and
+`postgis/postgis:16-3.4`. Database restored from `ATSC/S1_Road_Network_Database/dumps/tasc_v0_2019.sql.gz` and
 `sql/05_s2_interface.sql` per S1's README Option 1; S2 connected as `s2_reader`.
 
 S1 numbers checked before the run, all equal to S1's record: 185 segments + 2 intersections,

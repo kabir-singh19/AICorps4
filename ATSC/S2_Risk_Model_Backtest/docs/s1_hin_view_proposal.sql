@@ -1,7 +1,7 @@
 -- PROPOSAL from S2 for S1 (Kabir) to review. Not run, and not part of the S1 schema until S1
 -- adopts it. It adds the published MPO High-Injury Network (IF-05) and the view S2 reads for
 -- method A, tasc.s2_hin_site (see docs/interfaces.md). Written against
--- Kabir_Singh/sql/init/01_schema.sql and sql/05_s2_interface.sql as of 20 Oct 2026.
+-- ATSC/S1_Road_Network_Database/sql/init/01_schema.sql and sql/05_s2_interface.sql as of 20 Oct 2026.
 --
 -- Load only the real MPO layer. Do not draw, approximate or reconstruct HIN lines here; if the
 -- layer cannot be obtained, that is a separate team decision (CLAUDE.md, IF-05).
@@ -70,7 +70,7 @@ ON CONFLICT (source) DO UPDATE SET
 
 -- 3. Membership: one row per site in the network, every site exactly once.
 --    Segments (ICD Table 5): in_hin when at least 50% of the segment's length lies within
---    hin_buffer_m of the HIN. Same rule as Param_Shelar/hin_baseline.py overlap_membership():
+--    hin_buffer_m of the HIN. Same rule as ATSC/S2_Risk_Model_Backtest/hin_baseline.py overlap_membership():
 --    overlap_length >= 0.5 * segment_length. The buffer absorbs small offsets between the MPO's
 --    linework and the TxDOT centerline; record the value used and check sensitivity to it.
 --    Overlap is clipped to the segment, so it can never exceed the segment's own length.
