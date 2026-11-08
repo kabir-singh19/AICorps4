@@ -1,0 +1,17 @@
+{
+  "site_id": "16368",
+  "crash_profile": "From {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this unsignalized 4-leg intersection, with {{ka_3y}} fatal or serious injuries (A suspected serious injury only), and {{kabc_3y}} KABCO injuries overall. The most frequent crash types were angle ({{angle_3y}}) and run-off-road ({{run_off_road_3y}}). Nighttime and wet-weather crashes were rare. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to elevated fatal or serious injury rate ({{fsi_rate}} per mile), high traffic exposure ({{aadt}} vehicles/day), and its presence on the City's High Injury Network. The intersection's 4-leg geometry and state route status further raise risk.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "Systemic signing and marking improvements have broader evidence for reducing KABCO injuries at unsignalized intersections. The cited CMF {{cmf:8867}} is an aggregate for all severities and crash types, not a direct match for fatal or serious injuries or specific crash subtypes, so engineering review is required."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Flashing beacons at stop-controlled intersections are supported by broader evidence for all severities and crash types. The cited CMF {{cmf:446}} is not a direct match for fatal or serious injuries or specific crash subtypes, so engineering review is required."
+    }
+  ],
+  "benefit_cost": "A benefit cannot be computed for either countermeasure, as the evidence audit does not approve a library entry for numerical benefit calculation, and neither has a planning-level unit cost or service life. The CMF severity scopes do not match fatal or serious injuries only.",
+  "next_steps": "Conduct engineering review to confirm treatment prerequisites, including intersection geometry, traffic volumes, and existing equipment. Assess suitability for systemic signing and marking improvements and flashing beacons, referencing the broader evidence and CMF scope. Coordinate with TxDOT as the site is on a state route."
+}

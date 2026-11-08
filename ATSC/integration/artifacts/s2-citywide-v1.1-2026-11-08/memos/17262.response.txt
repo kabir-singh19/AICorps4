@@ -1,0 +1,17 @@
+{
+  "site_id": "17262",
+  "crash_profile": "From {{window_start}} to {{window_end}}, there were {{total_3y}} crashes at this unsignalized intersection, including {{ka_3y}} fatal or suspected serious injury crashes and {{kabc_3y}} total injury crashes. Rear-end crashes ({{rear_end_3y}}) and run-off-road crashes ({{run_off_road_3y}}) were most frequent. Nighttime crashes totaled {{night_3y}}. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "This site is flagged due to its inclusion in the High Injury Network and a model-estimated fatal or serious injury crash rate of {{fsi_rate}} per mile, with an annual fatal or serious injury frequency of {{annual_fsi}}. Elevated traffic exposure ({{aadt}} vehicles/day) and nearby crash clusters further raise risk.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "This systemic signing and marking improvement package addresses all crash types and severities observed at the site. The cited CMF {{cmf:8867}} is based on broader evidence for all severities, not a direct match for fatal or serious injury crashes, and requires engineering review for applicability."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Flashing beacons at stop-controlled intersections may improve visibility and compliance, potentially affecting all crash types. The CMF {{cmf:446}} is based on broader evidence for all severities, not a direct match for fatal or serious injury crashes, and requires engineering review to confirm suitability."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure because the evidence library lacks audit-approved CMFs for fatal or serious injury crashes, as well as planning-level unit costs and service life data for these treatments.",
+  "next_steps": "Conduct an engineering review to confirm site geometry, traffic volumes, and existing equipment for both countermeasures. Assess whether treatment prerequisites are met and if their scope aligns with observed crash types and severities. Field observations may help verify visibility and compliance issues."
+}

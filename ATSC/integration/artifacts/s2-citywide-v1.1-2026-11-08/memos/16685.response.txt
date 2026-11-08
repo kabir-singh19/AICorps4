@@ -1,0 +1,17 @@
+{
+  "site_id": "16685",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{ka_3y}} fatal or serious injury crashes and {{kabc_3y}} KABCO injury crashes occurred at this signalized four-leg intersection. The dominant crash type was left-turn opposing, with {{left_turn_opposing_3y}} crashes, followed by rear-end and sideswipe collisions. Nighttime crashes were noted, but no wet-weather crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "The site is flagged due to its model-estimated fatal or serious injury crash rate of {{fsi_rate}} per mile per year and {{annual_fsi}} fatal or serious injury crashes annually. Additional risk factors include high traffic exposure ({{aadt}} vehicles/day), a concentration of crashes within {{window_start}} to {{window_end}}, inclusion in the high-injury network, four-leg geometry, and proximity to a bar.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for KABCO injury crashes at four-leg urban signalized intersections with similar traffic volumes. The cited CMF {{cmf:267}} is a direct crash-type match for left-turn opposing collisions, but requires engineering review for prerequisites and severity scope."
+    },
+    {
+      "cm_id": "CM019",
+      "rationale": "Modifying change plus clearance intervals to the studied ITE 1985 practice is supported by broader evidence for all crash types at four-leg signalized intersections. The cited CMF {{cmf:380}} is a direct crash-type match, but needs engineering review for area setting and severity scope."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure because the library lacks audit-approved CMFs with planning-level unit costs and service lives, and the severity scopes do not match fatal or serious injury crashes only.",
+  "next_steps": "Conduct engineering review to verify prerequisites for left-turn lane installation and signal timing modifications, including geometry, traffic volumes, and existing equipment. Confirm applicability of CMFs to site conditions and severity scope. Complete source verification for both treatments."
+}

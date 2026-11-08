@@ -1,0 +1,17 @@
+{
+  "site_id": "16557",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this signalized 4-leg intersection. There were {{ka_3y}} fatal or suspected serious injury crashes and {{kabc_3y}} KABCO injury crashes. Crash types included {{angle_3y}} angle, {{rear_end_3y}} rear-end, {{run_off_road_3y}} run-off-road, and {{left_turn_opposing_3y}} left-turn-opposing collisions. Night and wet conditions were noted. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "The site is flagged due to a forecasted fatal or serious injury rate of {{fsi_rate}} per mile per year, elevated traffic exposure ({{aadt}} vehicles/day), 4-leg signalized intersection geometry, proximity to other crash sites, and inclusion in the high-injury network.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for all crash types and KABCO injury severities. The CMF {{cmf:267}} is not a direct match for fatal or serious injury crashes and requires engineering review for applicability."
+    },
+    {
+      "cm_id": "CM013",
+      "rationale": "Adding 3-inch yellow retroreflective sheeting to signal backplates is supported by broader evidence for all crash types and severities. The CMF {{cmf:1410}} is not a direct match for fatal or serious injury crashes and requires engineering review for applicability."
+    }
+  ],
+  "benefit_cost": "A numerical benefit could not be computed for either treatment. The library lacks audit-approved CMFs for fatal or serious injury crashes, planning-level unit costs, and service life data. Only qualitative assessment is possible.",
+  "next_steps": "Review intersection geometry, traffic volumes, and existing signal equipment to determine if prerequisites for the proposed treatments are met. Conduct engineering review to assess suitability and potential effectiveness for the crash types and severities observed."
+}

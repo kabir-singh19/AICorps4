@@ -1,0 +1,17 @@
+{
+  "site_id": "17161",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{ka_3y}} fatal or serious injury crashes and {{kabc_3y}} injury crashes occurred at this four-leg signalized intersection. The most frequent crash types were rear-end, left-turn opposing, and angle. Nighttime crashes were also notable. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to the model estimate of {{fsi_rate}} fatal or serious injury crashes per mile per year, high traffic exposure ({{aadt}} vehicles/day), concentration of crashes and injuries within {{window_start}} to {{window_end}}, and proximity to other sites with elevated crash counts. The intersection is in the High Injury Network and ranks {{rank_city_actionable}} among actionable city sites.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for all crash types and injury severities, with a CMF from study {{cmf:267}}. This is not a direct crash-type match and requires engineering review for geometry and traffic volumes."
+    },
+    {
+      "cm_id": "CM013",
+      "rationale": "Adding 3-inch yellow retroreflective sheeting to signal backplates is supported by broader evidence for all crash types and severities, with a CMF from study {{cmf:1410}}. This is not a direct crash-type match and requires engineering review for treatment prerequisites and existing equipment."
+    }
+  ],
+  "benefit_cost": "A benefit cannot be computed for these treatments because no audit-approved CMF, planning-level unit cost, or service life is available. The CMF severity scopes do not match fatal or serious injury crashes only.",
+  "next_steps": "Conduct engineering review for feasibility and prerequisites of left-turn lane and retroreflective signal backplates, including intersection geometry, traffic volumes, and existing signal equipment. Confirm applicability of broader-evidence CMFs to local crash types and severities."
+}

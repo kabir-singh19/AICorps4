@@ -1,0 +1,17 @@
+{
+  "site_id": "16620",
+  "crash_profile": "From {{window_start}} to {{window_end}}, this unsignalized intersection experienced {{total_3y}} crashes, including {{kabc_3y}} injury crashes and {{ka_3y}} fatal or serious injuries (none). The most frequent types were rear-end ({{rear_end_3y}}) and angle ({{angle_3y}}), with several occurring at night ({{night_3y}}) or on wet pavement ({{wet_3y}}). Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to a model-estimated fatal or serious injury crash rate of {{fsi_rate}} and annual fatal or serious injuries of {{annual_fsi}}, high traffic exposure ({{aadt}} vehicles/day), proximity to schools, and a concentration of crashes and injuries. The intersection is ranked {{rank_city_actionable}} among actionable city sites and is included in the High Injury Network.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "Systemic signing and marking improvements are supported by broader evidence for all severities and crash types, with a cited CMF {{cmf:8867}}. This is not a direct match for the dominant crash types or fatal/serious injury crashes and requires engineering review to confirm applicability."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Flashing beacons at stop-controlled intersections are supported by broader evidence for all crash types and severities, with a cited CMF {{cmf:446}}. This is not a direct match for the dominant crash types or fatal/serious injury crashes and requires engineering review to confirm applicability."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The evidence library lacks audit-approved CMFs for fatal/serious injury crashes, planning-level unit costs, and service life values. The severity scope of available CMFs does not match K and A only.",
+  "next_steps": "Conduct engineering review to confirm site prerequisites for each countermeasure, including intersection geometry, traffic volumes, and existing equipment. Assess whether systemic signing/marking improvements or flashing beacons are feasible and appropriate given the crash profile and site context."
+}

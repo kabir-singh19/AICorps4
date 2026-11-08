@@ -1,0 +1,17 @@
+{
+  "site_id": "17460",
+  "crash_profile": "From {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this unsignalized four-leg intersection, with {{ka_3y}} fatal or serious injury crashes and {{kabc_3y}} injury crashes overall. Rear-end and angle crashes are most common, followed by run-off-road and sideswipe types. Night and wet conditions contributed to some crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "The site is flagged due to a model-estimated fatal or serious injury crash rate of {{fsi_rate}} per mile and {{annual_fsi}} per year, high traffic exposure ({{aadt}} vehicles/day), its four-leg configuration, and a concentration of crashes nearby. It is ranked {{rank_city_actionable}} among actionable city sites and is included in the High Injury Network.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "Systemic signing and marking improvements are supported by broader evidence for reducing all injury crashes, with CMF {{cmf:8867}}. This is not a direct crash-type match and requires engineering review for applicability, including checking intersection geometry, traffic volumes, and existing equipment."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Flashing beacons at stop-controlled intersections are supported by broader evidence for all injury crashes, with CMF {{cmf:446}}. This is not a direct crash-type match and requires engineering review, including confirming intersection geometry and traffic volumes."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The evidence library lacks audit-approved CMFs for fatal or serious injury crashes, as well as planning-level unit costs and service life data. The CMF severity scopes do not match K and A only.",
+  "next_steps": "Conduct an engineering review to assess intersection geometry, traffic volumes, and existing signing and marking equipment. Confirm prerequisites for both countermeasures. Review crash patterns in detail to determine if systemic improvements or flashing beacons could address the dominant crash types. Pedestrian and bicycle activity should be monitored if relevant."
+}

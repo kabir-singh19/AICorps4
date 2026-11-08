@@ -1,0 +1,2063 @@
+{
+  "bootstrap": {
+    "resamples": 1000,
+    "seed": 42,
+    "unit": "individual test crash (paired across methods)"
+  },
+  "hin_version": "csap_fig3.9_digitized_2026-11-04",
+  "label_years": [
+    2019,
+    2020,
+    2021,
+    2022
+  ],
+  "leakage_gate": {
+    "analysis_scope": "college_station_public_roads",
+    "features": 166400,
+    "full_network": true,
+    "hin_available": true,
+    "history_rows": 3848,
+    "sites": 6656,
+    "test_crashes": 4869
+  },
+  "method_names": {
+    "A": "HIN (published MPO CSAP high-injury network)",
+    "B": "SPF+EB",
+    "C": "ML-EB",
+    "LGB-Tot": "LGB-Tot",
+    "LightGBM": "LightGBM",
+    "Naive": "Naive",
+    "Stack": "Stack"
+  },
+  "neighbor_pairs_250m": 64706,
+  "network_version": "v1_2022",
+  "primary": {
+    "differences": {
+      "B-A": {
+        "ci_high": -0.029239766081871288,
+        "ci_low": -0.14619883040935677,
+        "difference": -0.08771929824561397
+      },
+      "C-A": {
+        "ci_high": -0.04678362573099415,
+        "ci_low": -0.15219298245614032,
+        "difference": -0.09941520467836251
+      },
+      "C-B": {
+        "ci_high": 0.01754385964912286,
+        "ci_low": -0.04678362573099415,
+        "difference": -0.011695906432748537
+      },
+      "LGB-Tot-A": {
+        "ci_high": -0.04678362573099415,
+        "ci_low": -0.15219298245614032,
+        "difference": -0.09941520467836251
+      },
+      "LightGBM-A": {
+        "ci_high": -0.052631578947368474,
+        "ci_low": -0.16959064327485385,
+        "difference": -0.11111111111111105
+      },
+      "Naive-A": {
+        "ci_high": -0.07017543859649122,
+        "ci_low": -0.19897660818713447,
+        "difference": -0.13450292397660812
+      },
+      "Stack-A": {
+        "ci_high": -0.03508771929824561,
+        "ci_low": -0.1404970760233918,
+        "difference": -0.08771929824561397
+      }
+    },
+    "length_basis": "icd_250ft",
+    "methods": {
+      "A": {
+        "capture": 0.7953216374269005,
+        "captured_crashes": 136,
+        "ci_high": 0.8538011695906432,
+        "ci_low": 0.7309941520467836,
+        "flagged_miles": 114.16723882347526,
+        "flagged_share": 0.24830457685993879,
+        "flagged_sites": 1608,
+        "n_test_fsi": 171
+      },
+      "B": {
+        "capture": 0.7076023391812866,
+        "captured_crashes": 121,
+        "ci_high": 0.7719298245614035,
+        "ci_low": 0.631578947368421,
+        "flagged_intersections": 432,
+        "flagged_miles": 50.57077367449301,
+        "flagged_segments": 338,
+        "flagged_share": 0.10998737193022783,
+        "flagged_sites": 770,
+        "n_test_fsi": 171
+      },
+      "C": {
+        "capture": 0.695906432748538,
+        "captured_crashes": 119,
+        "ci_high": 0.7602339181286549,
+        "ci_low": 0.6257309941520468,
+        "flagged_intersections": 403,
+        "flagged_miles": 50.53501619122357,
+        "flagged_segments": 348,
+        "flagged_share": 0.1099096022754276,
+        "flagged_sites": 751,
+        "n_test_fsi": 171
+      },
+      "LGB-Tot": {
+        "capture": 0.695906432748538,
+        "captured_crashes": 119,
+        "ci_high": 0.7602339181286549,
+        "ci_low": 0.6257309941520468,
+        "flagged_intersections": 369,
+        "flagged_miles": 50.58880240469941,
+        "flagged_segments": 368,
+        "flagged_share": 0.1100265829707273,
+        "flagged_sites": 737,
+        "n_test_fsi": 171
+      },
+      "LightGBM": {
+        "capture": 0.6842105263157895,
+        "captured_crashes": 117,
+        "ci_high": 0.7485380116959064,
+        "ci_low": 0.6197368421052631,
+        "flagged_intersections": 352,
+        "flagged_miles": 50.55622703267635,
+        "flagged_segments": 375,
+        "flagged_share": 0.10995573415236579,
+        "flagged_sites": 727,
+        "n_test_fsi": 171
+      },
+      "Naive": {
+        "capture": 0.6608187134502924,
+        "captured_crashes": 113,
+        "ci_high": 0.7309941520467836,
+        "ci_low": 0.5906432748538012,
+        "flagged_intersections": 466,
+        "flagged_miles": 50.59258540162163,
+        "flagged_segments": 318,
+        "flagged_share": 0.11003481068526008,
+        "flagged_sites": 784,
+        "n_test_fsi": 171
+      },
+      "Stack": {
+        "capture": 0.7076023391812866,
+        "captured_crashes": 121,
+        "ci_high": 0.7719298245614035,
+        "ci_low": 0.6374269005847953,
+        "flagged_intersections": 397,
+        "flagged_miles": 50.52851121939952,
+        "flagged_segments": 351,
+        "flagged_share": 0.1098954544840568,
+        "flagged_sites": 748,
+        "n_test_fsi": 171
+      }
+    },
+    "n_test_crashes": 171,
+    "scenario": "11pct",
+    "target": "KA"
+  },
+  "protocol": "EVP 4.2 frozen 2022: train <= 2022-12-31, test 2023-2025",
+  "run_id": "s2-citywide-v1.1-2026-11-08",
+  "seeded_leakage_checks": [
+    {
+      "case": "feature dated 2023-06-30",
+      "detected": true,
+      "error": "leakage: 16288.interchange=2023-06-30 exceeds 2022-12-31"
+    },
+    {
+      "case": "history row for 2023",
+      "detected": true,
+      "error": "duplicate, out-of-network or post-cutoff history row"
+    },
+    {
+      "case": "predictor source available 2024-01-15",
+      "detected": true,
+      "error": "leakage: network v1_2022.available_as_of=2024-01-15 exceeds 2022-12-31"
+    },
+    {
+      "case": "site built 2023-01-01",
+      "detected": true,
+      "error": "leakage: site 16288=2023-01-01 exceeds 2022-12-31"
+    },
+    {
+      "case": "HIN membership offered as a feature",
+      "detected": true,
+      "error": "outcome, HIN, identity or future features cannot enter the model"
+    }
+  ],
+  "targets": {
+    "KA": [
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": -0.14035087719298245,
+            "ci_low": -0.26900584795321636,
+            "difference": -0.20467836257309935
+          },
+          "C-A": {
+            "ci_high": -0.14619883040935666,
+            "ci_low": -0.2748538011695906,
+            "difference": -0.21052631578947367
+          },
+          "C-B": {
+            "ci_high": 0.01754385964912286,
+            "ci_low": -0.0292397660818714,
+            "difference": -0.005847953216374324
+          },
+          "LGB-Tot-A": {
+            "ci_high": -0.15204678362573099,
+            "ci_low": -0.2807017543859649,
+            "difference": -0.21637426900584789
+          },
+          "LightGBM-A": {
+            "ci_high": -0.13450292397660824,
+            "ci_low": -0.26315789473684204,
+            "difference": -0.19883040935672514
+          },
+          "Naive-A": {
+            "ci_high": -0.17543859649122806,
+            "ci_low": -0.3216374269005848,
+            "difference": -0.2514619883040935
+          },
+          "Stack-A": {
+            "ci_high": -0.14619883040935677,
+            "ci_low": -0.2748538011695906,
+            "difference": -0.21052631578947367
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.5906432748538012,
+            "captured_crashes": 101,
+            "ci_high": 0.6608187134502924,
+            "ci_low": 0.52046783625731,
+            "flagged_intersections": 216,
+            "flagged_miles": 23.00484043300719,
+            "flagged_segments": 139,
+            "flagged_share": 0.05003368066280769,
+            "flagged_sites": 355,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.5847953216374269,
+            "captured_crashes": 100,
+            "ci_high": 0.6608187134502924,
+            "ci_low": 0.5087719298245614,
+            "flagged_intersections": 218,
+            "flagged_miles": 23.01518129181897,
+            "flagged_segments": 138,
+            "flagged_share": 0.05005617120035671,
+            "flagged_sites": 356,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.5789473684210527,
+            "captured_crashes": 99,
+            "ci_high": 0.6549707602339181,
+            "ci_low": 0.5087719298245614,
+            "flagged_intersections": 212,
+            "flagged_miles": 22.98101542104468,
+            "flagged_segments": 141,
+            "flagged_share": 0.04998186317492764,
+            "flagged_sites": 353,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.5964912280701754,
+            "captured_crashes": 102,
+            "ci_high": 0.672514619883041,
+            "ci_low": 0.52046783625731,
+            "flagged_intersections": 206,
+            "flagged_miles": 23.018076374135205,
+            "flagged_segments": 144,
+            "flagged_share": 0.05006246777192063,
+            "flagged_sites": 350,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.543859649122807,
+            "captured_crashes": 93,
+            "ci_high": 0.6198830409356725,
+            "ci_low": 0.4678362573099415,
+            "flagged_intersections": 220,
+            "flagged_miles": 23.024316418482204,
+            "flagged_segments": 139,
+            "flagged_share": 0.05007603936730243,
+            "flagged_sites": 359,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.5847953216374269,
+            "captured_crashes": 100,
+            "ci_high": 0.6549707602339181,
+            "ci_low": 0.5087719298245614,
+            "flagged_intersections": 219,
+            "flagged_miles": 22.980607694104787,
+            "flagged_segments": 137,
+            "flagged_share": 0.049980976401573673,
+            "flagged_sites": 356,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": 0.05,
+        "resamples": 1000,
+        "scenario": "5pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": -0.029239766081871288,
+            "ci_low": -0.14619883040935677,
+            "difference": -0.08771929824561397
+          },
+          "C-A": {
+            "ci_high": -0.04678362573099415,
+            "ci_low": -0.15219298245614032,
+            "difference": -0.09941520467836251
+          },
+          "C-B": {
+            "ci_high": 0.01754385964912286,
+            "ci_low": -0.04678362573099415,
+            "difference": -0.011695906432748537
+          },
+          "LGB-Tot-A": {
+            "ci_high": -0.04678362573099415,
+            "ci_low": -0.15219298245614032,
+            "difference": -0.09941520467836251
+          },
+          "LightGBM-A": {
+            "ci_high": -0.052631578947368474,
+            "ci_low": -0.16959064327485385,
+            "difference": -0.11111111111111105
+          },
+          "Naive-A": {
+            "ci_high": -0.07017543859649122,
+            "ci_low": -0.19897660818713447,
+            "difference": -0.13450292397660812
+          },
+          "Stack-A": {
+            "ci_high": -0.03508771929824561,
+            "ci_low": -0.1404970760233918,
+            "difference": -0.08771929824561397
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.7076023391812866,
+            "captured_crashes": 121,
+            "ci_high": 0.7719298245614035,
+            "ci_low": 0.631578947368421,
+            "flagged_intersections": 432,
+            "flagged_miles": 50.57077367449301,
+            "flagged_segments": 338,
+            "flagged_share": 0.10998737193022783,
+            "flagged_sites": 770,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.695906432748538,
+            "captured_crashes": 119,
+            "ci_high": 0.7602339181286549,
+            "ci_low": 0.6257309941520468,
+            "flagged_intersections": 403,
+            "flagged_miles": 50.53501619122357,
+            "flagged_segments": 348,
+            "flagged_share": 0.1099096022754276,
+            "flagged_sites": 751,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.695906432748538,
+            "captured_crashes": 119,
+            "ci_high": 0.7602339181286549,
+            "ci_low": 0.6257309941520468,
+            "flagged_intersections": 369,
+            "flagged_miles": 50.58880240469941,
+            "flagged_segments": 368,
+            "flagged_share": 0.1100265829707273,
+            "flagged_sites": 737,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.6842105263157895,
+            "captured_crashes": 117,
+            "ci_high": 0.7485380116959064,
+            "ci_low": 0.6197368421052631,
+            "flagged_intersections": 352,
+            "flagged_miles": 50.55622703267635,
+            "flagged_segments": 375,
+            "flagged_share": 0.10995573415236579,
+            "flagged_sites": 727,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.6608187134502924,
+            "captured_crashes": 113,
+            "ci_high": 0.7309941520467836,
+            "ci_low": 0.5906432748538012,
+            "flagged_intersections": 466,
+            "flagged_miles": 50.59258540162163,
+            "flagged_segments": 318,
+            "flagged_share": 0.11003481068526008,
+            "flagged_sites": 784,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.7076023391812866,
+            "captured_crashes": 121,
+            "ci_high": 0.7719298245614035,
+            "ci_low": 0.6374269005847953,
+            "flagged_intersections": 397,
+            "flagged_miles": 50.52851121939952,
+            "flagged_segments": 351,
+            "flagged_share": 0.1098954544840568,
+            "flagged_sites": 748,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": 0.11,
+        "resamples": 1000,
+        "scenario": "11pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.03508771929824561,
+            "ci_low": -0.07017543859649122,
+            "difference": -0.01754385964912275
+          },
+          "C-A": {
+            "ci_high": 0.03508771929824561,
+            "ci_low": -0.05847953216374269,
+            "difference": -0.011695906432748537
+          },
+          "C-B": {
+            "ci_high": 0.0292397660818714,
+            "ci_low": -0.01754385964912286,
+            "difference": 0.005847953216374213
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.05847953216374269,
+            "ci_low": -0.040935672514619825,
+            "difference": 0.005847953216374324
+          },
+          "LightGBM-A": {
+            "ci_high": 0.05847953216374269,
+            "ci_low": -0.040935672514619825,
+            "difference": 0.005847953216374324
+          },
+          "Naive-A": {
+            "ci_high": -0.040935672514619936,
+            "ci_low": -0.17543859649122806,
+            "difference": -0.11111111111111105
+          },
+          "Stack-A": {
+            "ci_high": 0.03508771929824561,
+            "ci_low": -0.05847953216374269,
+            "difference": -0.011695906432748537
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.7777777777777778,
+            "captured_crashes": 133,
+            "ci_high": 0.8362573099415205,
+            "ci_low": 0.7192982456140351,
+            "flagged_intersections": 856,
+            "flagged_miles": 91.95739893034286,
+            "flagged_segments": 592,
+            "flagged_share": 0.19999995853315075,
+            "flagged_sites": 1448,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.783625730994152,
+            "captured_crashes": 134,
+            "ci_high": 0.8421052631578947,
+            "ci_low": 0.7191520467836258,
+            "flagged_intersections": 774,
+            "flagged_miles": 91.99347858421045,
+            "flagged_segments": 625,
+            "flagged_share": 0.2000784288831318,
+            "flagged_sites": 1399,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.8011695906432749,
+            "captured_crashes": 137,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7368421052631579,
+            "flagged_intersections": 723,
+            "flagged_miles": 91.93639830340663,
+            "flagged_segments": 655,
+            "flagged_share": 0.19995428385590594,
+            "flagged_sites": 1378,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.8011695906432749,
+            "captured_crashes": 137,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7368421052631579,
+            "flagged_intersections": 720,
+            "flagged_miles": 91.96417529771176,
+            "flagged_segments": 654,
+            "flagged_share": 0.2000146965880387,
+            "flagged_sites": 1374,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.6842105263157895,
+            "captured_crashes": 117,
+            "ci_high": 0.7543859649122807,
+            "ci_low": 0.6140350877192983,
+            "flagged_intersections": 1340,
+            "flagged_miles": 91.9751611591974,
+            "flagged_segments": 318,
+            "flagged_share": 0.2000385899546099,
+            "flagged_sites": 1658,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.783625730994152,
+            "captured_crashes": 134,
+            "ci_high": 0.8421052631578947,
+            "ci_low": 0.7191520467836258,
+            "flagged_intersections": 773,
+            "flagged_miles": 91.94613009936197,
+            "flagged_segments": 625,
+            "flagged_share": 0.19997544973064968,
+            "flagged_sites": 1398,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": 0.2,
+        "resamples": 1000,
+        "scenario": "20pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.05263157894736836,
+            "ci_low": -0.040935672514619936,
+            "difference": 0.0
+          },
+          "C-A": {
+            "ci_high": 0.05847953216374269,
+            "ci_low": -0.02923976608187129,
+            "difference": 0.011695906432748537
+          },
+          "C-B": {
+            "ci_high": 0.04108187134502916,
+            "ci_low": -0.01754385964912286,
+            "difference": 0.011695906432748537
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.07017543859649122,
+            "ci_low": -0.01754385964912275,
+            "difference": 0.023391812865497075
+          },
+          "LightGBM-A": {
+            "ci_high": 0.07017543859649122,
+            "ci_low": -0.017690058479532207,
+            "difference": 0.023391812865497075
+          },
+          "Naive-A": {
+            "ci_high": -0.029239766081871395,
+            "ci_low": -0.1578947368421052,
+            "difference": -0.0935672514619883
+          },
+          "Stack-A": {
+            "ci_high": 0.06432748538011701,
+            "ci_low": -0.023391812865497075,
+            "difference": 0.01754385964912286
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_intersections": 1055,
+            "flagged_miles": 114.17849216963745,
+            "flagged_segments": 749,
+            "flagged_share": 0.2483290519842026,
+            "flagged_sites": 1804,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.8070175438596491,
+            "captured_crashes": 138,
+            "ci_high": 0.8597953216374268,
+            "ci_low": 0.7485380116959064,
+            "flagged_intersections": 942,
+            "flagged_miles": 114.18007404576653,
+            "flagged_segments": 793,
+            "flagged_share": 0.24833249243775937,
+            "flagged_sites": 1735,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.8187134502923976,
+            "captured_crashes": 140,
+            "ci_high": 0.8713450292397661,
+            "ci_low": 0.7543859649122807,
+            "flagged_intersections": 967,
+            "flagged_miles": 114.1681387645171,
+            "flagged_segments": 780,
+            "flagged_share": 0.2483065341594399,
+            "flagged_sites": 1747,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.8187134502923976,
+            "captured_crashes": 140,
+            "ci_high": 0.8714912280701753,
+            "ci_low": 0.7543859649122807,
+            "flagged_intersections": 960,
+            "flagged_miles": 114.13629989972051,
+            "flagged_segments": 780,
+            "flagged_share": 0.24823728718515473,
+            "flagged_sites": 1740,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.7017543859649122,
+            "captured_crashes": 120,
+            "ci_high": 0.7719298245614035,
+            "ci_low": 0.631578947368421,
+            "flagged_intersections": 1634,
+            "flagged_miles": 114.20371348350115,
+            "flagged_segments": 410,
+            "flagged_share": 0.24838390631659527,
+            "flagged_sites": 2044,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.8128654970760234,
+            "captured_crashes": 139,
+            "ci_high": 0.8713450292397661,
+            "ci_low": 0.7543859649122807,
+            "flagged_intersections": 1018,
+            "flagged_miles": 114.12974823791546,
+            "flagged_segments": 749,
+            "flagged_share": 0.24822303784682445,
+            "flagged_sites": 1767,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": 0.24830457685993879,
+        "resamples": 1000,
+        "scenario": "hin_share",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.0,
+            "ci_low": -0.11111111111111105,
+            "difference": -0.05263157894736836
+          },
+          "C-A": {
+            "ci_high": 0.011695906432748537,
+            "ci_low": -0.0935672514619883,
+            "difference": -0.040935672514619825
+          },
+          "C-B": {
+            "ci_high": 0.040935672514619936,
+            "ci_low": -0.023391812865497075,
+            "difference": 0.011695906432748537
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.011695906432748537,
+            "ci_low": -0.0935672514619883,
+            "difference": -0.040935672514619825
+          },
+          "LightGBM-A": {
+            "ci_high": -0.005847953216374324,
+            "ci_low": -0.10526315789473684,
+            "difference": -0.05263157894736836
+          },
+          "Naive-A": {
+            "ci_high": -0.029239766081871395,
+            "ci_low": -0.1578947368421052,
+            "difference": -0.0935672514619883
+          },
+          "Stack-A": {
+            "ci_high": 0.0,
+            "ci_low": -0.09941520467836251,
+            "difference": -0.04678362573099415
+          }
+        },
+        "length_basis": "s1_zero_length",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 92.95511761135404,
+            "flagged_share": 0.24307096611192566,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.7426900584795322,
+            "captured_crashes": 127,
+            "ci_high": 0.8070175438596491,
+            "ci_low": 0.672514619883041,
+            "flagged_intersections": 583,
+            "flagged_miles": 42.063432208308775,
+            "flagged_segments": 480,
+            "flagged_share": 0.1099928585707931,
+            "flagged_sites": 1063,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.7543859649122807,
+            "captured_crashes": 129,
+            "ci_high": 0.8187134502923976,
+            "ci_low": 0.6900584795321637,
+            "flagged_intersections": 556,
+            "flagged_miles": 42.06318335880056,
+            "flagged_segments": 471,
+            "flagged_share": 0.1099922078471758,
+            "flagged_sites": 1027,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.7543859649122807,
+            "captured_crashes": 129,
+            "ci_high": 0.8128654970760234,
+            "ci_low": 0.6899122807017544,
+            "flagged_intersections": 471,
+            "flagged_miles": 42.10771875259127,
+            "flagged_segments": 471,
+            "flagged_share": 0.11010866470800344,
+            "flagged_sites": 942,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.7426900584795322,
+            "captured_crashes": 127,
+            "ci_high": 0.8070175438596491,
+            "ci_low": 0.6783625730994152,
+            "flagged_intersections": 432,
+            "flagged_miles": 42.09106900420186,
+            "flagged_segments": 469,
+            "flagged_share": 0.1100651268100315,
+            "flagged_sites": 901,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.7017543859649122,
+            "captured_crashes": 120,
+            "ci_high": 0.7719298245614035,
+            "ci_low": 0.631578947368421,
+            "flagged_intersections": 1634,
+            "flagged_miles": 42.050174679209334,
+            "flagged_segments": 471,
+            "flagged_share": 0.10995819108298537,
+            "flagged_sites": 2105,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.7485380116959064,
+            "captured_crashes": 128,
+            "ci_high": 0.8071637426900583,
+            "ci_low": 0.6783625730994152,
+            "flagged_intersections": 555,
+            "flagged_miles": 42.06318335880056,
+            "flagged_segments": 471,
+            "flagged_share": 0.1099922078471758,
+            "flagged_sites": 1026,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": 0.11,
+        "resamples": 1000,
+        "scenario": "11pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.06432748538011701,
+            "ci_low": -0.03508771929824561,
+            "difference": 0.011695906432748537
+          },
+          "C-A": {
+            "ci_high": 0.08187134502923976,
+            "ci_low": -0.005847953216374324,
+            "difference": 0.03508771929824561
+          },
+          "C-B": {
+            "ci_high": 0.052631578947368474,
+            "ci_low": -0.005847953216374213,
+            "difference": 0.023391812865497075
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.08771929824561409,
+            "ci_low": 0.0,
+            "difference": 0.040935672514619936
+          },
+          "LightGBM-A": {
+            "ci_high": 0.08771929824561409,
+            "ci_low": 0.0,
+            "difference": 0.040935672514619936
+          },
+          "Naive-A": {
+            "ci_high": 0.01754385964912286,
+            "ci_low": -0.0935672514619883,
+            "difference": -0.03508771929824561
+          },
+          "Stack-A": {
+            "ci_high": 0.08187134502923976,
+            "ci_low": -0.005847953216374324,
+            "difference": 0.03508771929824561
+          }
+        },
+        "length_basis": "s1_zero_length",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 92.95511761135404,
+            "flagged_share": 0.24307096611192566,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.8070175438596491,
+            "captured_crashes": 138,
+            "ci_high": 0.8654970760233918,
+            "ci_low": 0.7426900584795322,
+            "flagged_intersections": 1138,
+            "flagged_miles": 92.92090468140373,
+            "flagged_segments": 1102,
+            "flagged_share": 0.24298150175374678,
+            "flagged_sites": 2240,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.8304093567251462,
+            "captured_crashes": 142,
+            "ci_high": 0.8830409356725146,
+            "ci_low": 0.7717836257309941,
+            "flagged_intersections": 1456,
+            "flagged_miles": 92.98683308429752,
+            "flagged_segments": 1075,
+            "flagged_share": 0.24315389979914123,
+            "flagged_sites": 2531,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.8362573099415205,
+            "captured_crashes": 143,
+            "ci_high": 0.8888888888888888,
+            "ci_low": 0.7719298245614035,
+            "flagged_intersections": 1620,
+            "flagged_miles": 92.98717920779745,
+            "flagged_segments": 1083,
+            "flagged_share": 0.2431548048872707,
+            "flagged_sites": 2703,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.8362573099415205,
+            "captured_crashes": 143,
+            "ci_high": 0.8888888888888888,
+            "ci_low": 0.7719298245614035,
+            "flagged_intersections": 1616,
+            "flagged_miles": 92.9325871781001,
+            "flagged_segments": 1075,
+            "flagged_share": 0.24301205064477674,
+            "flagged_sites": 2691,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.7602339181286549,
+            "captured_crashes": 130,
+            "ci_high": 0.8245614035087719,
+            "ci_low": 0.6957602339181287,
+            "flagged_intersections": 1634,
+            "flagged_miles": 92.98309517803264,
+            "flagged_segments": 1144,
+            "flagged_share": 0.2431441254423292,
+            "flagged_sites": 2778,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.8304093567251462,
+            "captured_crashes": 142,
+            "ci_high": 0.8830409356725146,
+            "ci_low": 0.7717836257309941,
+            "flagged_intersections": 1619,
+            "flagged_miles": 92.98683308429753,
+            "flagged_segments": 1075,
+            "flagged_share": 0.24315389979914126,
+            "flagged_sites": 2694,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": 0.24307096611192566,
+        "resamples": 1000,
+        "scenario": "hin_share",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.03523391812865483,
+            "ci_low": -0.05263157894736836,
+            "difference": -0.011695906432748537
+          },
+          "C-A": {
+            "ci_high": 0.05263157894736836,
+            "ci_low": -0.03508771929824561,
+            "difference": 0.005847953216374324
+          },
+          "C-B": {
+            "ci_high": 0.04678362573099415,
+            "ci_low": -0.011695906432748537,
+            "difference": 0.01754385964912286
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.0643274853801169,
+            "ci_low": -0.023391812865497075,
+            "difference": 0.01754385964912286
+          },
+          "LightGBM-A": {
+            "ci_high": 0.0643274853801169,
+            "ci_low": -0.023391812865497075,
+            "difference": 0.01754385964912286
+          },
+          "Naive-A": {
+            "ci_high": -0.023391812865497075,
+            "ci_low": -0.14035087719298245,
+            "difference": -0.07602339181286544
+          },
+          "Stack-A": {
+            "ci_high": 0.05847953216374269,
+            "ci_low": -0.0292397660818714,
+            "difference": 0.011695906432748537
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7953216374269005,
+            "captured_crashes": 136,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7309941520467836,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 171
+          },
+          "B": {
+            "capture": 0.783625730994152,
+            "captured_crashes": 134,
+            "ci_high": 0.8421052631578947,
+            "ci_low": 0.7192982456140351,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.13302589352492,
+            "flagged_segments": 1102,
+            "flagged_share": 0.24823016648458063,
+            "flagged_sites": 1550,
+            "n_test_fsi": 171
+          },
+          "C": {
+            "capture": 0.8011695906432749,
+            "captured_crashes": 137,
+            "ci_high": 0.8538011695906432,
+            "ci_low": 0.7368421052631579,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.19895429641875,
+            "flagged_segments": 1075,
+            "flagged_share": 0.24837355546685178,
+            "flagged_sites": 1523,
+            "n_test_fsi": 171
+          },
+          "LGB-Tot": {
+            "capture": 0.8128654970760234,
+            "captured_crashes": 139,
+            "ci_high": 0.8654970760233918,
+            "ci_low": 0.7485380116959064,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.19930041991867,
+            "flagged_segments": 1083,
+            "flagged_share": 0.24837430825767054,
+            "flagged_sites": 1531,
+            "n_test_fsi": 171
+          },
+          "LightGBM": {
+            "capture": 0.8128654970760234,
+            "captured_crashes": 139,
+            "ci_high": 0.8654970760233918,
+            "ci_low": 0.7485380116959064,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.14470839022133,
+            "flagged_segments": 1075,
+            "flagged_share": 0.24825557497679576,
+            "flagged_sites": 1523,
+            "n_test_fsi": 171
+          },
+          "Naive": {
+            "capture": 0.7192982456140351,
+            "captured_crashes": 123,
+            "ci_high": 0.783625730994152,
+            "ci_low": 0.6491228070175439,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.19521639015386,
+            "flagged_segments": 1144,
+            "flagged_share": 0.24836542582087795,
+            "flagged_sites": 1592,
+            "n_test_fsi": 171
+          },
+          "Stack": {
+            "capture": 0.8070175438596491,
+            "captured_crashes": 138,
+            "ci_high": 0.8596491228070176,
+            "ci_low": 0.7426900584795322,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.19895429641875,
+            "flagged_segments": 1075,
+            "flagged_share": 0.24837355546685178,
+            "flagged_sites": 1523,
+            "n_test_fsi": 171
+          }
+        },
+        "n_test_fsi": 171,
+        "requested_share": null,
+        "resamples": 1000,
+        "scenario": "hin_matched_counts",
+        "seed": 42,
+        "status": "ok",
+        "target": "KA",
+        "unmatched_crashes": 20
+      }
+    ],
+    "KABC": [
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": -0.12008474576271189,
+            "ci_low": -0.15303874092009684,
+            "difference": -0.13607748184019375
+          },
+          "C-A": {
+            "ci_high": -0.10992736077481846,
+            "ci_low": -0.14238498789346254,
+            "difference": -0.12590799031476996
+          },
+          "C-B": {
+            "ci_high": 0.017917675544794176,
+            "ci_low": 0.002421307506053294,
+            "difference": 0.01016949152542379
+          },
+          "LGB-Tot-A": {
+            "ci_high": -0.11766343825665859,
+            "ci_low": -0.14963680387409206,
+            "difference": -0.13365617433414045
+          },
+          "LightGBM-A": {
+            "ci_high": -0.12250605326876507,
+            "ci_low": -0.1544915254237288,
+            "difference": -0.13849878934624693
+          },
+          "Naive-A": {
+            "ci_high": -0.14817191283292985,
+            "ci_low": -0.18305084745762712,
+            "difference": -0.16561743341404356
+          },
+          "Stack-A": {
+            "ci_high": -0.11088377723970944,
+            "ci_low": -0.14237288135593218,
+            "difference": -0.12639225181598068
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.6576271186440678,
+            "captured_crashes": 1358,
+            "ci_high": 0.6794309927360774,
+            "ci_low": 0.6382566585956416,
+            "flagged_intersections": 204,
+            "flagged_miles": 23.0028541098562,
+            "flagged_segments": 147,
+            "flagged_share": 0.0500293605694552,
+            "flagged_sites": 351,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.6677966101694915,
+            "captured_crashes": 1379,
+            "ci_high": 0.6910411622276029,
+            "ci_low": 0.6469733656174335,
+            "flagged_intersections": 209,
+            "flagged_miles": 23.01766097216168,
+            "flagged_segments": 144,
+            "flagged_share": 0.05006156430598482,
+            "flagged_sites": 353,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.660048426150121,
+            "captured_crashes": 1363,
+            "ci_high": 0.6828087167070218,
+            "ci_low": 0.6401937046004843,
+            "flagged_intersections": 207,
+            "flagged_miles": 23.01649154604049,
+            "flagged_segments": 145,
+            "flagged_share": 0.05005902089807566,
+            "flagged_sites": 352,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.6552058111380146,
+            "captured_crashes": 1353,
+            "ci_high": 0.678450363196126,
+            "ci_low": 0.6358353510895883,
+            "flagged_intersections": 215,
+            "flagged_miles": 22.95418202276789,
+            "flagged_segments": 140,
+            "flagged_share": 0.04992350268838618,
+            "flagged_sites": 355,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.6280871670702179,
+            "captured_crashes": 1297,
+            "ci_high": 0.6508595641646489,
+            "ci_low": 0.6077481840193705,
+            "flagged_intersections": 269,
+            "flagged_miles": 22.976818356228684,
+            "flagged_segments": 114,
+            "flagged_share": 0.04997273489597538,
+            "flagged_sites": 383,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.6673123486682808,
+            "captured_crashes": 1378,
+            "ci_high": 0.6910411622276029,
+            "ci_low": 0.6464769975786925,
+            "flagged_intersections": 213,
+            "flagged_miles": 23.020483066913812,
+            "flagged_segments": 142,
+            "flagged_share": 0.050067702135457685,
+            "flagged_sites": 355,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": 0.05,
+        "resamples": 1000,
+        "scenario": "5pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": -0.025181598062954058,
+            "ci_low": -0.052312348668280946,
+            "difference": -0.038256658595641646
+          },
+          "C-A": {
+            "ci_high": -0.006779661016949157,
+            "ci_low": -0.032941888619854816,
+            "difference": -0.01937046004842613
+          },
+          "C-B": {
+            "ci_high": 0.02760290556900724,
+            "ci_low": 0.01016949152542379,
+            "difference": 0.018886198547215516
+          },
+          "LGB-Tot-A": {
+            "ci_high": -0.002893462469733654,
+            "ci_low": -0.02857142857142858,
+            "difference": -0.015496368038740882
+          },
+          "LightGBM-A": {
+            "ci_high": -0.0053268765133172025,
+            "ci_low": -0.030992736077481875,
+            "difference": -0.01840193704600479
+          },
+          "Naive-A": {
+            "ci_high": -0.06730024213075059,
+            "ci_low": -0.10024213075060528,
+            "difference": -0.08329297820823245
+          },
+          "Stack-A": {
+            "ci_high": -0.004830508474576223,
+            "ci_low": -0.030992736077481767,
+            "difference": -0.01743341404358356
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.7554479418886199,
+            "captured_crashes": 1560,
+            "ci_high": 0.7753026634382567,
+            "ci_low": 0.7375181598062954,
+            "flagged_intersections": 476,
+            "flagged_miles": 50.57272034747875,
+            "flagged_segments": 316,
+            "flagged_share": 0.10999160578765478,
+            "flagged_sites": 792,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.7743341404358354,
+            "captured_crashes": 1599,
+            "ci_high": 0.7927360774818402,
+            "ci_low": 0.7578692493946732,
+            "flagged_intersections": 385,
+            "flagged_miles": 50.56225200134755,
+            "flagged_segments": 360,
+            "flagged_share": 0.10996883797542321,
+            "flagged_sites": 745,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.7782082324455206,
+            "captured_crashes": 1607,
+            "ci_high": 0.7966101694915254,
+            "ci_low": 0.7607748184019371,
+            "flagged_intersections": 337,
+            "flagged_miles": 50.59112871750709,
+            "flagged_segments": 387,
+            "flagged_share": 0.11003164251428207,
+            "flagged_sites": 724,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.7753026634382567,
+            "captured_crashes": 1601,
+            "ci_high": 0.7941888619854721,
+            "ci_low": 0.7588256658595641,
+            "flagged_intersections": 352,
+            "flagged_miles": 50.59240908944009,
+            "flagged_segments": 378,
+            "flagged_share": 0.11003442722042302,
+            "flagged_sites": 730,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.710411622276029,
+            "captured_crashes": 1467,
+            "ci_high": 0.7302784503631962,
+            "ci_low": 0.6915133171912833,
+            "flagged_intersections": 466,
+            "flagged_miles": 50.59258540162163,
+            "flagged_segments": 318,
+            "flagged_share": 0.11003481068526008,
+            "flagged_sites": 784,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.7762711864406779,
+            "captured_crashes": 1603,
+            "ci_high": 0.7951573849878935,
+            "ci_low": 0.7598062953995157,
+            "flagged_intersections": 388,
+            "flagged_miles": 50.61151417646386,
+            "flagged_segments": 359,
+            "flagged_share": 0.11007597925056929,
+            "flagged_sites": 747,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": 0.11,
+        "resamples": 1000,
+        "scenario": "11pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.03680387409200969,
+            "ci_low": 0.01113801452784502,
+            "difference": 0.02421307506053272
+          },
+          "C-A": {
+            "ci_high": 0.04794188861985471,
+            "ci_low": 0.022760290556900764,
+            "difference": 0.03583535108958835
+          },
+          "C-B": {
+            "ci_high": 0.01791767554479418,
+            "ci_low": 0.004842615012106588,
+            "difference": 0.011622276029055634
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.052300242130750574,
+            "ci_low": 0.02855932203389821,
+            "difference": 0.04067796610169494
+          },
+          "LightGBM-A": {
+            "ci_high": 0.04794188861985471,
+            "ci_low": 0.023728813559321993,
+            "difference": 0.03631961259079908
+          },
+          "Naive-A": {
+            "ci_high": -0.019854721549636852,
+            "ci_low": -0.05182808716707023,
+            "difference": -0.03535108958837774
+          },
+          "Stack-A": {
+            "ci_high": 0.04697336561743348,
+            "ci_low": 0.022760290556900653,
+            "difference": 0.03535108958837774
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.8179176755447942,
+            "captured_crashes": 1689,
+            "ci_high": 0.836319612590799,
+            "ci_low": 0.801452784503632,
+            "flagged_intersections": 895,
+            "flagged_miles": 91.94834931775551,
+            "flagged_segments": 575,
+            "flagged_share": 0.19998027635245336,
+            "flagged_sites": 1470,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.8295399515738499,
+            "captured_crashes": 1713,
+            "ci_high": 0.8469733656174334,
+            "ci_low": 0.814043583535109,
+            "flagged_intersections": 763,
+            "flagged_miles": 91.9508207898117,
+            "flagged_segments": 631,
+            "flagged_share": 0.1999856516057174,
+            "flagged_sites": 1394,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.8343825665859564,
+            "captured_crashes": 1723,
+            "ci_high": 0.8513317191283293,
+            "ci_low": 0.8183898305084746,
+            "flagged_intersections": 730,
+            "flagged_miles": 91.92983743089171,
+            "flagged_segments": 652,
+            "flagged_share": 0.19994001448502127,
+            "flagged_sites": 1382,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.8300242130750606,
+            "captured_crashes": 1714,
+            "ci_high": 0.8469733656174334,
+            "ci_low": 0.8135593220338984,
+            "flagged_intersections": 723,
+            "flagged_miles": 91.925154364583,
+            "flagged_segments": 653,
+            "flagged_share": 0.19992982919184807,
+            "flagged_sites": 1376,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.7583535108958838,
+            "captured_crashes": 1566,
+            "ci_high": 0.7777360774818401,
+            "ci_low": 0.739951573849879,
+            "flagged_intersections": 1340,
+            "flagged_miles": 91.9751611591974,
+            "flagged_segments": 318,
+            "flagged_share": 0.2000385899546099,
+            "flagged_sites": 1658,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.8290556900726392,
+            "captured_crashes": 1712,
+            "ci_high": 0.8464891041162228,
+            "ci_low": 0.8130750605326876,
+            "flagged_intersections": 781,
+            "flagged_miles": 91.97337806649867,
+            "flagged_segments": 622,
+            "flagged_share": 0.20003471187117175,
+            "flagged_sites": 1403,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": 0.2,
+        "resamples": 1000,
+        "scenario": "20pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.05520581113801448,
+            "ci_low": 0.03147699757869249,
+            "difference": 0.04358353510895885
+          },
+          "C-A": {
+            "ci_high": 0.06489104116222766,
+            "ci_low": 0.040193704600484326,
+            "difference": 0.053268765133171914
+          },
+          "C-B": {
+            "ci_high": 0.015012106537530268,
+            "ci_low": 0.0038740920096852483,
+            "difference": 0.009685230024213065
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.06489104116222755,
+            "ci_low": 0.04213075060532678,
+            "difference": 0.05375302663438253
+          },
+          "LightGBM-A": {
+            "ci_high": 0.06634382566585961,
+            "ci_low": 0.04309927360774812,
+            "difference": 0.05520581113801448
+          },
+          "Naive-A": {
+            "ci_high": 0.0033898305084745254,
+            "ci_low": -0.028583535108958846,
+            "difference": -0.012590799031476974
+          },
+          "Stack-A": {
+            "ci_high": 0.0610169491525423,
+            "ci_low": 0.03776029055690066,
+            "difference": 0.04987893462469739
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.8372881355932204,
+            "captured_crashes": 1729,
+            "ci_high": 0.8547215496368039,
+            "ci_low": 0.8213075060532687,
+            "flagged_intersections": 958,
+            "flagged_miles": 114.18731358292632,
+            "flagged_segments": 811,
+            "flagged_share": 0.24834823784975013,
+            "flagged_sites": 1769,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.8469733656174334,
+            "captured_crashes": 1749,
+            "ci_high": 0.8619975786924939,
+            "ci_low": 0.8314769975786925,
+            "flagged_intersections": 935,
+            "flagged_miles": 114.2164723079576,
+            "flagged_segments": 801,
+            "flagged_share": 0.24841165573525983,
+            "flagged_sites": 1736,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.847457627118644,
+            "captured_crashes": 1750,
+            "ci_high": 0.8634382566585956,
+            "ci_low": 0.8324455205811138,
+            "flagged_intersections": 943,
+            "flagged_miles": 114.13829291462051,
+            "flagged_segments": 794,
+            "flagged_share": 0.24824162183252396,
+            "flagged_sites": 1737,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.848910411622276,
+            "captured_crashes": 1753,
+            "ci_high": 0.864406779661017,
+            "ci_low": 0.8334140435835351,
+            "flagged_intersections": 885,
+            "flagged_miles": 114.18227259557098,
+            "flagged_segments": 823,
+            "flagged_share": 0.24833727410704143,
+            "flagged_sites": 1708,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.7811138014527845,
+            "captured_crashes": 1613,
+            "ci_high": 0.8004842615012107,
+            "ci_low": 0.7641525423728813,
+            "flagged_intersections": 1634,
+            "flagged_miles": 114.20371348350115,
+            "flagged_segments": 410,
+            "flagged_share": 0.24838390631659527,
+            "flagged_sites": 2044,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.8435835351089589,
+            "captured_crashes": 1742,
+            "ci_high": 0.8600605326876514,
+            "ci_low": 0.8285714285714286,
+            "flagged_intersections": 995,
+            "flagged_miles": 114.19352448664388,
+            "flagged_segments": 766,
+            "flagged_share": 0.24836174606660288,
+            "flagged_sites": 1761,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": 0.24830457685993879,
+        "resamples": 1000,
+        "scenario": "hin_share",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.01889830508474577,
+            "ci_low": -0.006295399515738431,
+            "difference": 0.006779661016949157
+          },
+          "C-A": {
+            "ci_high": 0.020835351089588446,
+            "ci_low": -0.004842615012106588,
+            "difference": 0.008232445520581111
+          },
+          "C-B": {
+            "ci_high": 0.008728813559322087,
+            "ci_low": -0.005811138014527817,
+            "difference": 0.0014527845036319542
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.017929782082324538,
+            "ci_low": -0.006295399515738542,
+            "difference": 0.006295399515738542
+          },
+          "LightGBM-A": {
+            "ci_high": 0.01840193704600479,
+            "ci_low": -0.005811138014527928,
+            "difference": 0.006295399515738542
+          },
+          "Naive-A": {
+            "ci_high": 0.004842615012106477,
+            "ci_low": -0.02760290556900724,
+            "difference": -0.011622276029055745
+          },
+          "Stack-A": {
+            "ci_high": 0.024709443099273587,
+            "ci_low": 0.0,
+            "difference": 0.012590799031476974
+          }
+        },
+        "length_basis": "s1_zero_length",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 92.95511761135404,
+            "flagged_share": 0.24307096611192566,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.8004842615012107,
+            "captured_crashes": 1653,
+            "ci_high": 0.8184019370460048,
+            "ci_low": 0.7844915254237288,
+            "flagged_intersections": 657,
+            "flagged_miles": 42.03081614570481,
+            "flagged_segments": 480,
+            "flagged_share": 0.10990756990620273,
+            "flagged_sites": 1137,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.8019370460048426,
+            "captured_crashes": 1656,
+            "ci_high": 0.8193825665859564,
+            "ci_low": 0.7854721549636804,
+            "flagged_intersections": 520,
+            "flagged_miles": 42.07995470623159,
+            "flagged_segments": 473,
+            "flagged_share": 0.1100360637179209,
+            "flagged_sites": 993,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.8,
+            "captured_crashes": 1652,
+            "ci_high": 0.8184140435835351,
+            "ci_low": 0.7830508474576271,
+            "flagged_intersections": 440,
+            "flagged_miles": 42.068960022197786,
+            "flagged_segments": 473,
+            "flagged_share": 0.11000731340767585,
+            "flagged_sites": 913,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.8,
+            "captured_crashes": 1652,
+            "ci_high": 0.8184140435835351,
+            "ci_low": 0.7840193704600484,
+            "flagged_intersections": 487,
+            "flagged_miles": 42.04863166310046,
+            "flagged_segments": 471,
+            "flagged_share": 0.10995415620652081,
+            "flagged_sites": 958,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.7820823244552058,
+            "captured_crashes": 1615,
+            "ci_high": 0.8009806295399515,
+            "ci_low": 0.7646489104116223,
+            "flagged_intersections": 1634,
+            "flagged_miles": 42.050174679209334,
+            "flagged_segments": 471,
+            "flagged_share": 0.10995819108298537,
+            "flagged_sites": 2105,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.8062953995157385,
+            "captured_crashes": 1665,
+            "ci_high": 0.825181598062954,
+            "ci_low": 0.790314769975787,
+            "flagged_intersections": 584,
+            "flagged_miles": 42.079954706231575,
+            "flagged_segments": 473,
+            "flagged_share": 0.11003606371792087,
+            "flagged_sites": 1057,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": 0.11,
+        "resamples": 1000,
+        "scenario": "11pct",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.06829297820823244,
+            "ci_low": 0.043099273607748234,
+            "difference": 0.05617433414043582
+          },
+          "C-A": {
+            "ci_high": 0.07554479418886195,
+            "ci_low": 0.051331719128329345,
+            "difference": 0.06392251815980632
+          },
+          "C-B": {
+            "ci_high": 0.012590799031477085,
+            "ci_low": 0.002421307506053294,
+            "difference": 0.0077481840193704965
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.07796610169491525,
+            "ci_low": 0.053268765133171914,
+            "difference": 0.06585956416464889
+          },
+          "LightGBM-A": {
+            "ci_high": 0.07893462469733659,
+            "ci_low": 0.0547094430992736,
+            "difference": 0.06731234866828084
+          },
+          "Naive-A": {
+            "ci_high": 0.040193704600484215,
+            "ci_low": 0.011125907990314755,
+            "difference": 0.025665859564164673
+          },
+          "Stack-A": {
+            "ci_high": 0.07602905569007268,
+            "ci_low": 0.05181598062953996,
+            "difference": 0.06440677966101693
+          }
+        },
+        "length_basis": "s1_zero_length",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 92.95511761135404,
+            "flagged_share": 0.24307096611192566,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.8498789346246973,
+            "captured_crashes": 1755,
+            "ci_high": 0.8658716707021792,
+            "ci_low": 0.8348668280871671,
+            "flagged_intersections": 1077,
+            "flagged_miles": 92.9647096138772,
+            "flagged_segments": 1102,
+            "flagged_share": 0.2430960485106162,
+            "flagged_sites": 2179,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.8576271186440678,
+            "captured_crashes": 1771,
+            "ci_high": 0.8731234866828087,
+            "ci_low": 0.8430871670702179,
+            "flagged_intersections": 1269,
+            "flagged_miles": 92.96270642515519,
+            "flagged_segments": 1070,
+            "flagged_share": 0.24309081031577037,
+            "flagged_sites": 2339,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.8595641646489104,
+            "captured_crashes": 1775,
+            "ci_high": 0.8750605326876514,
+            "ci_low": 0.8445520581113801,
+            "flagged_intersections": 1414,
+            "flagged_miles": 92.92212412547107,
+            "flagged_segments": 1082,
+            "flagged_share": 0.24298469051252827,
+            "flagged_sites": 2496,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.8610169491525423,
+            "captured_crashes": 1778,
+            "ci_high": 0.8760411622276029,
+            "ci_low": 0.8459927360774818,
+            "flagged_intersections": 1266,
+            "flagged_miles": 92.93576972352972,
+            "flagged_segments": 1077,
+            "flagged_share": 0.24302037277283328,
+            "flagged_sites": 2343,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.8193704600484262,
+            "captured_crashes": 1692,
+            "ci_high": 0.836319612590799,
+            "ci_low": 0.8033898305084746,
+            "flagged_intersections": 1634,
+            "flagged_miles": 92.98309517803264,
+            "flagged_segments": 1144,
+            "flagged_share": 0.2431441254423292,
+            "flagged_sites": 2778,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.8581113801452784,
+            "captured_crashes": 1772,
+            "ci_high": 0.8736198547215496,
+            "ci_low": 0.8430992736077482,
+            "flagged_intersections": 1195,
+            "flagged_miles": 92.96270642515518,
+            "flagged_segments": 1070,
+            "flagged_share": 0.24309081031577032,
+            "flagged_sites": 2265,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": 0.24307096611192566,
+        "resamples": 1000,
+        "scenario": "hin_share",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      },
+      {
+        "bootstrap_unit": "individual crash",
+        "differences": {
+          "B-A": {
+            "ci_high": 0.03583535108958835,
+            "ci_low": 0.012590799031476974,
+            "difference": 0.02421307506053272
+          },
+          "C-A": {
+            "ci_high": 0.04650121065375301,
+            "ci_low": 0.022760290556900653,
+            "difference": 0.0343825665859564
+          },
+          "C-B": {
+            "ci_high": 0.01599273607748186,
+            "ci_low": 0.0038740920096852483,
+            "difference": 0.01016949152542368
+          },
+          "LGB-Tot-A": {
+            "ci_high": 0.052300242130750574,
+            "ci_low": 0.02904358353510893,
+            "difference": 0.04067796610169494
+          },
+          "LightGBM-A": {
+            "ci_high": 0.05084745762711862,
+            "ci_low": 0.027590799031476976,
+            "difference": 0.039225181598062986
+          },
+          "Naive-A": {
+            "ci_high": -0.026610169491525393,
+            "ci_low": -0.05424939467312352,
+            "difference": -0.0397094430992736
+          },
+          "Stack-A": {
+            "ci_high": 0.04987893462469728,
+            "ci_low": 0.026150121065375287,
+            "difference": 0.03777239709443103
+          }
+        },
+        "length_basis": "icd_250ft",
+        "methods": {
+          "A": {
+            "capture": 0.7937046004842615,
+            "captured_crashes": 1639,
+            "ci_high": 0.8116222760290557,
+            "ci_low": 0.7772397094430993,
+            "flagged_miles": 114.16723882347526,
+            "flagged_share": 0.24830457685993879,
+            "flagged_sites": 1608,
+            "n_test_fsi": 2065
+          },
+          "B": {
+            "capture": 0.8179176755447942,
+            "captured_crashes": 1689,
+            "ci_high": 0.8343946731234867,
+            "ci_low": 0.8019370460048426,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.17683082599842,
+            "flagged_segments": 1102,
+            "flagged_share": 0.2483254386951929,
+            "flagged_sites": 1550,
+            "n_test_fsi": 2065
+          },
+          "C": {
+            "capture": 0.8280871670702179,
+            "captured_crashes": 1710,
+            "ci_high": 0.8445520581113801,
+            "ci_low": 0.8121065375302663,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.1748276372764,
+            "flagged_segments": 1070,
+            "flagged_share": 0.2483210819205777,
+            "flagged_sites": 1518,
+            "n_test_fsi": 2065
+          },
+          "LGB-Tot": {
+            "capture": 0.8343825665859564,
+            "captured_crashes": 1723,
+            "ci_high": 0.8503631961259079,
+            "ci_low": 0.8184019370460048,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.13424533759229,
+            "flagged_segments": 1082,
+            "flagged_share": 0.24823281867750632,
+            "flagged_sites": 1530,
+            "n_test_fsi": 2065
+          },
+          "LightGBM": {
+            "capture": 0.8329297820823245,
+            "captured_crashes": 1720,
+            "ci_high": 0.848910411622276,
+            "ci_low": 0.8174334140435835,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.1478909356509,
+            "flagged_segments": 1077,
+            "flagged_share": 0.24826249675754805,
+            "flagged_sites": 1525,
+            "n_test_fsi": 2065
+          },
+          "Naive": {
+            "capture": 0.7539951573849879,
+            "captured_crashes": 1557,
+            "ci_high": 0.7719128329297821,
+            "ci_low": 0.735593220338983,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.19521639015386,
+            "flagged_segments": 1144,
+            "flagged_share": 0.24836542582087795,
+            "flagged_sites": 1592,
+            "n_test_fsi": 2065
+          },
+          "Stack": {
+            "capture": 0.8314769975786925,
+            "captured_crashes": 1717,
+            "ci_high": 0.847457627118644,
+            "ci_low": 0.8154963680387409,
+            "flagged_intersections": 448,
+            "flagged_miles": 114.1748276372764,
+            "flagged_segments": 1070,
+            "flagged_share": 0.2483210819205777,
+            "flagged_sites": 1518,
+            "n_test_fsi": 2065
+          }
+        },
+        "n_test_fsi": 2065,
+        "requested_share": null,
+        "resamples": 1000,
+        "scenario": "hin_matched_counts",
+        "seed": 42,
+        "status": "ok",
+        "target": "KABC",
+        "unmatched_crashes": 245
+      }
+    ]
+  },
+  "test_years": [
+    2023,
+    2024,
+    2025
+  ]
+}

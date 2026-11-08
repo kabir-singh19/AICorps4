@@ -20,7 +20,7 @@
   "lgb_seeds": [42, 7, 2026],
   "lgb_early_stop": 100,
   "lgb_max_rounds": 2000,
-  "threads": 4,
+  "threads": 8,
   "verify_refit": true,
   "bit_campaign": true,
   "bit_good_runs": 20,
