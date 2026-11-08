@@ -1,0 +1,331 @@
+{
+  "criteria": "detect >= 19 of 20 seeded faults; <= 1 false alarm in 20 clean runs",
+  "detected": 20,
+  "false_alarms": 0,
+  "faults": 20,
+  "good_runs": [
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1000,
+        1001,
+        1002
+      ],
+      "run": 1,
+      "seconds": 29.4
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 775,
+      "lgb_seeds": [
+        1003,
+        1004,
+        1005
+      ],
+      "run": 2,
+      "seconds": 29.7
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 773,
+      "lgb_seeds": [
+        1006,
+        1007,
+        1008
+      ],
+      "run": 3,
+      "seconds": 30.3
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1009,
+        1010,
+        1011
+      ],
+      "run": 4,
+      "seconds": 29.1
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1012,
+        1013,
+        1014
+      ],
+      "run": 5,
+      "seconds": 30.5
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 775,
+      "lgb_seeds": [
+        1015,
+        1016,
+        1017
+      ],
+      "run": 6,
+      "seconds": 29.4
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 773,
+      "lgb_seeds": [
+        1018,
+        1019,
+        1020
+      ],
+      "run": 7,
+      "seconds": 29.2
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 775,
+      "lgb_seeds": [
+        1021,
+        1022,
+        1023
+      ],
+      "run": 8,
+      "seconds": 29.3
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1024,
+        1025,
+        1026
+      ],
+      "run": 9,
+      "seconds": 29.3
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 775,
+      "lgb_seeds": [
+        1027,
+        1028,
+        1029
+      ],
+      "run": 10,
+      "seconds": 29.3
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1030,
+        1031,
+        1032
+      ],
+      "run": 11,
+      "seconds": 29.7
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1033,
+        1034,
+        1035
+      ],
+      "run": 12,
+      "seconds": 29.3
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 773,
+      "lgb_seeds": [
+        1036,
+        1037,
+        1038
+      ],
+      "run": 13,
+      "seconds": 29.5
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 773,
+      "lgb_seeds": [
+        1039,
+        1040,
+        1041
+      ],
+      "run": 14,
+      "seconds": 29.4
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 775,
+      "lgb_seeds": [
+        1042,
+        1043,
+        1044
+      ],
+      "run": 15,
+      "seconds": 31.3
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 777,
+      "lgb_seeds": [
+        1045,
+        1046,
+        1047
+      ],
+      "run": 16,
+      "seconds": 32.4
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 776,
+      "lgb_seeds": [
+        1048,
+        1049,
+        1050
+      ],
+      "run": 17,
+      "seconds": 30.6
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 774,
+      "lgb_seeds": [
+        1051,
+        1052,
+        1053
+      ],
+      "run": 18,
+      "seconds": 29.5
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 775,
+      "lgb_seeds": [
+        1054,
+        1055,
+        1056
+      ],
+      "run": 19,
+      "seconds": 29.4
+    },
+    {
+      "alarm": false,
+      "flagged_sites": 772,
+      "lgb_seeds": [
+        1057,
+        1058,
+        1059
+      ],
+      "run": 20,
+      "seconds": 29.3
+    }
+  ],
+  "result": "PASS",
+  "seeded_faults": [
+    {
+      "by": "ValueError: BIT: invalid mu",
+      "detected": true,
+      "fault": "mu is NaN"
+    },
+    {
+      "by": "ValueError: BIT: invalid mu",
+      "detected": true,
+      "fault": "mu negative"
+    },
+    {
+      "by": "ValueError: BIT: invalid EB weight or severity probability",
+      "detected": true,
+      "fault": "EB weight = 1"
+    },
+    {
+      "by": "ValueError: BIT: invalid EB weight or severity probability",
+      "detected": true,
+      "fault": "EB weight = 0"
+    },
+    {
+      "by": "ValueError: BIT: invalid EB weight or severity probability",
+      "detected": true,
+      "fault": "p_fsi = 1.2"
+    },
+    {
+      "by": "ValueError: BIT: F&SI annual estimate exceeds all crashes",
+      "detected": true,
+      "fault": "annual F&SI above all crashes"
+    },
+    {
+      "by": "ValueError: BIT: rate/count units disagree",
+      "detected": true,
+      "fault": "rate/count units disagree"
+    },
+    {
+      "by": "ValueError: BIT: missing, duplicate or extra predictions",
+      "detected": true,
+      "fault": "duplicate site row"
+    },
+    {
+      "by": "ValueError: BIT: missing, duplicate or extra predictions",
+      "detected": true,
+      "fault": "site missing"
+    },
+    {
+      "by": "ValueError: BIT: missing, duplicate or extra predictions",
+      "detected": true,
+      "fault": "unknown site"
+    },
+    {
+      "by": "ValueError: BIT: invalid ranks",
+      "detected": true,
+      "fault": "rank gap"
+    },
+    {
+      "by": "ValueError: BIT: flags are not the highest-ranked prefix",
+      "detected": true,
+      "fault": "flags not a rank prefix"
+    },
+    {
+      "by": "ValueError: BIT: flagged network outside required length budget",
+      "detected": true,
+      "fault": "flagged length about 15%"
+    },
+    {
+      "by": "ValueError: BIT: flagged network outside required length budget",
+      "detected": true,
+      "fault": "flagged length about 7%"
+    },
+    {
+      "by": "ValueError: BIT: positive model counts, k and risk exposure required",
+      "detected": true,
+      "fault": "k = 0"
+    },
+    {
+      "by": "ValueError: BIT: missing/extra flagged-site explanations",
+      "detected": true,
+      "fault": "flagged site without explanation"
+    },
+    {
+      "by": "ValueError: BIT: exactly five unique ranked source features required",
+      "detected": true,
+      "fault": "four factors for one site"
+    },
+    {
+      "by": "ValueError: BIT: invalid SHAP value",
+      "detected": true,
+      "fault": "SHAP value NaN"
+    },
+    {
+      "by": "ValueError: leakage: 17934.aadt=2023-06-30 exceeds 2022-12-31",
+      "detected": true,
+      "fault": "post-cutoff feature in snapshot"
+    },
+    {
+      "by": "ValueError: BIT: reloaded models changed the ranking",
+      "detected": true,
+      "fault": "saved model state altered"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+[
+  {
+    "details": {
+      "flagged_miles": 52.747783319305974,
+      "network_miles": 479.49861597527183,
+      "sites": 7224
+    },
+    "result": "pass",
+    "test": "prediction coverage, ranges, units, rank prefix and length"
+  },
+  {
+    "details": {
+      "flagged_miles": 52.72361914068615,
+      "network_miles": 479.49861597527183,
+      "sites": 7224
+    },
+    "result": "pass",
+    "test": "prediction coverage, ranges, units, rank prefix and length"
+  },
+  {
+    "details": {
+      "flagged_miles": 52.73811519021793,
+      "network_miles": 479.49861597527183,
+      "sites": 7224
+    },
+    "result": "pass",
+    "test": "prediction coverage, ranges, units, rank prefix and length"
+  },
+  {
+    "details": {
+      "flagged_miles": 52.730746373820324,
+      "network_miles": 479.49861597527183,
+      "sites": 7224
+    },
+    "result": "pass",
+    "test": "prediction coverage, ranges, units, rank prefix and length"
+  },
+  {
+    "details": {
+      "flagged_sites": 774
+    },
+    "result": "pass",
+    "test": "top-five explanation coverage"
+  }
+]
