@@ -55,3 +55,19 @@ textarea{resize:vertical;min-height:130px;margin:10px 0}
 @media(max-width:520px){.example-inputs{grid-template-columns:1fr}}
 .question-ideas{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
 .question-ideas button{font-size:13px;padding:8px 10px}
+.map{height:min(70vh,620px)}
+.map-toolbar label{display:inline-flex;align-items:center;gap:6px;font-size:14px;margin-right:16px}
+.map-toolbar input[type=checkbox]{width:auto}
+.map-legend i.legend-flagged{background:transparent;border:3px solid #111827;height:8px}
+.map-legend i.legend-hin{background:transparent;border-top:2px dashed #6d28d9;border-radius:0;height:2px}
+.filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:4px 16px;align-items:end}
+.filters label{grid-row:1;font-size:14px}.filters input,.filters select{grid-row:2;margin:6px 0}
+button.link{border:0;padding:0;background:none;color:#173e34;text-decoration:underline;text-align:left}
+.big{font-size:28px;font-weight:700}
+.history-chart svg{width:100%;max-width:520px;height:auto}
+.capture-chart svg{width:100%;max-width:560px;height:auto}
+figcaption{font-size:13px;color:#52645e;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.swatch{display:inline-block;width:12px;height:12px;border-radius:2px}
+.factors li{margin:8px 0;line-height:1.5}.factors .up{color:#9b2424;font-weight:600}.factors .down{color:#1d6b43;font-weight:600}
+.memo pre{background:#f7f9f8;border:1px solid #d9e1de;border-radius:8px;padding:16px;font-family:inherit;font-size:14px;line-height:1.6}
+@media(max-width:760px){.filters{grid-template-columns:1fr}.filters label,.filters input,.filters select{grid-row:auto}}

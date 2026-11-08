@@ -29,3 +29,9 @@ ATSC/integration/artifacts/*/models/
 *.pkl
 *.ubj
 *.webm.part
+
+# make stage stamps and Playwright outputs
+ATSC/integration/.stamps/
+ATSC/S4_Web_App/e2e/results/
+ATSC/S4_Web_App/e2e/test-results/
+ATSC/S4_Web_App/frontend/dist/

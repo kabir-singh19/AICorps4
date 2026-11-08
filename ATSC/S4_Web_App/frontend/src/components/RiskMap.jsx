@@ -1,141 +1,128 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { corridors, selectableRoadGeometry, corridorBounds, roadById, roadChoices } from '../data/corridors.js';
 
-export default function RiskMap({ selectedRoad, onSelectRoad, modelSites, selectedModelSite, onSelectModelSite }) {
+// Sequential classes of expected K+A crashes per mile per year (ICD 5.4). Breaks are the run's
+// quintiles of sites with a nonzero rate, so the legend always states the values used.
+const COLORS = ['#fde68a', '#fbbf24', '#f97316', '#dc2626', '#7f1d1d'];
+
+function quantileBreaks(features) {
+  const values = features.map(f => f.properties.fsi_rate).filter(v => v > 0).sort((a, b) => a - b);
+  if (!values.length) return [0, 0, 0, 0];
+  return [0.2, 0.4, 0.6, 0.8].map(q => values[Math.min(values.length - 1, Math.floor(q * values.length))]);
+}
+
+function colorExpression(breaks) {
+  return ['step', ['coalesce', ['get', 'fsi_rate'], 0], COLORS[0], breaks[0], COLORS[1], breaks[1], COLORS[2], breaks[2], COLORS[3], breaks[3], COLORS[4]];
+}
+
+function bounds(features) {
+  let w = 180, s = 90, e = -180, n = -90;
+  for (const f of features) {
+    const pts = f.geometry.type === 'Point' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    for (const [x, y] of pts) { w = Math.min(w, x); e = Math.max(e, x); s = Math.min(s, y); n = Math.max(n, y); }
+  }
+  return w < e ? [[w, s], [e, n]] : [[-96.4, 30.53], [-96.22, 30.66]];
+}
+
+export default function RiskMap({ run, resource, sites, selectedSiteId, onSelectSite }) {
   const container = useRef(null);
   const mapRef = useRef(null);
-  const modelSitesRef = useRef(modelSites);
-  const modelSelectRef = useRef(onSelectModelSite);
-  modelSitesRef.current = modelSites;
-  modelSelectRef.current = onSelectModelSite;
-  const [error, setError] = useState('');
+  const selectRef = useRef(onSelectSite);
+  selectRef.current = onSelectSite;
   const [loaded, setLoaded] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState('');
+  const [showHin, setShowHin] = useState(false);
+  const [flaggedOnly, setFlaggedOnly] = useState(false);
   const [retry, setRetry] = useState(0);
-  const [focusedCorridor, setFocusedCorridor] = useState('All corridors');
+  const breaks = useMemo(() => quantileBreaks(sites.features), [sites]);
+
   useEffect(() => {
     let map;
-    setError('');
-    setLoaded(false);
-    const initialCorridor = selectedRoad?.properties.corridor || 'All corridors';
-    setFocusedCorridor(initialCorridor);
+    setLoaded(false); setReady(false); setError('');
     try {
       map = new maplibregl.Map({
-        container: container.current,
-        bounds: corridorBounds(initialCorridor), fitBoundsOptions: { padding: 28, maxZoom: 15 }, maxZoom: 19,
-        attributionControl: false,
-        style: {
-          version: 8,
+        container: container.current, bounds: [[-96.4, 30.53], [-96.22, 30.66]], maxZoom: 19, attributionControl: false,
+        style: { version: 8,
           sources: {
-            streets: {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256,
-              maxzoom: 19,
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>',
-            },
-            corridors: { type: 'geojson', data: selectableRoadGeometry },
-            selected: { type: 'geojson', data: { type: 'FeatureCollection', features: selectedRoad ? [selectedRoad] : [] } },
-            'model-sites': { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
-            'selected-model': { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
+            streets: { type: 'raster', tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize: 256, maxzoom: 19,
+                       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>' },
+            sites: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
+            selected: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
           },
           layers: [
-            { id: 'streets', type: 'raster', source: 'streets' },
-            {
-              id: 'corridor-outline', type: 'line', source: 'corridors',
-              layout: { 'line-cap': 'round', 'line-join': 'round' },
-              paint: { 'line-color': '#ffffff', 'line-width': 8, 'line-opacity': 0.9 },
-            },
-            {
-              id: 'corridor-lines', type: 'line', source: 'corridors',
-              layout: { 'line-cap': 'round', 'line-join': 'round' },
-              paint: {
-                'line-color': ['match', ['get', 'corridor'], ...corridors.flatMap(road => [road.name, road.color]), '#173e34'],
-                'line-width': 4,
-                'line-opacity': initialCorridor === 'All corridors' ? 1 : ['case', ['==', ['get', 'corridor'], initialCorridor], 1, 0.3],
-              },
-            },
-            {
-              id: 'selected-road', type: 'line', source: 'selected',
-              layout: { 'line-cap': 'round', 'line-join': 'round' },
-              paint: { 'line-color': '#192d29', 'line-width': 8, 'line-gap-width': 4 },
-            },
-            {
-              id: 'road-hit-area', type: 'line', source: 'corridors',
-              layout: { 'line-cap': 'round', 'line-join': 'round' },
-              paint: { 'line-width': 18, 'line-opacity': 0 },
-            },
-            { id: 'model-sites-line', type: 'line', source: 'model-sites', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-width': 7, 'line-color': ['case', ['get', 'flagged'], '#9a3412', '#0369a1'] } },
-            { id: 'model-sites-point', type: 'circle', source: 'model-sites', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 7, 'circle-color': ['case', ['get', 'flagged'], '#9a3412', '#0369a1'], 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 2 } },
-            { id: 'model-line-hit', type: 'line', source: 'model-sites', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-width': 20, 'line-opacity': 0 } },
-            { id: 'model-point-hit', type: 'circle', source: 'model-sites', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 14, 'circle-opacity': 0 } },
-            { id: 'selected-model-line', type: 'line', source: 'selected-model', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-width': 3, 'line-color': '#111827', 'line-dasharray': [2, 2] } },
-            { id: 'selected-model-point', type: 'circle', source: 'selected-model', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 11, 'circle-color': 'transparent', 'circle-stroke-color': '#111827', 'circle-stroke-width': 3 } },
-          ],
-        },
+            { id: 'streets', type: 'raster', source: 'streets', paint: { 'raster-opacity': 0.55 } },
+            { id: 'flagged-casing', type: 'line', source: 'sites', filter: ['all', ['==', ['geometry-type'], 'LineString'], ['get', 'flagged']], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#111827', 'line-width': 7 } },
+            { id: 'segments', type: 'line', source: 'sites', filter: ['==', ['geometry-type'], 'LineString'], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#9ca3af', 'line-width': ['case', ['get', 'flagged'], 4.5, 2] } },
+            { id: 'hin', type: 'line', source: 'sites', filter: ['all', ['==', ['geometry-type'], 'LineString'], ['get', 'in_hin']], layout: { visibility: 'none' }, paint: { 'line-color': '#6d28d9', 'line-width': 2, 'line-dasharray': [2, 1.5], 'line-offset': 4 } },
+            { id: 'intersections', type: 'circle', source: 'sites', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': ['case', ['get', 'flagged'], 5.5, 3], 'circle-color': '#9ca3af', 'circle-stroke-color': ['case', ['get', 'flagged'], '#111827', '#ffffff'], 'circle-stroke-width': ['case', ['get', 'flagged'], 2, 0.5] } },
+            { id: 'hin-points', type: 'circle', source: 'sites', filter: ['all', ['==', ['geometry-type'], 'Point'], ['get', 'in_hin']], layout: { visibility: 'none' }, paint: { 'circle-radius': 8, 'circle-color': 'transparent', 'circle-stroke-color': '#6d28d9', 'circle-stroke-width': 1.5 } },
+            { id: 'selected-line', type: 'line', source: 'selected', filter: ['==', ['geometry-type'], 'LineString'], paint: { 'line-color': '#0ea5e9', 'line-width': 9, 'line-opacity': 0.6 } },
+            { id: 'selected-point', type: 'circle', source: 'selected', filter: ['==', ['geometry-type'], 'Point'], paint: { 'circle-radius': 11, 'circle-color': 'transparent', 'circle-stroke-color': '#0ea5e9', 'circle-stroke-width': 3 } },
+          ] },
       });
       mapRef.current = map;
       map.addControl(new maplibregl.NavigationControl(), 'top-right');
       map.addControl(new maplibregl.ScaleControl({ unit: 'imperial' }), 'bottom-left');
       map.addControl(new maplibregl.AttributionControl({ compact: false }), 'bottom-right');
       map.on('load', () => setLoaded(true));
-      map.on('mouseenter', 'road-hit-area', () => { map.getCanvas().style.cursor = 'pointer'; });
-      map.on('mouseleave', 'road-hit-area', () => { map.getCanvas().style.cursor = ''; });
-      map.on('click', 'road-hit-area', event => {
-        if (map.queryRenderedFeatures(event.point, { layers: ['model-line-hit', 'model-point-hit'] }).length) return;
-        const road = roadById.get(event.features?.[0]?.properties.map_segment_id);
-        if (road) onSelectRoad(road);
-      });
-      for (const layer of ['model-line-hit', 'model-point-hit']) {
+      for (const layer of ['segments', 'intersections']) {
         map.on('mouseenter', layer, () => { map.getCanvas().style.cursor = 'pointer'; });
         map.on('mouseleave', layer, () => { map.getCanvas().style.cursor = ''; });
-        map.on('click', layer, event => {
-          const id = event.features?.[0]?.properties.site_id;
-          const site = modelSitesRef.current?.features.find(feature => feature.properties.site_id === id);
-          if (site) modelSelectRef.current(site);
-        });
+        map.on('click', layer, event => { const id = event.features?.[0]?.properties.site_id; if (id) selectRef.current(String(id)); });
       }
-      map.on('error', () => setError('Street map tiles could not load. Check your internet connection and retry the map.'));
+      map.on('error', event => { if (event?.sourceId === 'streets') setError('Basemap tiles could not load; sites are still shown.'); });
     } catch { setError('The map could not start. Check that your browser supports WebGL and retry the map.'); }
-    return () => {
-      mapRef.current = null;
-      map?.remove();
-    };
-  }, [retry, selectedRoad, onSelectRoad]);
+    return () => { mapRef.current = null; map?.remove(); };
+  }, [retry]);
+
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
-    const update = () => {
-      map.getSource('model-sites')?.setData(modelSites);
-      map.getSource('selected-model')?.setData({ type: 'FeatureCollection', features: selectedModelSite ? [selectedModelSite] : [] });
-    };
-    if (map.isStyleLoaded()) update();
-    else map.once('load', update);
-    return () => map.off('load', update);
-  }, [modelSites, selectedModelSite, loaded, retry, selectedRoad]);
-  function focusRoad(name) {
+    if (!map || !loaded || !sites.features.length) return;
+    const data = flaggedOnly ? { type: 'FeatureCollection', features: sites.features.filter(f => f.properties.flagged) } : sites;
+    map.getSource('sites').setData(data);
+    map.setPaintProperty('segments', 'line-color', colorExpression(breaks));
+    map.setPaintProperty('intersections', 'circle-color', colorExpression(breaks));
+    setReady(false);
+    map.once('idle', () => setReady(true));
+  }, [sites, loaded, breaks, flaggedOnly]);
+
+  useEffect(() => {
     const map = mapRef.current;
     if (!map || !loaded) return;
-    setFocusedCorridor(name);
-    map.fitBounds(corridorBounds(name), { padding: 28, maxZoom: 15, bearing: 0, pitch: 0 });
-    map.setPaintProperty('corridor-lines', 'line-opacity', name === 'All corridors' ? 1 : ['case', ['==', ['get', 'corridor'], name], 1, 0.3]);
-  }
+    map.setLayoutProperty('hin', 'visibility', showHin ? 'visible' : 'none');
+    map.setLayoutProperty('hin-points', 'visibility', showHin ? 'visible' : 'none');
+  }, [showHin, loaded]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !loaded) return;
+    const f = sites.features.find(site => site.properties.site_id === selectedSiteId);
+    map.getSource('selected').setData({ type: 'FeatureCollection', features: f ? [f] : [] });
+  }, [selectedSiteId, sites, loaded]);
+
+  useEffect(() => {
+    if (mapRef.current && loaded && sites.features.length) mapRef.current.fitBounds(bounds(sites.features), { padding: 20, duration: 0 });
+  }, [loaded, sites]);
+
+  const n = sites.features.length;
+  const nFlagged = sites.features.filter(f => f.properties.flagged).length;
+  const fmt = v => v.toFixed(2);
   return <section aria-label="Risk map">
-    <div className="map-toolbar" role="group" aria-label="Focus on a road">
-      <button disabled={!loaded} aria-pressed={focusedCorridor === 'All corridors'} onClick={() => focusRoad('All corridors')}>All corridors</button>
-      {corridors.map(road => <button key={road.name} disabled={!loaded} aria-pressed={focusedCorridor === road.name} onClick={() => focusRoad(road.name)}><span className="road-swatch" style={{ backgroundColor: road.color }} aria-hidden="true" />{road.name}</button>)}
-      {error && <button onClick={() => setRetry(value => value + 1)}>Retry map</button>}
+    <div className="map-toolbar" role="group" aria-label="Map layers">
+      <label><input type="checkbox" checked={showHin} onChange={e => setShowHin(e.target.checked)} /> Show MPO high-injury network</label>
+      <label><input type="checkbox" checked={flaggedOnly} onChange={e => setFlaggedOnly(e.target.checked)} /> Flagged sites only</label>
+      {error && <button onClick={() => setRetry(v => v + 1)}>Retry map</button>}
     </div>
-    <div ref={container} className="map" />
-    {modelSites.features.length > 0 && <div className="map-legend" aria-label="Published model site legend"><span><i style={{background:'#9a3412'}} aria-hidden="true"/>Flagged for review</span><span><i style={{background:'#0369a1'}} aria-hidden="true"/>Other published sites</span><span>{modelSites.features.length} published sites</span></div>}
-    <p role="status">{error || (loaded ? `Viewing ${focusedCorridor === 'All corridors' ? 'all four corridors' : focusedCorridor}. Click a highlighted road to open its details.` : 'Loading the corridor map…')}</p>
-    <p className="map-note"></p>
-    {selectedRoad && <p className="map-note">Selected: {selectedRoad.properties.corridor}. The outlined section is your last selection.</p>}
-    <section className="card" aria-label="Road selection">
-      <h2>Road details</h2>
-      <p>Select a road below to view one mapped section, or click the map to choose a specific section.</p>
-      <div className="road-choices">{roadChoices.map(road => <button key={road.name} onClick={() => onSelectRoad(road.feature)}><span className="road-swatch" style={{ backgroundColor: road.color }} aria-hidden="true" />{road.name} — view details</button>)}</div>
-    </section>
+    <div ref={container} className="map" data-testid="risk-map" data-ready={ready ? 'true' : 'false'} data-sites={n} role="img" aria-label={`Map of ${n} road sites colored by expected fatal and serious-injury crashes per mile per year; ${nFlagged} flagged sites drawn with a thick dark outline.`} />
+    {n > 0 && <div className="map-legend" aria-label="Map legend">
+      <strong>K+A crashes per mile per year</strong>
+      {COLORS.map((c, i) => <span key={c}><i style={{ background: c }} aria-hidden="true" />{i === 0 ? `under ${fmt(breaks[0])}` : i === 4 ? `${fmt(breaks[3])} or more` : `${fmt(breaks[i - 1])} to ${fmt(breaks[i])}`}</span>)}
+      <span><i className="legend-flagged" aria-hidden="true" />Flagged (top 11% of length): thick dark outline</span>
+      <span><i className="legend-hin" aria-hidden="true" />MPO HIN (dashed purple, when shown)</span>
+      <span>Lines are segments; circles are intersections.</span>
+    </div>}
+    <p role="status" data-testid="map-status">{error || (resource.loading ? 'Loading sites…' : resource.error ? resource.error : ready ? `Map ready: ${n} sites, ${nFlagged} flagged. Click a site to open its details.` : n ? 'Drawing sites…' : run ? 'No sites in this run.' : 'Loading…')}</p>
   </section>;
 }
