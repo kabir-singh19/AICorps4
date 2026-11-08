@@ -1,29 +1,29 @@
-== memos: 2026-11-08T09:09:29-06:00
+== memos: 2026-11-08T11:39:46-06:00
 {"event": "env_loaded", "keys": ["MEMO_API_URL", "MEMO_API_KEY", "MEMO_MODEL"]}
-{"event": "memo", "site_id": "17683", "status": "draft", "seconds": 0.685, "tokens_in": 2719, "tokens_out": 477, "cost_usd": 0.009254}
-{"event": "memo", "site_id": "17898", "status": "draft", "seconds": 3.273, "tokens_in": 5929, "tokens_out": 915, "cost_usd": 0.019178}
-{"event": "memo", "site_id": "16923", "status": "draft", "seconds": 3.155, "tokens_in": 5953, "tokens_out": 981, "cost_usd": 0.019754}
-{"event": "memo", "site_id": "17120", "status": "draft", "seconds": 2.927, "tokens_in": 6435, "tokens_out": 927, "cost_usd": 0.020286}
-{"event": "memo", "site_id": "17151", "status": "draft", "seconds": 0.682, "tokens_in": 2715, "tokens_out": 444, "cost_usd": 0.008982}
-{"event": "memo", "site_id": "17161", "status": "draft", "seconds": 3.084, "tokens_in": 5979, "tokens_out": 980, "cost_usd": 0.019798}
-{"event": "memo", "site_id": "16685", "status": "draft", "seconds": 0.653, "tokens_in": 2712, "tokens_out": 461, "cost_usd": 0.009112}
-{"event": "memo", "site_id": "16550", "status": "draft", "seconds": 2.819, "tokens_in": 5925, "tokens_out": 947, "cost_usd": 0.019426}
-{"event": "memo", "site_id": "17188", "status": "draft", "seconds": 0.577, "tokens_in": 1908, "tokens_out": 502, "cost_usd": 0.007832}
-{"event": "memo", "site_id": "16557", "status": "draft", "seconds": 0.618, "tokens_in": 2715, "tokens_out": 505, "cost_usd": 0.00947}
-{"event": "memo", "site_id": "17460", "status": "draft", "seconds": 3.314, "tokens_in": 4405, "tokens_out": 1047, "cost_usd": 0.017186}
-{"event": "memo", "site_id": "17143", "status": "draft", "seconds": 2.612, "tokens_in": 6408, "tokens_out": 867, "cost_usd": 0.019752}
-{"event": "memo", "site_id": "16620", "status": "draft", "seconds": 3.838, "tokens_in": 4347, "tokens_out": 930, "cost_usd": 0.016134}
-{"event": "memo", "site_id": "17127", "status": "draft", "seconds": 2.938, "tokens_in": 6454, "tokens_out": 943, "cost_usd": 0.020452}
-{"event": "memo", "site_id": "17172", "status": "draft", "seconds": 3.358, "tokens_in": 6024, "tokens_out": 1066, "cost_usd": 0.020576}
-{"event": "memo", "site_id": "16368", "status": "draft", "seconds": 0.61, "tokens_in": 1897, "tokens_out": 414, "cost_usd": 0.007106}
-{"event": "memo", "site_id": "16530", "status": "draft", "seconds": 2.704, "tokens_in": 6443, "tokens_out": 912, "cost_usd": 0.020182}
-{"event": "memo", "site_id": "17296", "status": "draft", "seconds": 1.185, "tokens_in": 4299, "tokens_out": 885, "cost_usd": 0.015678}
-{"event": "memo", "site_id": "17427", "status": "draft", "seconds": 1.173, "tokens_in": 4323, "tokens_out": 938, "cost_usd": 0.01615}
-{"event": "memo", "site_id": "17573", "status": "draft", "seconds": 1.155, "tokens_in": 4325, "tokens_out": 930, "cost_usd": 0.01609}
-{"event": "memo", "site_id": "17081", "status": "draft", "seconds": 2.799, "tokens_in": 6445, "tokens_out": 811, "cost_usd": 0.019378}
-{"event": "memo", "site_id": "16493", "status": "draft", "seconds": 2.927, "tokens_in": 5970, "tokens_out": 904, "cost_usd": 0.019172}
-{"event": "memo", "site_id": "16381", "status": "draft", "seconds": 1.132, "tokens_in": 4345, "tokens_out": 935, "cost_usd": 0.01617}
-{"event": "memo", "site_id": "16334", "status": "draft", "seconds": 1.25, "tokens_in": 5913, "tokens_out": 908, "cost_usd": 0.01909}
-{"event": "memo", "site_id": "17243", "status": "draft", "seconds": 2.885, "tokens_in": 6419, "tokens_out": 892, "cost_usd": 0.019974}
-{"event": "memos_done", "counts": {"draft": 25, "blocked": 0, "pending": 0}, "median_seconds": 2.704, "median_cost_usd": 0.01909, "total_cost_usd": 0.406182}
-== memos: exit 0 after 52.6s
+{"event": "memo", "site_id": "17683", "status": "draft", "seconds": 5.885, "tokens_in": 5914, "tokens_out": 896, "cost_usd": 0.018996}
+{"event": "memo", "site_id": "17898", "status": "draft", "seconds": 3.869, "tokens_in": 2722, "tokens_out": 495, "cost_usd": 0.009404}
+{"event": "memo", "site_id": "16923", "status": "draft", "seconds": 5.279, "tokens_in": 5882, "tokens_out": 853, "cost_usd": 0.018588}
+{"event": "memo", "site_id": "17120", "status": "draft", "seconds": 5.982, "tokens_in": 6422, "tokens_out": 901, "cost_usd": 0.020052}
+{"event": "memo", "site_id": "17161", "status": "draft", "seconds": 5.31, "tokens_in": 5923, "tokens_out": 860, "cost_usd": 0.018726}
+{"event": "memo", "site_id": "17151", "status": "draft", "seconds": 3.579, "tokens_in": 2715, "tokens_out": 465, "cost_usd": 0.00915}
+{"event": "memo", "site_id": "16685", "status": "draft", "seconds": 5.939, "tokens_in": 5912, "tokens_out": 920, "cost_usd": 0.019184}
+{"event": "memo", "site_id": "16550", "status": "draft", "seconds": 7.383, "tokens_in": 5962, "tokens_out": 993, "cost_usd": 0.019868}
+{"event": "memo", "site_id": "17188", "status": "draft", "seconds": 5.697, "tokens_in": 4301, "tokens_out": 909, "cost_usd": 0.015874}
+{"event": "memo", "site_id": "16557", "status": "draft", "seconds": 5.603, "tokens_in": 5924, "tokens_out": 906, "cost_usd": 0.019096}
+{"event": "memo", "site_id": "17460", "status": "draft", "seconds": 5.584, "tokens_in": 4317, "tokens_out": 912, "cost_usd": 0.01593}
+{"event": "memo", "site_id": "17143", "status": "draft", "seconds": 5.386, "tokens_in": 6414, "tokens_out": 875, "cost_usd": 0.019828}
+{"event": "memo", "site_id": "16620", "status": "draft", "seconds": 5.37, "tokens_in": 4365, "tokens_out": 966, "cost_usd": 0.016458}
+{"event": "memo", "site_id": "17127", "status": "draft", "seconds": 5.929, "tokens_in": 6433, "tokens_out": 899, "cost_usd": 0.020058}
+{"event": "memo", "site_id": "17172", "status": "draft", "seconds": 6.077, "tokens_in": 5919, "tokens_out": 883, "cost_usd": 0.018902}
+{"event": "memo", "site_id": "16368", "status": "draft", "seconds": 3.486, "tokens_in": 1904, "tokens_out": 469, "cost_usd": 0.00756}
+{"event": "memo", "site_id": "16530", "status": "draft", "seconds": 3.187, "tokens_in": 2977, "tokens_out": 404, "cost_usd": 0.009186}
+{"event": "memo", "site_id": "17427", "status": "draft", "seconds": 5.465, "tokens_in": 4315, "tokens_out": 893, "cost_usd": 0.015774}
+{"event": "memo", "site_id": "17573", "status": "draft", "seconds": 5.38, "tokens_in": 4332, "tokens_out": 933, "cost_usd": 0.016128}
+{"event": "memo", "site_id": "17081", "status": "draft", "seconds": 6.228, "tokens_in": 6480, "tokens_out": 897, "cost_usd": 0.020136}
+{"event": "memo", "site_id": "16493", "status": "draft", "seconds": 6.079, "tokens_in": 6015, "tokens_out": 948, "cost_usd": 0.019614}
+{"event": "memo", "site_id": "16381", "status": "draft", "seconds": 5.948, "tokens_in": 4386, "tokens_out": 1029, "cost_usd": 0.017004}
+{"event": "memo", "site_id": "16334", "status": "draft", "seconds": 6.006, "tokens_in": 5967, "tokens_out": 1004, "cost_usd": 0.019966}
+{"event": "memo", "site_id": "17262", "status": "draft", "seconds": 5.997, "tokens_in": 4335, "tokens_out": 932, "cost_usd": 0.016126}
+{"event": "memo", "site_id": "17243", "status": "draft", "seconds": 7.11, "tokens_in": 6441, "tokens_out": 954, "cost_usd": 0.020514}
+{"event": "memos_done", "counts": {"draft": 25, "blocked": 0, "pending": 0}, "median_seconds": 5.697, "median_cost_usd": 0.018726, "total_cost_usd": 0.422122}
+== memos: exit 0 after 138.0s

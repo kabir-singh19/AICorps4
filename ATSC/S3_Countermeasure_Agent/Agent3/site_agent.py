@@ -547,6 +547,7 @@ def run_memo(run, site_id, library, out_dir, mode, prices, conn=None, attempts=4
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / f"{site_id}.evidence.json").write_text(json.dumps(evidence, indent=2, default=str) + "\n")
     user = json.dumps(llm_view(evidence), ensure_ascii=False, default=str)
+    (out_dir / f"{site_id}.prompt.txt").unlink(missing_ok=True)
     memo = {"memo_id": f"{evidence['run_id']}-{site_id}", "site_id": str(site_id), "run_id": evidence["run_id"],
             "created": created, "model": os.environ.get("MEMO_MODEL", "offline-template") if mode == "api" else "offline-template",
             "mode": mode, "prompt_sha256": hashlib.sha256((SYSTEM + user).encode()).hexdigest(),
@@ -556,6 +557,9 @@ def run_memo(run, site_id, library, out_dir, mode, prices, conn=None, attempts=4
     memo["llm_calls"] = []
 
     def ask(prompt):
+        # FSR 3.2.3.2.2: keep the exact prompt of every LLM call next to the memo.
+        with (out_dir / f"{site_id}.prompt.txt").open("a") as pf:
+            pf.write(f"--- call {len(memo['llm_calls']) + 1} system ---\n{SYSTEM}\n--- user ---\n{prompt}\n")
         raw, log = memo_pipeline.call_api(None, attempts, timeout, system=SYSTEM, user=prompt, temperature=0.2)
         usage = log.get("usage") or {}
         tin, tout = int(usage.get("prompt_tokens") or 0), int(usage.get("completion_tokens") or 0)
