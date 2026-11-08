@@ -39,7 +39,14 @@ PATTERN_MIN_COUNT = 2
 NUMBER_WORDS = re.compile(r"\b(two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|"
                           r"fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|"
                           r"eighty|ninety|hundred|thousand|million|dozen|percent|half|twice|double|triple)\b", re.I)
-EXEMPT_PHRASES = re.compile(r"\btwo[- ]way\b|\btwo[- ]lane\b|\bfour[- ]leg\b|\bthree[- ]leg\b", re.I)
+EXEMPT_PHRASES = re.compile(r"\btwo[- ]way\b|\btwo[- ]lane\b|\bfour[- ]leg\b|\bthree[- ]leg\b|"
+                            r"\bper million (?:entering )?vehicle", re.I)  # unit phrases, not quantities
+DIGIT_WORD = re.compile(r"[\w,.-]*\d[\w,.-]*")
+NUMERIC = re.compile(r"[\d,.]+")
+
+
+def _word(t):
+    return t.strip(".,-").lower()
 PLACEHOLDER = re.compile(r"\{\{\s*([^{}]*?)\s*\}\}")
 
 SYSTEM = """You write short planning-memo text for City of College Station traffic-safety staff.
@@ -295,9 +302,34 @@ def prose_fields(draft):
             yield f"countermeasures[{i}].rationale", c.get("rationale")
 
 
+def text_terms(evidence):
+    """Digit-bearing words that tool results contain as text: road names (FM2818), treatment names
+    (12-inch signal heads, ITE 1985) and factor descriptions. Quoting them is quoting a tool result.
+    Bare integers below 100 and decimals are not included: counts and rates must use placeholders."""
+    terms = set()
+
+    def walk(o):
+        if isinstance(o, dict):
+            for v in o.values():
+                walk(v)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v)
+        elif isinstance(o, str) and not o.startswith("http"):
+            for t in map(_word, DIGIT_WORD.findall(o)):
+                if not NUMERIC.fullmatch(t) or (t.isdigit() and int(t) >= 100):
+                    terms.add(t)
+    walk([c["output"] for c in evidence["tool_results"]])
+    if isinstance(evidence["numbers"].get("legs"), (int, float)):
+        terms.add(f"{int(evidence['numbers']['legs'])}-leg")
+    return terms
+
+
 def check_numeric(draft, evidence):
-    """FSR 3.2.1.14: no number may appear except through a placeholder that names a tool result."""
+    """FSR 3.2.1.14: no number may appear except through a placeholder that names a tool result, or as
+    a word quoted verbatim from tool-result text (see text_terms)."""
     errors = []
+    terms = text_terms(evidence)
     for field, text in prose_fields(draft):
         if not isinstance(text, str):
             continue
@@ -312,6 +344,7 @@ def check_numeric(draft, evidence):
             bare = re.sub(rf"\b{re.escape(cm)}\b", " ", bare)
         if "{" in bare or "}" in bare:
             errors.append(f"{field}: malformed placeholder")
+        bare = DIGIT_WORD.sub(lambda m: " " if _word(m.group(0)) in terms else m.group(0), bare)
         if re.search(r"\d", bare):
             errors.append(f"{field}: contains a number not taken from a tool result")
         words = NUMBER_WORDS.findall(EXEMPT_PHRASES.sub(" ", bare))
@@ -621,7 +654,8 @@ def main(argv=None):
                          for m in memos]}
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps({"event": "memos_done", **{k: summary[k] for k in ("counts", "median_seconds", "median_cost_usd", "total_cost_usd")}}))
-    return 0 if not summary["counts"]["blocked"] else 2
+    # Blocked memos are a reported outcome (ICD memo status), not a batch failure.
+    return 0
 
 
 if __name__ == "__main__":

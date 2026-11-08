@@ -187,3 +187,33 @@ class SiteAgentTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TextTermTests(unittest.TestCase):
+    """Numbers quoted verbatim from tool-result text are grounded; counts and rates still need placeholders."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.ev = evidence_fixture()
+        cls.ev["tool_results"][0]["output"]["top_factors"].append(
+            {"rank": 2, "text": "crashes on streets within 250 m", "direction": "raises risk"})
+        cls.ev["tool_results"][3]["output"].append({"treatment": "Replace 8-inch signal heads with 12-inch (ITE 1985)"})
+        cls.good = sa.offline_draft(cls.ev)
+
+    def check(self, text):
+        d = copy.deepcopy(self.good)
+        d["why_flagged"] += " " + text
+        return sa.validate(d, self.ev)["numeric_grounding_3_2_1_14"]
+
+    def test_quoted_terms_pass(self):
+        for text in ("The site is on FM2818.", "Use 12-inch heads in place of 8-inch heads.", "ITE 1985 timing.",
+                     "Nearby streets within 250 m matter.", "It is a {{legs}}-leg intersection, a 4-leg layout.",
+                     "Rates are per million entering vehicles."):
+            with self.subTest(text=text):
+                self.assertTrue(self.check(text)["pass"], self.check(text))
+
+    def test_counts_and_values_still_blocked(self):
+        for text in ("Traffic is 77,520 vehicles per day.", "There were 3 crashes.", "Use 10-inch heads.",
+                     "Rates are 2.5 per million entering vehicles.", "A 3-leg layout.", "Expect 250 fewer crashes in 2031."):
+            with self.subTest(text=text):
+                self.assertFalse(self.check(text)["pass"])
