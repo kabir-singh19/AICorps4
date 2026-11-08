@@ -4,11 +4,18 @@ The project, the AI Traffic-Safety Consultant (ATSC), lives in [ATSC/](ATSC/READ
 integration pipeline (`ATSC/Makefile`), and the controlling documents in `ATSC/docs/`.
 `Initial_Research/` holds early background notes.
 
-## Run the website on a new machine (Ubuntu)
+Notes from the 9/11 kickoff meeting. Project ideas are in [IDEAS.md](Initial_Research/IDEAS.md).
 
-Paste this into a terminal. It installs Docker and git, pulls the latest code from GitHub (or
-clones it the first time), builds the web app, and serves it at http://localhost:10000. The
-model run and memos are already in the repo, so nothing else needs to run.
+## Run the website on a new machine
+
+Each block below installs what is missing, pulls the latest code from GitHub (or clones it the
+first time), builds the web app with Docker, and serves it at http://localhost:10000. The model
+run and memos are already in the repo, so nothing else needs to run. To update after new
+commits, run the same block again. The container restarts on its own whenever Docker starts.
+
+### Ubuntu
+
+Paste into a terminal:
 
 ```bash
 sudo apt update && sudo apt install -y docker.io git
@@ -23,14 +30,60 @@ sudo docker run -d --name atsc-demo --restart unless-stopped -p 10000:10000 \
   -e ATSC_AI_ENABLED=false atsc
 ```
 
-To update after new commits, run the same block again. The container restarts on its own after
-a reboot.
-
 - "Cannot connect to the Docker daemon": run `sudo systemctl start docker.socket docker.service`.
 - Stop and remove: `sudo docker rm -f atsc-demo`. Remove Docker too: `sudo apt purge -y docker.io`.
-- The full pipeline (database, model, memos) is in [ATSC/README.md](ATSC/README.md#build-and-run).
 
-Notes from the 9/11 kickoff meeting. Project ideas are in [IDEAS.md](Initial_Research/IDEAS.md).
+### macOS (Intel or Apple Silicon)
+
+One-time setup: install git with `xcode-select --install`, and install
+[Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/) (or
+`brew install --cask docker` if you use Homebrew). Open Docker Desktop once and wait until it
+says it is running. Then paste into Terminal:
+
+```bash
+cd ~/Desktop
+[ -d AICorps4 ] && git -C AICorps4 pull || git clone https://github.com/kabir-singh19/AICorps4.git
+cd AICorps4/ATSC/S4_Web_App
+docker build -t atsc .
+docker rm -f atsc-demo 2>/dev/null
+docker run -d --name atsc-demo --restart unless-stopped -p 10000:10000 \
+  -e ATSC_ENV=production -e ATSC_SESSION_SECRET="$(openssl rand -hex 32)" \
+  -e ATSC_AI_ENABLED=false atsc
+```
+
+### Windows 10 or 11
+
+One-time setup, in PowerShell:
+
+```powershell
+winget install -e --id Git.Git
+winget install -e --id Docker.DockerDesktop
+```
+
+Restart the PC if the installer asks (Docker Desktop turns on WSL 2), then open Docker Desktop
+once and wait until it says it is running. Open a new PowerShell window and paste:
+
+```powershell
+cd $HOME
+if (Test-Path AICorps4) { git -C AICorps4 pull } else { git clone https://github.com/kabir-singh19/AICorps4.git }
+cd AICorps4\ATSC\S4_Web_App
+docker build -t atsc .
+docker rm -f atsc-demo 2>$null
+$b = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($b)
+$secret = -join ($b | ForEach-Object { '{0:x2}' -f $_ })
+docker run -d --name atsc-demo --restart unless-stopped -p 10000:10000 `
+  -e ATSC_ENV=production -e ATSC_SESSION_SECRET=$secret `
+  -e ATSC_AI_ENABLED=false atsc
+```
+
+### All platforms
+
+- Docker errors such as "cannot connect" or "pipe not found" on macOS or Windows mean Docker
+  Desktop is not running. Open it, wait, and run the block again.
+- Port 10000 already in use: change `-p 10000:10000` to `-p 8080:10000` and open
+  http://localhost:8080.
+- Stop and remove the site: `docker rm -f atsc-demo` (add `sudo` on Ubuntu).
+- The full pipeline (database, model, memos) is in [ATSC/README.md](ATSC/README.md#build-and-run).
 
 ## Project: AI Consulting Tool (Teams 1 & 4)
 

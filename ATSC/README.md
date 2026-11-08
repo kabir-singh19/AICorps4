@@ -18,7 +18,7 @@ Run everything from this folder. S2 runs as a package: `python -m S2_Risk_Model_
 ## Build and run
 
 To serve only the website from the committed run (Docker only, no pipeline), use the
-copy-paste block in the [top-level README](../README.md#run-the-website-on-a-new-machine-ubuntu).
+copy-paste blocks (Ubuntu, macOS, Windows) in the [top-level README](../README.md#run-the-website-on-a-new-machine).
 
 ```bash
 make demo     # data -> model -> memos -> web; stages are cached (integration/.stamps/)
