@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: atsc-traffic-safety
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/ready
+    envVars:
+      - key: ATSC_ENV
+        value: production
+      - key: ATSC_SESSION_SECRET
+        generateValue: true
+      - key: ATSC_AI_ENABLED
+        value: "false"
