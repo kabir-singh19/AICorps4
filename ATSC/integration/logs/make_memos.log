@@ -1,0 +1,29 @@
+== memos: 2026-11-08T09:09:29-06:00
+{"event": "env_loaded", "keys": ["MEMO_API_URL", "MEMO_API_KEY", "MEMO_MODEL"]}
+{"event": "memo", "site_id": "17683", "status": "draft", "seconds": 0.685, "tokens_in": 2719, "tokens_out": 477, "cost_usd": 0.009254}
+{"event": "memo", "site_id": "17898", "status": "draft", "seconds": 3.273, "tokens_in": 5929, "tokens_out": 915, "cost_usd": 0.019178}
+{"event": "memo", "site_id": "16923", "status": "draft", "seconds": 3.155, "tokens_in": 5953, "tokens_out": 981, "cost_usd": 0.019754}
+{"event": "memo", "site_id": "17120", "status": "draft", "seconds": 2.927, "tokens_in": 6435, "tokens_out": 927, "cost_usd": 0.020286}
+{"event": "memo", "site_id": "17151", "status": "draft", "seconds": 0.682, "tokens_in": 2715, "tokens_out": 444, "cost_usd": 0.008982}
+{"event": "memo", "site_id": "17161", "status": "draft", "seconds": 3.084, "tokens_in": 5979, "tokens_out": 980, "cost_usd": 0.019798}
+{"event": "memo", "site_id": "16685", "status": "draft", "seconds": 0.653, "tokens_in": 2712, "tokens_out": 461, "cost_usd": 0.009112}
+{"event": "memo", "site_id": "16550", "status": "draft", "seconds": 2.819, "tokens_in": 5925, "tokens_out": 947, "cost_usd": 0.019426}
+{"event": "memo", "site_id": "17188", "status": "draft", "seconds": 0.577, "tokens_in": 1908, "tokens_out": 502, "cost_usd": 0.007832}
+{"event": "memo", "site_id": "16557", "status": "draft", "seconds": 0.618, "tokens_in": 2715, "tokens_out": 505, "cost_usd": 0.00947}
+{"event": "memo", "site_id": "17460", "status": "draft", "seconds": 3.314, "tokens_in": 4405, "tokens_out": 1047, "cost_usd": 0.017186}
+{"event": "memo", "site_id": "17143", "status": "draft", "seconds": 2.612, "tokens_in": 6408, "tokens_out": 867, "cost_usd": 0.019752}
+{"event": "memo", "site_id": "16620", "status": "draft", "seconds": 3.838, "tokens_in": 4347, "tokens_out": 930, "cost_usd": 0.016134}
+{"event": "memo", "site_id": "17127", "status": "draft", "seconds": 2.938, "tokens_in": 6454, "tokens_out": 943, "cost_usd": 0.020452}
+{"event": "memo", "site_id": "17172", "status": "draft", "seconds": 3.358, "tokens_in": 6024, "tokens_out": 1066, "cost_usd": 0.020576}
+{"event": "memo", "site_id": "16368", "status": "draft", "seconds": 0.61, "tokens_in": 1897, "tokens_out": 414, "cost_usd": 0.007106}
+{"event": "memo", "site_id": "16530", "status": "draft", "seconds": 2.704, "tokens_in": 6443, "tokens_out": 912, "cost_usd": 0.020182}
+{"event": "memo", "site_id": "17296", "status": "draft", "seconds": 1.185, "tokens_in": 4299, "tokens_out": 885, "cost_usd": 0.015678}
+{"event": "memo", "site_id": "17427", "status": "draft", "seconds": 1.173, "tokens_in": 4323, "tokens_out": 938, "cost_usd": 0.01615}
+{"event": "memo", "site_id": "17573", "status": "draft", "seconds": 1.155, "tokens_in": 4325, "tokens_out": 930, "cost_usd": 0.01609}
+{"event": "memo", "site_id": "17081", "status": "draft", "seconds": 2.799, "tokens_in": 6445, "tokens_out": 811, "cost_usd": 0.019378}
+{"event": "memo", "site_id": "16493", "status": "draft", "seconds": 2.927, "tokens_in": 5970, "tokens_out": 904, "cost_usd": 0.019172}
+{"event": "memo", "site_id": "16381", "status": "draft", "seconds": 1.132, "tokens_in": 4345, "tokens_out": 935, "cost_usd": 0.01617}
+{"event": "memo", "site_id": "16334", "status": "draft", "seconds": 1.25, "tokens_in": 5913, "tokens_out": 908, "cost_usd": 0.01909}
+{"event": "memo", "site_id": "17243", "status": "draft", "seconds": 2.885, "tokens_in": 6419, "tokens_out": 892, "cost_usd": 0.019974}
+{"event": "memos_done", "counts": {"draft": 25, "blocked": 0, "pending": 0}, "median_seconds": 2.704, "median_cost_usd": 0.01909, "total_cost_usd": 0.406182}
+== memos: exit 0 after 52.6s

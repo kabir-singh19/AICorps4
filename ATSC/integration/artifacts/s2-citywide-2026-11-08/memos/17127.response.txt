@@ -1,0 +1,17 @@
+{
+  "site_id": "17127",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{ka_3y}} fatal or serious injury crashes and {{kabc_3y}} KABCO injury crashes occurred at this four-leg signalized intersection. The most frequent patterns were angle ({{angle_3y}}), rear-end ({{rear_end_3y}}), and left-turn opposing ({{left_turn_opposing_3y}}) collisions. Nighttime crashes were notable ({{night_3y}}). Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to the model estimate of {{fsi_rate}} fatal or serious injury crashes per mile per year, high traffic exposure ({{aadt}} vehicles/day), four-leg geometry, signalization, and proximity to other crash sites. It is in the High Injury Network and ranks {{rank_city_actionable}} among actionable city sites for KABCO injury crash frequency.",
+  "countermeasures": [
+    {
+      "cm_id": "CM034",
+      "rationale": "Replacing 8-inch red signal heads with 12-inch heads is supported by broader evidence for angle crashes, which are frequent at this site. The cited CMF {{cmf:2333}} is a partial crash-type match and requires engineering review to confirm applicability to local conditions."
+    },
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for all severities at four-leg urban signalized intersections with similar traffic volumes. The cited CMF {{cmf:267}} is a broader evidence match but requires engineering review for geometry and severity scope."
+    }
+  ],
+  "benefit_cost": "A numerical benefit could not be computed for either countermeasure. The library lacks audit-approved CMFs for fatal or serious injury crashes, planning-level unit costs, and service life values for these treatments.",
+  "next_steps": "Review intersection geometry, existing signal equipment, and left-turn lane configurations. Confirm whether 8-inch red signal heads are present and assess feasibility of upgrading to 12-inch heads. Evaluate major-road approaches for left-turn lane installation, considering traffic volumes and site constraints. Conduct engineering review for both treatments to verify prerequisites and applicability."
+}

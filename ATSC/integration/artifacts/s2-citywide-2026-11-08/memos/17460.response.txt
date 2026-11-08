@@ -1,0 +1,17 @@
+{
+  "site_id": "17460",
+  "crash_profile": "From {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this unsignalized 4-leg intersection. No fatal or suspected serious injury crashes (K or A) were recorded ({{ka_3y}}). Injury crashes (B or C severity) totaled {{kabc_3y}}. Rear-end ({{rear_end_3y}}) and angle ({{angle_3y}}) crashes were most frequent, with some run-off-road ({{run_off_road_3y}}) and left-turn-opposing ({{left_turn_opposing_3y}}) crashes. Night and wet conditions contributed to {{night_3y}} and {{wet_3y}} crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "Flagged due to a model-estimated fatal or serious injury crash rate of {{fsi_rate}} per mile per year and an annual fatal or serious injury estimate of {{annual_fsi}}. High traffic exposure ({{aadt}} vehicles/day), 4-leg intersection geometry, proximity to other crash-prone sites, and inclusion in the High Injury Network further raise risk.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "Broader evidence supports this systemic signing and marking improvement package for all crash types and severities, citing {{cmf:8867}}. The CMF is not a direct match for the most frequent crash types here and requires engineering review to confirm applicability, especially given intersection traffic volumes and existing equipment."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Broader evidence supports flashing beacons at stop-controlled intersections for all crash types and severities, citing {{cmf:446}}. The CMF is not a direct match for the crash subtypes observed and requires engineering review to confirm suitability, considering intersection geometry and traffic volumes."
+    }
+  ],
+  "benefit_cost": "A numerical benefit could not be computed for either countermeasure. The CMFs are not limited to fatal or serious injury crashes, and there is no audit-approved unit cost or service life available in the library for these treatments.",
+  "next_steps": "Conduct engineering review to assess intersection geometry, traffic volumes, and existing signing/marking equipment. Confirm prerequisites for both countermeasures, including compatibility with high AADT and four-leg configuration. Evaluate potential for systemic improvements or flashing beacon installation based on site-specific conditions."
+}

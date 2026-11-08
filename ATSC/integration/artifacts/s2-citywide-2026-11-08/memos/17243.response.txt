@@ -1,0 +1,17 @@
+{
+  "site_id": "17243",
+  "crash_profile": "From {{window_start}} to {{window_end}}, this signalized four-leg intersection saw {{kabc_3y}} KABCO injury crashes, including {{ka_3y}} fatal or serious injury, with {{angle_3y}} angle, {{rear_end_3y}} rear-end, and {{left_turn_opposing_3y}} left-turn-opposing crashes. Pedestrian and bicycle counts are not available. Night and wet crashes were reported, but not predominant.",
+  "why_flagged": "Flagged due to elevated model estimate of fatal or serious injury crash rate ({{fsi_rate}} per mile), high traffic exposure ({{aadt}} vehicles/day), four-leg geometry, signalization, and proximity to other crash sites. It is ranked {{rank_city_actionable}} among actionable city sites and is part of the high-injury network.",
+  "countermeasures": [
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach is supported by broader evidence for four-leg urban signalized intersections with similar traffic volumes. The cited CMF {{cmf:267}} is an aggregate for all crash types and KABCO severities, not a direct match for left-turn-opposing or fatal/serious crashes; engineering review is needed."
+    },
+    {
+      "cm_id": "CM034",
+      "rationale": "Replacing 8-inch red signal heads with 12-inch heads is partially supported for angle crashes. The CMF {{cmf:2333}} covers angle crashes and all severities, but not exclusively fatal/serious; engineering review is needed to confirm applicability."
+    }
+  ],
+  "benefit_cost": "A numerical benefit could not be computed for either treatment. The library lacks audit-approved CMFs for fatal/serious crashes, and no planning-level unit cost or service life is available for these entries.",
+  "next_steps": "Conduct engineering review to confirm prerequisites for left-turn lane and signal head upgrades, including intersection geometry, existing equipment, and traffic volumes. Assess site-specific crash patterns and operational constraints before further action."
+}

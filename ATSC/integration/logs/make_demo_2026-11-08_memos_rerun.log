@@ -1,0 +1,76 @@
+rm -rf -- "/home/param-shelar/Desktop/AICorps4/ATSC/integration/artifacts/s2-citywide-2026-11-08/memos"
+integration/stage.sh memos 'export DATABASE_URL="postgresql://s2_reader:$(cat /home/param-shelar/Desktop/AICorps4/ATSC/integration/secrets/s2_password)@localhost:5432/tasc" && cd S3_Countermeasure_Agent/Agent3 && /home/param-shelar/Desktop/AICorps4/ATSC/.venv/bin/python site_agent.py \
+  --run-dir /home/param-shelar/Desktop/AICorps4/ATSC/integration/artifacts/s2-citywide-2026-11-08 --top 25 --mode api --env-file /home/param-shelar/.config/atsc/memo.env'
+== memos: 2026-11-08T09:09:29-06:00
+{"event": "env_loaded", "keys": ["MEMO_API_URL", "MEMO_API_KEY", "MEMO_MODEL"]}
+{"event": "memo", "site_id": "17683", "status": "draft", "seconds": 0.685, "tokens_in": 2719, "tokens_out": 477, "cost_usd": 0.009254}
+{"event": "memo", "site_id": "17898", "status": "draft", "seconds": 3.273, "tokens_in": 5929, "tokens_out": 915, "cost_usd": 0.019178}
+{"event": "memo", "site_id": "16923", "status": "draft", "seconds": 3.155, "tokens_in": 5953, "tokens_out": 981, "cost_usd": 0.019754}
+{"event": "memo", "site_id": "17120", "status": "draft", "seconds": 2.927, "tokens_in": 6435, "tokens_out": 927, "cost_usd": 0.020286}
+{"event": "memo", "site_id": "17151", "status": "draft", "seconds": 0.682, "tokens_in": 2715, "tokens_out": 444, "cost_usd": 0.008982}
+{"event": "memo", "site_id": "17161", "status": "draft", "seconds": 3.084, "tokens_in": 5979, "tokens_out": 980, "cost_usd": 0.019798}
+{"event": "memo", "site_id": "16685", "status": "draft", "seconds": 0.653, "tokens_in": 2712, "tokens_out": 461, "cost_usd": 0.009112}
+{"event": "memo", "site_id": "16550", "status": "draft", "seconds": 2.819, "tokens_in": 5925, "tokens_out": 947, "cost_usd": 0.019426}
+{"event": "memo", "site_id": "17188", "status": "draft", "seconds": 0.577, "tokens_in": 1908, "tokens_out": 502, "cost_usd": 0.007832}
+{"event": "memo", "site_id": "16557", "status": "draft", "seconds": 0.618, "tokens_in": 2715, "tokens_out": 505, "cost_usd": 0.00947}
+{"event": "memo", "site_id": "17460", "status": "draft", "seconds": 3.314, "tokens_in": 4405, "tokens_out": 1047, "cost_usd": 0.017186}
+{"event": "memo", "site_id": "17143", "status": "draft", "seconds": 2.612, "tokens_in": 6408, "tokens_out": 867, "cost_usd": 0.019752}
+{"event": "memo", "site_id": "16620", "status": "draft", "seconds": 3.838, "tokens_in": 4347, "tokens_out": 930, "cost_usd": 0.016134}
+{"event": "memo", "site_id": "17127", "status": "draft", "seconds": 2.938, "tokens_in": 6454, "tokens_out": 943, "cost_usd": 0.020452}
+{"event": "memo", "site_id": "17172", "status": "draft", "seconds": 3.358, "tokens_in": 6024, "tokens_out": 1066, "cost_usd": 0.020576}
+{"event": "memo", "site_id": "16368", "status": "draft", "seconds": 0.61, "tokens_in": 1897, "tokens_out": 414, "cost_usd": 0.007106}
+{"event": "memo", "site_id": "16530", "status": "draft", "seconds": 2.704, "tokens_in": 6443, "tokens_out": 912, "cost_usd": 0.020182}
+{"event": "memo", "site_id": "17296", "status": "draft", "seconds": 1.185, "tokens_in": 4299, "tokens_out": 885, "cost_usd": 0.015678}
+{"event": "memo", "site_id": "17427", "status": "draft", "seconds": 1.173, "tokens_in": 4323, "tokens_out": 938, "cost_usd": 0.01615}
+{"event": "memo", "site_id": "17573", "status": "draft", "seconds": 1.155, "tokens_in": 4325, "tokens_out": 930, "cost_usd": 0.01609}
+{"event": "memo", "site_id": "17081", "status": "draft", "seconds": 2.799, "tokens_in": 6445, "tokens_out": 811, "cost_usd": 0.019378}
+{"event": "memo", "site_id": "16493", "status": "draft", "seconds": 2.927, "tokens_in": 5970, "tokens_out": 904, "cost_usd": 0.019172}
+{"event": "memo", "site_id": "16381", "status": "draft", "seconds": 1.132, "tokens_in": 4345, "tokens_out": 935, "cost_usd": 0.01617}
+{"event": "memo", "site_id": "16334", "status": "draft", "seconds": 1.25, "tokens_in": 5913, "tokens_out": 908, "cost_usd": 0.01909}
+{"event": "memo", "site_id": "17243", "status": "draft", "seconds": 2.885, "tokens_in": 6419, "tokens_out": 892, "cost_usd": 0.019974}
+{"event": "memos_done", "counts": {"draft": 25, "blocked": 0, "pending": 0}, "median_seconds": 2.704, "median_cost_usd": 0.01909, "total_cost_usd": 0.406182}
+== memos: exit 0 after 52.6s
+touch integration/.stamps/memos
+rm -rf -- "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/backend/data/artifacts"
+integration/stage.sh web 'cd S4_Web_App/frontend && export PATH=/home/param-shelar/.local/atsc-tools/node-v22.12.0-linux-x64/bin:$PATH && { [ -d node_modules ] || npm ci --no-audit --no-fund; } && npm run build \
+  && cd /home/param-shelar/Desktop/AICorps4/ATSC && mkdir -p S4_Web_App/backend/data/artifacts && rsync -a --exclude models/ integration/artifacts/s2-citywide-2026-11-08/ S4_Web_App/backend/data/artifacts/s2-citywide-2026-11-08/ && du -sh S4_Web_App/backend/data/artifacts/s2-citywide-2026-11-08'
+== web: 2026-11-08T09:10:22-06:00
+
+> atsc-web@0.1.0 build
+> vite build
+
+vite v6.4.4 building for production...
+transforming...
+✓ 35 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                       0.37 kB │ gzip:   0.27 kB
+dist/assets/index-BbyP2V0H.css        7.51 kB │ gzip:   2.20 kB
+dist/assets/RiskMap-B-YMMjus.css     69.94 kB │ gzip:  10.06 kB
+dist/assets/index-StUwurvd.js       265.10 kB │ gzip:  81.51 kB
+dist/assets/RiskMap-BSJhmLvR.js   1,061.99 kB │ gzip: 287.56 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 4.47s
+7.8M	S4_Web_App/backend/data/artifacts/s2-citywide-2026-11-08
+== web: exit 0 after 4.8s
+touch integration/.stamps/web
+run s2-citywide-2026-11-08  ranking_hash 044da876680f  refit reproduced True
+primary: KA capture, 11pct, icd_250ft, n = 171
+  A: 0.795 [0.731, 0.854] at 0.245 of length
+  B: 0.713 [0.643, 0.778] at 0.110 of length
+  C: 0.702 [0.632, 0.766] at 0.110 of length
+  C-A: -0.094 [-0.146, -0.047]
+  B-A: -0.082 [-0.140, -0.023]
+memos: {'counts': {'draft': 25, 'blocked': 0, 'pending': 0}, 'median_seconds': 2.704, 'median_cost_usd': 0.01909, 'total_cost_usd': 0.406182}
+{"stage": "model", "started": "2026-11-08T08:53:54-06:00", "seconds": 668.5, "exit": 0}
+{"stage": "memos", "started": "2026-11-08T09:05:02-06:00", "seconds": 151.3, "exit": 2}
+{"stage": "memos", "started": "2026-11-08T09:09:29-06:00", "seconds": 52.6, "exit": 0}
+{"stage": "web", "started": "2026-11-08T09:10:22-06:00", "seconds": 4.8, "exit": 0}
+
+real	0m57.505s
+user	0m9.590s
+sys	0m0.533s

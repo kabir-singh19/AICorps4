@@ -1,0 +1,86 @@
+== data: 2026-11-08T08:53:30-06:00
+ Network s1_road_network_database_default  Creating
+ Network s1_road_network_database_default  Created
+ Volume s1_road_network_database_tasc_pgdata  Creating
+ Volume s1_road_network_database_tasc_pgdata  Created
+ Container s1_road_network_database-db-1  Creating
+ Container s1_road_network_database-db-1  Created
+ Container s1_road_network_database-db-1  Starting
+ Container s1_road_network_database-db-1  Started
+ Container s1_road_network_database-db-1  Waiting
+ Container s1_road_network_database-db-1  Healthy
+ s1_road_network_database-db-1 copy dumps/tasc_v1_2022_2026-11-04.sql.gz to s1_road_network_database-db-1:/tmp/tasc.sql.gz Copying
+ s1_road_network_database-db-1 copy dumps/tasc_v1_2022_2026-11-04.sql.gz to s1_road_network_database-db-1:/tmp/tasc.sql.gz Copied
+ set_config 
+------------
+ 
+(1 row)
+
+ setval 
+--------
+    183
+(1 row)
+
+ setval 
+--------
+   6106
+(1 row)
+
+ setval 
+--------
+  31535
+(1 row)
+
+NOTICE:  relation "s2_source_availability" already exists, skipping
+ network_version | segments | intersections | nonpositive_risk_length | total_network_mi 
+-----------------+----------+---------------+-------------------------+------------------
+ v0_2019         |      185 |             2 |                       0 |            18.07
+ v1_2022         |     5590 |          1634 |                       0 |           402.13
+(2 rows)
+
+         source         |    role    | as_of_date | available_as_of 
+------------------------+------------+------------+-----------------
+ cris_test              | evaluation | 2025-12-31 | 2026-10-07
+ cris_history           | history    | 2022-12-31 | 2022-12-31
+ network v0_2019        | predictor  | 2019-12-31 | 2021-08-06
+ network v1_2022        | predictor  | 2022-12-31 | 2022-12-31
+ osm_2022-12-31         | predictor  | 2022-12-31 | 2022-12-31
+ osm_city_2022-12-31    | predictor  | 2022-12-31 | 2022-12-31
+ osm_city_latest        | predictor  | 2026-07-27 | 2026-07-27
+ osm_latest             | predictor  | 2026-07-27 | 2026-07-27
+ osm_roads_2022-12-31   | predictor  | 2022-12-31 | 2022-12-31
+ roadway_inventory_2019 | predictor  | 2019-12-31 | 2021-08-06
+(10 rows)
+
+Loaded HIN 'csap_fig3.9_digitized_2026-11-04': 522 lines, 163.8 mi. run_id 184
+NOTICE:  view "s2_hin_site" does not exist, skipping
+ sites | duplicates | in_hin | null_in_hin 
+-------+------------+--------+-------------
+  7224 |          0 |   1708 |           0
+(1 row)
+
+  site_type   | in_hin | sites | hin_network_mi | hin_share_pct 
+--------------+--------+-------+----------------+---------------
+              |   1708 |  7224 |           96.1 |         23.89
+ intersection |    448 |  1634 |            0.0 |              
+ segment      |   1260 |  5590 |           96.1 |         23.89
+(3 rows)
+
+NOTICE:  view "s2_site_context" does not exist, skipping
+NOTICE:  table "site_context" does not exist, skipping
+NOTICE:  view "s2_crash_detail" does not exist, skipping
+ network_version |  site_type   | jurisdiction | count | with_aadt 
+-----------------+--------------+--------------+-------+-----------
+ v0_2019         | intersection | TxDOT        |     2 |         2
+ v0_2019         | segment      | TxDOT        |   185 |         0
+ v1_2022         | intersection | City         |  1461 |      1260
+ v1_2022         | intersection | City/TxDOT   |    92 |        92
+ v1_2022         | intersection | TAMU         |    67 |         0
+ v1_2022         | intersection | TxDOT        |    14 |        14
+ v1_2022         | segment      | City         |  4782 |         0
+ v1_2022         | segment      | TAMU         |   307 |         0
+ v1_2022         | segment      | TxDOT        |   501 |         0
+(9 rows)
+
+{"event": "s1_report", "fsi_match_pct": 98.39, "hin_share": 0.2389017960833115, "out": "../integration/artifacts/s1_data_report.json"}
+== data: exit 0 after 23.1s

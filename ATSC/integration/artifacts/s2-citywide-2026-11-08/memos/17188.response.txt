@@ -1,0 +1,17 @@
+{
+  "site_id": "17188",
+  "crash_profile": "From {{window_start}} to {{window_end}}, {{total_3y}} crashes occurred at this unsignalized four-leg intersection. Most were angle crashes ({{angle_3y}}), with some rear-end ({{rear_end_3y}}), run-off-road ({{run_off_road_3y}}), and head-on ({{head_on_3y}}). There were {{ka_3y}} fatal or serious injury crashes (K or A), and {{kabc_3y}} with any injury (K, A, B, or C). Night and wet conditions were present in a small number of crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "The site is flagged due to a high crash rate, especially angle crashes, and a notable annual fatal or serious injury rate ({{fsi_rate}} per mile). It ranks {{rank_city_actionable}} among actionable city sites and is included in the High Injury Network. High traffic exposure ({{aadt}} vehicles/day) and the four-leg geometry raise risk.",
+  "countermeasures": [
+    {
+      "cm_id": "CM018",
+      "rationale": "Applying a systemic signing and marking improvement package is supported by broader evidence for all crash types and injury severities (CMF {{cmf:8867}}). This is not a direct match for angle crashes or fatal/serious injuries and requires engineering review to confirm prerequisites and applicability."
+    },
+    {
+      "cm_id": "CM029",
+      "rationale": "Providing flashing beacons at stop-controlled intersections is supported by broader evidence for all crash types and severities (CMF {{cmf:446}}). This is not a direct match for angle crashes or fatal/serious injuries and needs engineering review for prerequisites and installation details."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The evidence library does not provide a numerical CMF, planning-level unit cost, or service life for these treatments, and the severity scope does not match fatal or serious injuries only.",
+  "next_steps": "Conduct an engineering review to confirm site prerequisites for both countermeasures, including intersection geometry, traffic volumes, and existing equipment. Assess the suitability of systemic signing/marking improvements and flashing beacons, and document findings for future action."
+}

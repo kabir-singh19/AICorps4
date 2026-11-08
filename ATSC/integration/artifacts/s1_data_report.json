@@ -478,11 +478,11 @@
         "site_type": "segment",
         "sites": 5590,
         "in_hin": 1260,
-        "network_mi": 402.13119173284184,
-        "hin_mi": 96.06986396609815
+        "network_mi": 402.131191732841,
+        "hin_mi": 96.06986396609821
       }
     ],
-    "hin_share_of_network_length": 0.23890179608331083
+    "hin_share_of_network_length": 0.2389017960833115
   },
   "streetlights_if_04": {
     "status": "not delivered",

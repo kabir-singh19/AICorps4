@@ -1,0 +1,155 @@
+cd S1_Road_Network_Database && sudo docker compose down -v
+ Container s1_road_network_database-db-1  Stopping
+ Container s1_road_network_database-db-1  Stopped
+ Container s1_road_network_database-db-1  Removing
+ Container s1_road_network_database-db-1  Removed
+ Volume s1_road_network_database_tasc_pgdata  Removing
+ Network s1_road_network_database_default  Removing
+ Volume s1_road_network_database_tasc_pgdata  Removed
+ Network s1_road_network_database_default  Removed
+rm -rf -- "/home/param-shelar/Desktop/AICorps4/ATSC/integration/.stamps" "/home/param-shelar/Desktop/AICorps4/ATSC/integration/artifacts/s2-citywide-2026-11-08" "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/backend/data/artifacts" "/home/param-shelar/Desktop/AICorps4/ATSC/S4_Web_App/frontend/dist"
+mkdir -p integration/secrets
+umask 077; python3 -c "import secrets; print(secrets.token_hex(16))" > integration/secrets/s2_password
+mkdir -p integration/.stamps
+integration/stage.sh data 'cd S1_Road_Network_Database \
+  && sudo docker compose up -d --wait \
+  && sudo docker compose cp dumps/tasc_v1_2022_2026-11-04.sql.gz db:/tmp/tasc.sql.gz \
+  && sudo docker compose exec -T db sh -c "gunzip -c /tmp/tasc.sql.gz | psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc" \
+  && sudo docker compose exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v s2_password="$(cat /home/param-shelar/Desktop/AICorps4/ATSC/integration/secrets/s2_password)" < sql/05_s2_interface.sql \
+  && /home/param-shelar/Desktop/AICorps4/ATSC/.venv/bin/python ingest.py hin inputs/hin_mpo_digitized.geojson --version csap_fig3.9_digitized_2026-11-04 \
+  && sudo docker compose exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v network_version=v1_2022 -v hin_version=csap_fig3.9_digitized_2026-11-04 \
+       -v hin_buffer_m=30 -v hin_available_as_of=2026-11-04 -v hin_evidence="MPO CSAP Fig. 3.9 digitized 2026-11-04" < sql/08_hin.sql \
+  && sudo docker compose exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v network_version=v1_2022 -v feature_set=backtest_2022 < sql/09_s2_context.sql \
+  && /home/param-shelar/Desktop/AICorps4/ATSC/.venv/bin/python s1_report.py --hin-version csap_fig3.9_digitized_2026-11-04 --out ../integration/artifacts/s1_data_report.json'
+== data: 2026-11-08T08:53:30-06:00
+ Network s1_road_network_database_default  Creating
+ Network s1_road_network_database_default  Created
+ Volume s1_road_network_database_tasc_pgdata  Creating
+ Volume s1_road_network_database_tasc_pgdata  Created
+ Container s1_road_network_database-db-1  Creating
+ Container s1_road_network_database-db-1  Created
+ Container s1_road_network_database-db-1  Starting
+ Container s1_road_network_database-db-1  Started
+ Container s1_road_network_database-db-1  Waiting
+ Container s1_road_network_database-db-1  Healthy
+ s1_road_network_database-db-1 copy dumps/tasc_v1_2022_2026-11-04.sql.gz to s1_road_network_database-db-1:/tmp/tasc.sql.gz Copying
+ s1_road_network_database-db-1 copy dumps/tasc_v1_2022_2026-11-04.sql.gz to s1_road_network_database-db-1:/tmp/tasc.sql.gz Copied
+ set_config 
+------------
+ 
+(1 row)
+
+ setval 
+--------
+    183
+(1 row)
+
+ setval 
+--------
+   6106
+(1 row)
+
+ setval 
+--------
+  31535
+(1 row)
+
+NOTICE:  relation "s2_source_availability" already exists, skipping
+ network_version | segments | intersections | nonpositive_risk_length | total_network_mi 
+-----------------+----------+---------------+-------------------------+------------------
+ v0_2019         |      185 |             2 |                       0 |            18.07
+ v1_2022         |     5590 |          1634 |                       0 |           402.13
+(2 rows)
+
+         source         |    role    | as_of_date | available_as_of 
+------------------------+------------+------------+-----------------
+ cris_test              | evaluation | 2025-12-31 | 2026-10-07
+ cris_history           | history    | 2022-12-31 | 2022-12-31
+ network v0_2019        | predictor  | 2019-12-31 | 2021-08-06
+ network v1_2022        | predictor  | 2022-12-31 | 2022-12-31
+ osm_2022-12-31         | predictor  | 2022-12-31 | 2022-12-31
+ osm_city_2022-12-31    | predictor  | 2022-12-31 | 2022-12-31
+ osm_city_latest        | predictor  | 2026-07-27 | 2026-07-27
+ osm_latest             | predictor  | 2026-07-27 | 2026-07-27
+ osm_roads_2022-12-31   | predictor  | 2022-12-31 | 2022-12-31
+ roadway_inventory_2019 | predictor  | 2019-12-31 | 2021-08-06
+(10 rows)
+
+Loaded HIN 'csap_fig3.9_digitized_2026-11-04': 522 lines, 163.8 mi. run_id 184
+NOTICE:  view "s2_hin_site" does not exist, skipping
+ sites | duplicates | in_hin | null_in_hin 
+-------+------------+--------+-------------
+  7224 |          0 |   1708 |           0
+(1 row)
+
+  site_type   | in_hin | sites | hin_network_mi | hin_share_pct 
+--------------+--------+-------+----------------+---------------
+              |   1708 |  7224 |           96.1 |         23.89
+ intersection |    448 |  1634 |            0.0 |              
+ segment      |   1260 |  5590 |           96.1 |         23.89
+(3 rows)
+
+NOTICE:  view "s2_site_context" does not exist, skipping
+NOTICE:  table "site_context" does not exist, skipping
+NOTICE:  view "s2_crash_detail" does not exist, skipping
+ network_version |  site_type   | jurisdiction | count | with_aadt 
+-----------------+--------------+--------------+-------+-----------
+ v0_2019         | intersection | TxDOT        |     2 |         2
+ v0_2019         | segment      | TxDOT        |   185 |         0
+ v1_2022         | intersection | City         |  1461 |      1260
+ v1_2022         | intersection | City/TxDOT   |    92 |        92
+ v1_2022         | intersection | TAMU         |    67 |         0
+ v1_2022         | intersection | TxDOT        |    14 |        14
+ v1_2022         | segment      | City         |  4782 |         0
+ v1_2022         | segment      | TAMU         |   307 |         0
+ v1_2022         | segment      | TxDOT        |   501 |         0
+(9 rows)
+
+{"event": "s1_report", "fsi_match_pct": 98.39, "hin_share": 0.2389017960833115, "out": "../integration/artifacts/s1_data_report.json"}
+== data: exit 0 after 23.1s
+touch integration/.stamps/data
+rm -rf -- "/home/param-shelar/Desktop/AICorps4/ATSC/integration/artifacts/s2-citywide-2026-11-08"
+integration/stage.sh model 'export DATABASE_URL="postgresql://s2_reader:$(cat /home/param-shelar/Desktop/AICorps4/ATSC/integration/secrets/s2_password)@localhost:5432/tasc" && /home/param-shelar/Desktop/AICorps4/ATSC/.venv/bin/python -m S2_Risk_Model_Backtest.citywide --config S2_Risk_Model_Backtest/config/citywide_v1_2022.json \
+  --run-id s2-citywide-2026-11-08 --out-root integration/artifacts > integration/logs/s2_citywide_s2-citywide-2026-11-08.jsonl; \
+  status=$?; tail -n 1 integration/logs/s2_citywide_s2-citywide-2026-11-08.jsonl | cut -c1-300; exit $status'
+== model: 2026-11-08T08:53:54-06:00
+{"event": "run_complete", "t": 668.0, "path": "integration/artifacts/s2-citywide-2026-11-08", "seconds": 667.6, "ranking_hash": "044da876680fead6a269b8e524ad78af575848ffda386c75805928b778a874aa", "reload_ok": true, "refit_ok": true, "primary": {"A": {"capture": 0.7953216374269005, "ci_low": 0.730994
+== model: exit 0 after 668.5s
+touch integration/.stamps/model
+rm -rf -- "/home/param-shelar/Desktop/AICorps4/ATSC/integration/artifacts/s2-citywide-2026-11-08/memos"
+integration/stage.sh memos 'export DATABASE_URL="postgresql://s2_reader:$(cat /home/param-shelar/Desktop/AICorps4/ATSC/integration/secrets/s2_password)@localhost:5432/tasc" && cd S3_Countermeasure_Agent/Agent3 && /home/param-shelar/Desktop/AICorps4/ATSC/.venv/bin/python site_agent.py \
+  --run-dir /home/param-shelar/Desktop/AICorps4/ATSC/integration/artifacts/s2-citywide-2026-11-08 --top 25 --mode api --env-file /home/param-shelar/.config/atsc/memo.env'
+== memos: 2026-11-08T09:05:02-06:00
+{"event": "env_loaded", "keys": ["MEMO_API_URL", "MEMO_API_KEY", "MEMO_MODEL"]}
+{"event": "memo", "site_id": "17683", "status": "blocked", "seconds": 6.666, "tokens_in": 5954, "tokens_out": 954, "cost_usd": 0.01954, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17898", "status": "blocked", "seconds": 6.159, "tokens_in": 5948, "tokens_out": 914, "cost_usd": 0.019208, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16923", "status": "blocked", "seconds": 6.747, "tokens_in": 5987, "tokens_out": 997, "cost_usd": 0.01995, "failed": {"numeric_grounding_3_2_1_14": ["crash_profile: contains a number not taken from a tool result", "countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17120", "status": "blocked", "seconds": 5.823, "tokens_in": 6454, "tokens_out": 920, "cost_usd": 0.020268, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[0].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17151", "status": "blocked", "seconds": 5.593, "tokens_in": 5913, "tokens_out": 888, "cost_usd": 0.01893, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17161", "status": "blocked", "seconds": 6.261, "tokens_in": 5998, "tokens_out": 953, "cost_usd": 0.01962, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16685", "status": "blocked", "seconds": 6.574, "tokens_in": 5924, "tokens_out": 922, "cost_usd": 0.019224, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16550", "status": "blocked", "seconds": 6.492, "tokens_in": 5959, "tokens_out": 917, "cost_usd": 0.019254, "failed": {"numeric_grounding_3_2_1_14": ["crash_profile: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17188", "status": "draft", "seconds": 3.706, "tokens_in": 1908, "tokens_out": 502, "cost_usd": 0.007832}
+{"event": "memo", "site_id": "16557", "status": "blocked", "seconds": 5.799, "tokens_in": 5974, "tokens_out": 1010, "cost_usd": 0.020028, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17460", "status": "blocked", "seconds": 6.432, "tokens_in": 4434, "tokens_out": 1007, "cost_usd": 0.016924, "failed": {"numeric_grounding_3_2_1_14": ["crash_profile: contains a number not taken from a tool result", "why_flagged: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17143", "status": "blocked", "seconds": 6.032, "tokens_in": 6457, "tokens_out": 857, "cost_usd": 0.01977, "failed": {"numeric_grounding_3_2_1_14": ["crash_profile: contains a number not taken from a tool result", "why_flagged: contains a number not taken from a tool result", "countermeasures[0].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16620", "status": "blocked", "seconds": 6.246, "tokens_in": 4361, "tokens_out": 929, "cost_usd": 0.016154, "failed": {"numeric_grounding_3_2_1_14": ["why_flagged: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17127", "status": "blocked", "seconds": 6.031, "tokens_in": 6487, "tokens_out": 914, "cost_usd": 0.020286, "failed": {"numeric_grounding_3_2_1_14": ["next_steps: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17172", "status": "blocked", "seconds": 9.162, "tokens_in": 6058, "tokens_out": 1050, "cost_usd": 0.020516, "failed": {"numeric_grounding_3_2_1_14": ["crash_profile: contains a number not taken from a tool result", "why_flagged: contains number words ['million']", "countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16368", "status": "draft", "seconds": 3.005, "tokens_in": 1897, "tokens_out": 414, "cost_usd": 0.007106}
+{"event": "memo", "site_id": "16530", "status": "blocked", "seconds": 6.739, "tokens_in": 6462, "tokens_out": 907, "cost_usd": 0.02018, "failed": {"numeric_grounding_3_2_1_14": ["countermeasures[0].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "17296", "status": "draft", "seconds": 5.626, "tokens_in": 4299, "tokens_out": 885, "cost_usd": 0.015678}
+{"event": "memo", "site_id": "17427", "status": "draft", "seconds": 5.698, "tokens_in": 4323, "tokens_out": 938, "cost_usd": 0.01615}
+{"event": "memo", "site_id": "17573", "status": "blocked", "seconds": 5.263, "tokens_in": 4325, "tokens_out": 930, "cost_usd": 0.01609, "failed": {"numeric_grounding_3_2_1_14": ["why_flagged: contains number words ['million']"]}}
+{"event": "memo", "site_id": "17081", "status": "blocked", "seconds": 5.358, "tokens_in": 6499, "tokens_out": 813, "cost_usd": 0.019502, "failed": {"numeric_grounding_3_2_1_14": ["crash_profile: contains a number not taken from a tool result", "countermeasures[0].rationale: contains a number not taken from a tool result", "countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16493", "status": "blocked", "seconds": 7.722, "tokens_in": 5989, "tokens_out": 896, "cost_usd": 0.019146, "failed": {"numeric_grounding_3_2_1_14": ["why_flagged: contains number words ['million']", "countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memo", "site_id": "16381", "status": "draft", "seconds": 5.655, "tokens_in": 4345, "tokens_out": 935, "cost_usd": 0.01617}
+{"event": "memo", "site_id": "16334", "status": "draft", "seconds": 6.108, "tokens_in": 5913, "tokens_out": 908, "cost_usd": 0.01909}
+{"event": "memo", "site_id": "17243", "status": "blocked", "seconds": 6.172, "tokens_in": 6438, "tokens_out": 891, "cost_usd": 0.020004, "failed": {"numeric_grounding_3_2_1_14": ["why_flagged: contains number words ['million']", "countermeasures[1].rationale: contains a number not taken from a tool result"]}}
+{"event": "memos_done", "counts": {"draft": 6, "blocked": 19, "pending": 0}, "median_seconds": 6.108, "median_cost_usd": 0.019224, "total_cost_usd": 0.44662}
+== memos: exit 2 after 151.3s
+make: *** [Makefile:92: integration/.stamps/memos] Error 2
+
+real	14m3.434s
+user	42m13.359s
+sys	0m14.502s

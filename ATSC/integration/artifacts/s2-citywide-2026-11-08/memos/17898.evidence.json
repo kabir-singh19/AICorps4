@@ -1,0 +1,581 @@
+{
+  "site_id": "17898",
+  "run_id": "s2-citywide-2026-11-08",
+  "tool_order": [
+    "get_site_profile",
+    "get_crash_breakdown",
+    "match_countermeasures",
+    "compute_benefit"
+  ],
+  "tool_results": [
+    {
+      "tool": "get_site_profile",
+      "args": {
+        "site_id": "17898",
+        "run_id": "s2-citywide-2026-11-08"
+      },
+      "output": {
+        "site_id": "17898",
+        "run_id": "s2-citywide-2026-11-08",
+        "site_type": "intersection",
+        "road_name": "SOUTHWEST E PKWY & SOUTHWEST PKWY & Texas Ave",
+        "jurisdiction": "City/TxDOT",
+        "signalized": true,
+        "length_mi": 0.0473,
+        "rank": 4,
+        "rank_city_actionable": 2,
+        "flagged": true,
+        "in_hin": true,
+        "fsi_rate": 16.143857,
+        "annual_fsi": 0.764387,
+        "annual_kabc": 10.399889,
+        "eb_weight": 0.094639,
+        "aadt": 62980.0,
+        "aadt_imputed": false,
+        "speed_limit": null,
+        "num_lanes": null,
+        "legs": 4.0,
+        "median_type": null,
+        "top_factors": [
+          {
+            "rank": 1,
+            "text": "traffic exposure (62,980 vehicles/day)",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 2,
+            "text": "6 marked crossings within 30 m",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 3,
+            "text": "4-leg intersection",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 4,
+            "text": "20 crashes on sites within 250 m in the last 3 years",
+            "direction": "raises risk"
+          },
+          {
+            "rank": 5,
+            "text": "signalized",
+            "direction": "raises risk"
+          }
+        ],
+        "model": "S2 method C (ML-EB), forecast year 2026"
+      }
+    },
+    {
+      "tool": "get_crash_breakdown",
+      "args": {
+        "site_id": "17898",
+        "years": "2023-2025"
+      },
+      "output": {
+        "total": 55,
+        "k": 1,
+        "a": 1,
+        "b": 21,
+        "c": 10,
+        "o": 22,
+        "u": 0,
+        "angle": 3,
+        "rear_end": 17,
+        "run_off_road": 5,
+        "opposite_direction": 22,
+        "head_on": 0,
+        "left_turn_opposing": 22,
+        "sideswipe": 3,
+        "night": 18,
+        "wet": 5,
+        "years": "2023-2025",
+        "ka": 2,
+        "kabc": 33,
+        "pedestrian": null,
+        "bicycle": null,
+        "notes": [
+          "Pedestrian and bicycle counts are not available: the delivered CRIS exports have no pedestrian or bicycle field.",
+          "run_off_road counts all single-vehicle crashes (CRIS manner of collision 'one motor vehicle'); it is a proxy, not a roadway-departure flag.",
+          "head_on = opposite direction, both going straight; left_turn_opposing = opposite direction with a left-turning vehicle (not head-on).",
+          "night = dark lighted, dark not lighted or dark unknown lighting; wet = wet or standing water."
+        ]
+      }
+    },
+    {
+      "tool": "match_countermeasures",
+      "args": {
+        "site": {
+          "site_id": "17898",
+          "site_type": "signalized intersection",
+          "crash_patterns": [
+            "rear_end"
+          ],
+          "area_type": "urban",
+          "time_of_day": "unknown",
+          "severity_scope": "K;A",
+          "example": false
+        }
+      },
+      "output": {
+        "candidates": [],
+        "engineering_review": [
+          {
+            "cm_id": "CM013",
+            "treatment": "Add 3-inch yellow retroreflective sheeting to signal backplates",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: signalized intersection.",
+              "Area setting is compatible with the recorded study setting.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=All. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Urban signalized roadway intersections; treatment is retroreflective border on signal backplates.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.85,
+              "cmf_id": "1410",
+              "crash_types": "All",
+              "severity_scope": "All",
+              "star_rating": 4,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=1410",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Sayed et al., 2005; Safety Impact of Increased Traffic Signal Backboards Conspicuity",
+              "limitations": "Empirical Bayes before-after; 17 after-treatment sites. Source notes missing after-crash counts in rating. Do not substitute a CMF for a larger visibility-improvement package."
+            }
+          },
+          {
+            "cm_id": "CM015",
+            "treatment": "Provide left-turn lane on one major-road approach",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: signalized intersection.",
+              "Area setting is compatible with the recorded study setting.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=K;A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg urban signalized intersection; major-road ADT 4600-40300; minor-road ADT 100-13700.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.72,
+              "cmf_id": "267",
+              "crash_types": "All",
+              "severity_scope": "K;A;B;C",
+              "star_rating": 4,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=267",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Harwood et al., 2002; Safety Effectiveness of Intersection Left- and Right-Turn Lanes",
+              "limitations": "Adjusted SE is 0.06. This record supports one added left-turn lane, not right-turn lanes or a protected left-turn signal. KABC is not KA only."
+            }
+          },
+          {
+            "cm_id": "CM016",
+            "treatment": "Convert conventional signalized intersection to Type B median U-turn",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: signalized intersection.",
+              "Area setting is compatible with the recorded study setting.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg signalized intersection on divided roadway; major AADT 19267-72074; minor AADT 1204-58591. Match Type B layout in study Figure 2.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.7029,
+              "cmf_id": "10867",
+              "crash_types": "All",
+              "severity_scope": "A;B;C",
+              "star_rating": 5,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10867",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Al-Omari et al., 2020; Safety Evaluation of Median U-Turn Crossover-Based Intersections",
+              "limitations": "ABC scope excludes fatalities in the Clearinghouse record. Do not apply to KA predictions or all reduced-left-turn-conflict designs."
+            }
+          },
+          {
+            "cm_id": "CM017",
+            "treatment": "Convert signalized intersection to modern roundabout",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: signalized intersection.",
+              "Area setting is compatible with the recorded study setting.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=A;B;C. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Existing signalized roadway intersection; record lists 1-2 lanes. Traffic volume limits and geometry not specified.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.22,
+              "cmf_id": "226",
+              "crash_types": "All",
+              "severity_scope": "A;B;C",
+              "star_rating": 3,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=226",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Rodegerdts et al., 2007; NCHRP Report 572: Applying Roundabouts in the United States",
+              "limitations": "Adjusted SE is 0.07. Record labels severity ABC, not KA or KABC; preserve this distinction even when general summaries describe fatal/injury reductions. Not a stop-control conversion CMF."
+            }
+          },
+          {
+            "cm_id": "CM019",
+            "treatment": "Modify change plus clearance intervals to studied ITE 1985 practice",
+            "status": "engineering_review_only",
+            "category": "broader_evidence",
+            "category_reason": "Aggregate crash evidence requires engineering review.",
+            "matched_crash_patterns": [],
+            "match_kind": "aggregate_crash_scope",
+            "reasons": [
+              "Location type matches: signalized intersection.",
+              "Study covers all crash types combined."
+            ],
+            "review_needed": [
+              "Area setting needs review: study=Not specified.",
+              "Aggregate CMF does not establish a reduction for the requested crash subtype alone.",
+              "Severity scope is unknown or differs: requested=K;A; study=All. Do not transfer this CMF to fatal/serious-injury crashes.",
+              "Check treatment prerequisites, geometry, traffic volumes, and existing equipment: Four-leg signalized roadway intersections. Study evaluates change AND clearance interval retiming.",
+              "Complete source verification; current status: evidence_checked_indexed"
+            ],
+            "severity_scope_matches": false,
+            "eligible_for_benefit_calculation": false,
+            "evidence": {
+              "cmf": 0.92,
+              "cmf_id": "380",
+              "crash_types": "All",
+              "severity_scope": "All",
+              "star_rating": 2,
+              "rating_status": "Rated",
+              "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=380",
+              "verification_status": "evidence_checked_indexed",
+              "record_check_status": "indexed_record_crosschecked",
+              "original_study_review_status": "not_reviewed_this_pass",
+              "review_date": "2026-10-21",
+              "study_reference": "Retting and Chapline, 2002; Changes in Crash Risk Following Re-Timing of Traffic Signal Change Intervals",
+              "limitations": "Adjusted SE is 0.10. HSM flags use with caution; interval includes 1.0. Historic treatment definition is not a current signal-timing design prescription or isolated yellow-only effect."
+            }
+          }
+        ],
+        "excluded": [
+          {
+            "cm_id": "CM007",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM008",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM009",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM010",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM011",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM012",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM014",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM018",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM020",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM021",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM022",
+            "reason": "Process entry without a selected treatment CMF."
+          },
+          {
+            "cm_id": "CM023",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM024",
+            "reason": "Process entry without a selected treatment CMF."
+          },
+          {
+            "cm_id": "CM025",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM027",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM028",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM029",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM030",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM031",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM032",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM033",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM034",
+            "reason": "No overlap with CMF-supported crash types: Angle."
+          },
+          {
+            "cm_id": "CM035",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM036",
+            "reason": "Location type does not match the library entry."
+          },
+          {
+            "cm_id": "CM037",
+            "reason": "Location type does not match the library entry."
+          }
+        ],
+        "notice": "Preliminary screening only. No crash reductions or benefit rankings are calculated. Direct means crash-type support only, not verified site suitability. Broader/partial evidence is listed separately for engineering review.",
+        "rule": "crash patterns = manner-of-collision groups with at least 2 crashes and 25% of the site's crashes in the window; night when at least a third of crashes were in the dark; otherwise 'all'"
+      }
+    },
+    {
+      "tool": "compute_benefit",
+      "args": {
+        "site_id": "17898",
+        "cm_ids": [
+          "CM013",
+          "CM015",
+          "CM016",
+          "CM017",
+          "CM019"
+        ]
+      },
+      "output": [
+        {
+          "cm_id": "CM013",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (All) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        },
+        {
+          "cm_id": "CM015",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (K;A;B;C) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        },
+        {
+          "cm_id": "CM016",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (A;B;C) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        },
+        {
+          "cm_id": "CM017",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (A;B;C) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        },
+        {
+          "cm_id": "CM019",
+          "mode": "qualitative",
+          "ka_reduced_per_year": null,
+          "bc_ratio": null,
+          "reasons": [
+            "Run/CMF_EVIDENCE_AUDIT.md approves no library entry for numerical benefit calculation",
+            "the library has no planning-level unit cost or service life for this entry",
+            "the CMF severity scope (All) is not K and A only"
+          ],
+          "assumptions_if_computed": [
+            "benefit = KA/yr x (1 - CMF) x crash cost x service life, discounted",
+            "requires an audit-approved CMF, a unit cost and a service life"
+          ]
+        }
+      ]
+    }
+  ],
+  "numbers": {
+    "ka_3y": 2,
+    "kabc_3y": 33,
+    "total_3y": 55,
+    "k_3y": 1,
+    "a_3y": 1,
+    "b_3y": 21,
+    "c_3y": 10,
+    "o_3y": 22,
+    "angle_3y": 3,
+    "rear_end_3y": 17,
+    "run_off_road_3y": 5,
+    "head_on_3y": 0,
+    "left_turn_opposing_3y": 22,
+    "sideswipe_3y": 3,
+    "night_3y": 18,
+    "wet_3y": 5,
+    "rank": 4,
+    "fsi_rate": 16.143857,
+    "annual_fsi": 0.764387,
+    "annual_kabc": 10.399889,
+    "eb_weight": 0.094639,
+    "length_mi": 0.0473,
+    "window_start": "2023",
+    "window_end": "2025",
+    "rank_city_actionable": 2,
+    "aadt": 62980.0,
+    "legs": 4.0
+  },
+  "citations": {
+    "1410": {
+      "cm_id": "CM013",
+      "cmf": 0.85,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=1410",
+      "treatment": "Add 3-inch yellow retroreflective sheeting to signal backplates",
+      "study_reference": "Sayed et al., 2005; Safety Impact of Increased Traffic Signal Backboards Conspicuity"
+    },
+    "267": {
+      "cm_id": "CM015",
+      "cmf": 0.72,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=267",
+      "treatment": "Provide left-turn lane on one major-road approach",
+      "study_reference": "Harwood et al., 2002; Safety Effectiveness of Intersection Left- and Right-Turn Lanes"
+    },
+    "10867": {
+      "cm_id": "CM016",
+      "cmf": 0.7029,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=10867",
+      "treatment": "Convert conventional signalized intersection to Type B median U-turn",
+      "study_reference": "Al-Omari et al., 2020; Safety Evaluation of Median U-Turn Crossover-Based Intersections"
+    },
+    "226": {
+      "cm_id": "CM017",
+      "cmf": 0.22,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=226",
+      "treatment": "Convert signalized intersection to modern roundabout",
+      "study_reference": "Rodegerdts et al., 2007; NCHRP Report 572: Applying Roundabouts in the United States"
+    },
+    "380": {
+      "cm_id": "CM019",
+      "cmf": 0.92,
+      "source_url": "https://cmfclearinghouse.fhwa.dot.gov/detail.php?facid=380",
+      "treatment": "Modify change plus clearance intervals to studied ITE 1985 practice",
+      "study_reference": "Retting and Chapline, 2002; Changes in Crash Risk Following Re-Timing of Traffic Signal Change Intervals"
+    }
+  },
+  "allowed_cm_ids": [
+    "CM013",
+    "CM015",
+    "CM016",
+    "CM017",
+    "CM019"
+  ],
+  "candidate_cm_ids": [],
+  "tool_seconds": 0.002
+}

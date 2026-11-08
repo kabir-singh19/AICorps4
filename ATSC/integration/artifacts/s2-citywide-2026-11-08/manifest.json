@@ -8,9 +8,9 @@
     "test_window": "2023-2025",
     "txdot_inventory": "2019-12-31 (available 2021-08-06)"
   },
-  "commit": "ef504ffc85203b3d78a19f023c670a0fb870697a",
+  "commit": "4154e60dbed5e0aeb2998896df46ce813250bfd1",
   "config_hash": "7825839edc1b00b399d06a90059fa6d48be309bc74ad3194bd4a056630bd3055",
-  "created": "2026-11-08T14:48:06.865465+00:00",
+  "created": "2026-11-08T15:05:01.732757+00:00",
   "data_versions": {
     "boundary": "Census places 2022 vintage",
     "cris": "CRIS Query exports, College Station, 2016-2025, downloaded 2026-10-07",
@@ -20,17 +20,17 @@
     "osm": "OpenStreetMap as of 2022-12-31 (ohsome)"
   },
   "dirty_worktree": false,
-  "duration_seconds": 675.3,
+  "duration_seconds": 667.6,
   "files": {
     "backtest.json": "2fc4ccf24bbc778c4b919af13d1f270cc3fc0d718ca3775310049964ff5a6ea1",
     "bit.json": "cdcb3d3d6d9b170f69d586cadb14a990e8d904a887a6f3bba2cfddf8e697629c",
-    "bit_campaign.json": "df637ebf9e0e193af775e2caee500d2085d0a0db6cb0ea94578a387c02748007",
+    "bit_campaign.json": "e400f20284cc0267ab43ed1275a7998704363cbf65093f59a9ae925041bbb0a6",
     "calibration.json": "8af1c7049aaf1a001f64062a09735d706cbcea91efd92d96ba25d76aac876c5a",
     "calibration_ka.png": "b280c199a70db43527a9575e74dbe6b1bab2ce3fa3b22e4a1d3bd5c3705c2b37",
     "capture_vs_share.png": "1998f94ed45d0de41309cb3089c096b97324efa4e64c939664db2f0a6d6f14c3",
     "config.json": "d9d22f992f59bb85dad22388da343688deed525c44b2be703358163c4c4a6c93",
     "explanations.json": "f9b04791f48374d33aa63d010401141dcd2ce2fdd54db6359b82a1f1b08c4794",
-    "model_card.md": "51a91b9a6e82d7e7d83b7bd104d485bc6eabfffd6a9fbb456480fa52c903aac2",
+    "model_card.md": "170777ff7427bcbb8a0e82efb66abdfdc199dd0fb0109a464b841d04b5dd5f6d",
     "models/lightgbm_lg_intersection_seed0.txt": "4e6822aa24fdbc6acf69b16a3e84a8cd5aa8e43de3cd7033618b7603f7a18516",
     "models/lightgbm_lg_intersection_seed1.txt": "b2b3d021150cc725b85a15a2132ded0d13b8801732187ec2a451544bc19fbd34",
     "models/lightgbm_lg_intersection_seed2.txt": "f4df1a249430d02b5639c290daa3dd079b40940347c6d7406089dad2aae83b3b",
@@ -87,27 +87,27 @@
   "schema_version": 1,
   "stages": [
     {
-      "seconds": 6.69,
+      "seconds": 23.38,
       "stage": "snapshot_and_leakage_gate"
     },
     {
-      "seconds": 0.55,
+      "seconds": 0.57,
       "stage": "context"
     },
     {
-      "seconds": 10.24,
+      "seconds": 9.82,
       "stage": "backtest_fit"
     },
     {
-      "seconds": 0.8,
+      "seconds": 0.79,
       "stage": "backtest_score"
     },
     {
-      "seconds": 20.04,
+      "seconds": 21.25,
       "stage": "forecast_fit"
     },
     {
-      "seconds": 9.75,
+      "seconds": 9.85,
       "stage": "forecast_score_explain_bit"
     },
     {
@@ -115,11 +115,11 @@
       "stage": "export_models_and_reload"
     },
     {
-      "seconds": 19.54,
+      "seconds": 19.76,
       "stage": "independent_refit_check"
     },
     {
-      "seconds": 605.68,
+      "seconds": 580.18,
       "stage": "bit_campaign"
     }
   ],

@@ -1,0 +1,17 @@
+{
+  "site_id": "17120",
+  "crash_profile": "During {{window_start}} to {{window_end}}, {{ka_3y}} fatal or serious injury crash and {{kabc_3y}} KABCO injury crashes occurred, out of {{total_3y}} total. Rear-end crashes were most frequent ({{rear_end_3y}}), followed by angle crashes ({{angle_3y}}). Other crash types included left-turn opposing, head-on, sideswipe, and run-off-road. Night and wet conditions contributed to some crashes. Pedestrian and bicycle counts are not available.",
+  "why_flagged": "This intersection is flagged due to a model-estimated fatal or serious injury crash rate of {{fsi_rate}} per million entering vehicles and an annual fatal or serious injury frequency of {{annual_fsi}}. Additional risk factors include high traffic exposure ({{aadt}} vehicles/day), four-leg layout, proximity to bus stops, signalization, and recent crash history. It ranks {{rank_city_actionable}} among actionable city sites and is included in the HIN.",
+  "countermeasures": [
+    {
+      "cm_id": "CM034",
+      "rationale": "Replacing 8-inch red signal heads with 12-inch heads is supported for angle crashes, which are present at this site. The cited CMF {{cmf:2333}} is a partial crash-type match and requires engineering review for area setting and severity scope."
+    },
+    {
+      "cm_id": "CM015",
+      "rationale": "Providing a left-turn lane on one major-road approach addresses left-turn opposing and angle crash types. The cited CMF {{cmf:267}} is a broader evidence entry, not a direct crash-type match, and needs engineering review for prerequisites and severity scope."
+    }
+  ],
+  "benefit_cost": "A benefit could not be computed for either countermeasure. The library lacks audit-approved CMFs for fatal or serious injury crashes, planning-level unit costs, and service life data for these entries.",
+  "next_steps": "Review intersection geometry, traffic volumes, and existing signal equipment to confirm prerequisites for both treatments. Conduct engineering review for area setting and severity scope, especially for angle and left-turn crash patterns. Consider coordination with TxDOT due to jurisdiction."
+}

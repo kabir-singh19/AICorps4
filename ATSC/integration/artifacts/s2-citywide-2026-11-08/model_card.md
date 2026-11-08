@@ -43,7 +43,7 @@ Primary (KA, 11%): C flagged 0.1100 of network length, B 0.1100; test K+A crashe
 
 ## Run facts
 
-- Training and scoring time: 675 s (stages in manifest.json)
+- Training and scoring time: 668 s (stages in manifest.json)
 - Reload of saved models reproduced the ranking: True
 - Independent refit reproduced the ranking hash: True
 - Ranking hash: `044da876680fead6a269b8e524ad78af575848ffda386c75805928b778a874aa`
