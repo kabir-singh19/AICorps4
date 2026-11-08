@@ -1,4 +1,4 @@
-== data: 2026-11-08T08:53:30-06:00
+== data: 2026-11-08T11:13:25-06:00
  Network s1_road_network_database_default  Creating
  Network s1_road_network_database_default  Created
  Volume s1_road_network_database_tasc_pgdata  Creating
@@ -31,11 +31,33 @@
   31535
 (1 row)
 
+ set_config 
+------------
+ v1_2022
+(1 row)
+
+                       action                       | pieces | miles 
+----------------------------------------------------+--------+-------
+ inside the influence zone of this intersection     |    548 | 19.27
+ isolated short piece, folded into the nearest site |     10 |  0.44
+ joined to the next segment of the same road        |     10 |  0.24
+(3 rows)
+
+ segments | under_0_05_mi | over_0_15_mi 
+----------+---------------+--------------
+     5022 |             0 |            0
+(1 row)
+
+  feature_set  |     osm_source      | lamp_points | lit_tagged_roads | sites_with_lamp | dropped_constant 
+---------------+---------------------+-------------+------------------+-----------------+------------------
+ backtest_2022 | osm_city_2022-12-31 |          68 |                0 |               3 | {osm_lit_share}
+(1 row)
+
 NOTICE:  relation "s2_source_availability" already exists, skipping
  network_version | segments | intersections | nonpositive_risk_length | total_network_mi 
 -----------------+----------+---------------+-------------------------+------------------
  v0_2019         |      185 |             2 |                       0 |            18.07
- v1_2022         |     5590 |          1634 |                       0 |           402.13
+ v1_2022         |     5022 |          1634 |                       0 |           382.42
 (2 rows)
 
          source         |    role    | as_of_date | available_as_of 
@@ -56,14 +78,14 @@ Loaded HIN 'csap_fig3.9_digitized_2026-11-04': 522 lines, 163.8 mi. run_id 184
 NOTICE:  view "s2_hin_site" does not exist, skipping
  sites | duplicates | in_hin | null_in_hin 
 -------+------------+--------+-------------
-  7224 |          0 |   1708 |           0
+  6656 |          0 |   1608 |           0
 (1 row)
 
   site_type   | in_hin | sites | hin_network_mi | hin_share_pct 
 --------------+--------+-------+----------------+---------------
-              |   1708 |  7224 |           96.1 |         23.89
+              |   1608 |  6656 |           93.0 |         24.31
  intersection |    448 |  1634 |            0.0 |              
- segment      |   1260 |  5590 |           96.1 |         23.89
+ segment      |   1160 |  5022 |           93.0 |         24.31
 (3 rows)
 
 NOTICE:  view "s2_site_context" does not exist, skipping
@@ -73,14 +95,14 @@ NOTICE:  view "s2_crash_detail" does not exist, skipping
 -----------------+--------------+--------------+-------+-----------
  v0_2019         | intersection | TxDOT        |     2 |         2
  v0_2019         | segment      | TxDOT        |   185 |         0
- v1_2022         | intersection | City         |  1461 |      1260
- v1_2022         | intersection | City/TxDOT   |    92 |        92
+ v1_2022         | intersection | City         |  1461 |      1248
+ v1_2022         | intersection | City/TxDOT   |    85 |        85
  v1_2022         | intersection | TAMU         |    67 |         0
- v1_2022         | intersection | TxDOT        |    14 |        14
- v1_2022         | segment      | City         |  4782 |         0
- v1_2022         | segment      | TAMU         |   307 |         0
- v1_2022         | segment      | TxDOT        |   501 |         0
+ v1_2022         | intersection | TxDOT        |    21 |        21
+ v1_2022         | segment      | City         |  4256 |         0
+ v1_2022         | segment      | TAMU         |   270 |         0
+ v1_2022         | segment      | TxDOT        |   496 |         0
 (9 rows)
 
-{"event": "s1_report", "fsi_match_pct": 98.39, "hin_share": 0.2389017960833115, "out": "../integration/artifacts/s1_data_report.json"}
-== data: exit 0 after 23.1s
+{"event": "s1_report", "fsi_match_pct": 98.39, "hin_share": 0.24307096611192675, "out": "../integration/artifacts/s1_data_report.json"}
+== data: exit 0 after 28.6s

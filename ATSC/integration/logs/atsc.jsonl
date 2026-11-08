@@ -1,0 +1,15 @@
+{"ts": "2026-11-08T17:17:04+00:00", "event": "command", "cmd": "runs", "args": {}}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "done", "cmd": "runs"}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "command", "cmd": "backtest", "args": {"run_id": "s2-citywide-2026-11-08"}}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "backtest", "run_id": "s2-citywide-2026-11-08", "test_years": [2023, 2024, 2025], "n_test_fsi": 171, "capture": {"A": 0.795, "B": 0.713, "C": 0.702}, "c_minus_a": {"ci_high": -0.04663742690058493, "ci_low": -0.14619883040935677, "difference": -0.0935672514619883}}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "done", "cmd": "backtest"}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "command", "cmd": "ingest", "args": {"source": "countermeasures", "path": "S3_Countermeasure_Agent/Agent3/countermeasure_library.csv"}}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "ingest", "source": "countermeasures", "path": "S3_Countermeasure_Agent/Agent3/countermeasure_library.csv", "entries": 30, "cmf_ids": 28}
+{"ts": "2026-11-08T17:17:04+00:00", "event": "done", "cmd": "ingest"}
+{"ts": "2026-11-08T17:42:18+00:00", "event": "command", "cmd": "bit", "args": {"run_id": "s2-citywide-v1.1-2026-11-08", "show": false}}
+{"ts": "2026-11-08T17:42:18+00:00", "event": "bit", "test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:18+00:00", "test": "data validation (S1 ingest checks)", "result": "pass", "details": "OK"}
+{"ts": "2026-11-08T17:42:20+00:00", "event": "bit", "test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:20+00:00", "test": "model outputs (S2 checks: rates, EB weights, ranking, leakage)", "result": "pass", "details": "50 passed in 0.72s"}
+{"ts": "2026-11-08T17:42:20+00:00", "event": "bit", "test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:20+00:00", "test": "memo grounding (S3 seeded memos)", "result": "pass", "details": "11 passed, 55 subtests passed in 0.11s"}
+{"ts": "2026-11-08T17:42:22+00:00", "event": "bit", "test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:22+00:00", "test": "API health (S4)", "result": "pass", "details": "23 passed, 1 skipped, 1 warning in 1.68s"}
+{"ts": "2026-11-08T17:42:22+00:00", "event": "bit", "test_run_id": "bit-20261108-114218-185b43", "timestamp": "2026-11-08T17:42:22+00:00", "test": "seeded-fault campaign (s2-citywide-v1.1-2026-11-08)", "result": "pass", "details": "20/20 faults detected, 0 false alarms in 20 clean runs"}
+{"ts": "2026-11-08T17:42:22+00:00", "event": "done", "cmd": "bit"}

@@ -1,7 +1,7 @@
 # ATSC end-to-end build. Stages are cached with stamp files in integration/.stamps/; a stage reruns
 # when its inputs change. Logs: integration/logs/make_<stage>.log and make_timings.jsonl.
 #
-#   make data     restore the S1 database (PostGIS in Docker), load the HIN, context views, S1 report
+#   make data     restore the S1 database (PostGIS in Docker), fold short links, lighting, HIN, context views, S1 report
 #   make model    S2 citywide run -> integration/artifacts/$(RUN_ID)/ (backtest, forecast, BIT)
 #   make memos    S3 memos for the top $(TOP) City-actionable sites -> $(RUN_ID)/memos/
 #   make web      build the frontend and bundle the run (without models/) into the S4 backend
@@ -18,9 +18,11 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := demo
 
 PY        ?= $(CURDIR)/.venv/bin/python
+# Training runs in the batch worker container under the ICD Table 2 caps (2 vCPU, 3.5 GB).
+WORKER    ?= $(CURDIR)/deploy/worker.sh python
 COMPOSE   ?= sudo docker compose
 NODE_BIN  ?= $(HOME)/.local/atsc-tools/node-v22.12.0-linux-x64/bin
-RUN_ID    ?= s2-citywide-2026-11-08
+RUN_ID    ?= s2-citywide-v1.1-2026-11-08
 CONFIG    ?= S2_Risk_Model_Backtest/config/citywide_v1_2022.json
 DUMP      ?= dumps/tasc_v1_2022_2026-11-04.sql.gz
 HIN_FILE  ?= inputs/hin_mpo_digitized.geojson
@@ -44,7 +46,7 @@ SECRET := integration/secrets/s2_password
 DB_URL  = postgresql://s2_reader:$$(cat $(CURDIR)/$(SECRET))@localhost:5432/tasc
 NODE    = PATH=$(NODE_BIN):$$PATH
 
-S1_SQL  := $(S1)/sql/05_s2_interface.sql $(S1)/sql/08_hin.sql $(S1)/sql/09_s2_context.sql
+S1_SQL  := $(S1)/sql/05_s2_interface.sql $(S1)/sql/08_hin.sql $(S1)/sql/09_s2_context.sql $(S1)/sql/10_short_links.sql $(S1)/sql/11_lighting.sql
 S2_SRC  := $(wildcard S2_Risk_Model_Backtest/*.py) $(CONFIG)
 S3_SRC  := $(wildcard S3_Countermeasure_Agent/Agent3/*.py) S3_Countermeasure_Agent/Agent3/countermeasure_library.csv
 WEB_SRC := $(shell find $(S4)/frontend/src -type f) $(S4)/frontend/package.json $(S4)/frontend/index.html
@@ -72,6 +74,9 @@ $(STAMPS)/data: $(S1)/$(DUMP) $(S1)/$(HIN_FILE) $(S1_SQL) $(S1)/ingest.py $(S1)/
 	  && $(COMPOSE) up -d --wait \
 	  && $(COMPOSE) cp $(DUMP) db:/tmp/tasc.sql.gz \
 	  && $(COMPOSE) exec -T db sh -c "gunzip -c /tmp/tasc.sql.gz | psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc" \
+	  && $(COMPOSE) exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v network_version=v1_2022 < sql/10_short_links.sql \
+	  && $(COMPOSE) exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v network_version=v1_2022 -v feature_set=backtest_2022 \
+	       -v osm_source=osm_city_2022-12-31 < sql/11_lighting.sql \
 	  && $(COMPOSE) exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v s2_password="$$(cat $(CURDIR)/$(SECRET))" < sql/05_s2_interface.sql \
 	  && $(PY) ingest.py hin $(HIN_FILE) --version $(HIN_VER) \
 	  && $(COMPOSE) exec -T db psql -q -v ON_ERROR_STOP=1 -U tasc -d tasc -v network_version=v1_2022 -v hin_version=$(HIN_VER) \
@@ -80,9 +85,9 @@ $(STAMPS)/data: $(S1)/$(DUMP) $(S1)/$(HIN_FILE) $(S1_SQL) $(S1)/ingest.py $(S1)/
 	  && $(PY) s1_report.py --hin-version $(HIN_VER) --out ../integration/artifacts/s1_data_report.json'
 	touch $@
 
-$(STAMPS)/model: $(STAMPS)/data $(S2_SRC)
+$(STAMPS)/model: $(STAMPS)/data $(S2_SRC) deploy/worker.Dockerfile deploy/worker.sh
 	rm -rf -- "$(CURDIR)/$(ART)"
-	$(STAGE) model 'export DATABASE_URL="$(DB_URL)" && $(PY) -m S2_Risk_Model_Backtest.citywide --config $(CONFIG) \
+	$(STAGE) model 'export DATABASE_URL="$(DB_URL)" && $(WORKER) -m S2_Risk_Model_Backtest.citywide --config $(CONFIG) \
 	  --run-id $(RUN_ID) --out-root integration/artifacts > integration/logs/s2_citywide_$(RUN_ID).jsonl; \
 	  status=$$?; tail -n 1 integration/logs/s2_citywide_$(RUN_ID).jsonl | cut -c1-300; exit $$status'
 	touch $@

@@ -13,4 +13,6 @@ end=$(date +%s.%N)
 secs=$(python3 -c "print(round($end - $start, 1))")
 printf '{"stage": "%s", "started": "%s", "seconds": %s, "exit": %s}\n' "$stage" "$(date -Is -d "@${start%.*}")" "$secs" "$status" >> "$logs/make_timings.jsonl"
 echo "== $stage: exit $status after ${secs}s" | tee -a "$logs/make_$stage.log"
+# Retention (EVP 3.2.3.2.2): logs are kept 90 days, then removed (same rule as `atsc logs prune`).
+find "$logs" -type f -mtime +90 -delete
 exit "$status"

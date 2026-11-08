@@ -32,5 +32,11 @@ key in `~/.config/atsc/memo.env` (outside the repo; without it memos are marked 
 Logs and per-stage timings go to `integration/logs/` (`make_<stage>.log`, `make_timings.jsonl`).
 How the subsystems hand data to each other: `INTERFACES.md`. Deployment: `S4_Web_App/DEPLOY.md`.
 
+Operator commands (ICD Table 13) are in `./atsc` (run `./atsc -h`): `ingest`, `network build`,
+`match`, `features --as-of`, `train`, `backtest`, `memos`, `bit` (`--show` prints the BIT log),
+`publish`, `rollback`, `runs`, `logs prune`. Each command appends JSON events to
+`integration/logs/atsc.jsonl` and exits non-zero on failure. Logs are kept 90 days.
+Change requests: `docs/change_requests/`. Forms for the ECEN 404 human checks: `docs/handoff/`.
+
 Current run: `integration/artifacts/s2-citywide-2026-11-08/` (model card, backtest, charts,
 memos). `make demo` from a clean database on 8 Nov 2026 reproduced its ranking hash exactly.

@@ -1,0 +1,257 @@
+#!/usr/bin/env python3
+"""ATSC operator CLI (ICD Table 13, IF-12).
+
+Every command appends JSON events to integration/logs/atsc.jsonl, prints them, and exits
+non-zero on failure. Run from anywhere; paths resolve from this file.
+
+  atsc ingest --source <name> --path <file> [args]   validate and load a source (IF-01 to IF-06)
+  atsc network build                                 build segments and intersections, fold short links
+  atsc match                                         map-match crashes; report the F&SI match rate
+  atsc features --as-of <date>                       features known as of the date (TxDOT, OSM, lighting)
+  atsc train --run-id <id>                           S2 run in the capped worker (models, EB, SHAP, backtest)
+  atsc backtest --run-id <id>                        report methods A, B, C on the test window for a run
+  atsc memos --run-id <id> [--flagged] [--top N]     S3 memo batch
+  atsc bit [--run-id <id>]                           built-in test suite; results go to the BIT log
+  atsc bit --show                                    print the BIT log
+  atsc publish --run-id <id> / rollback --run-id <id> set or revert the run the web app shows
+  atsc runs                                          list stored runs and the published one
+  atsc logs prune [--days 90]                        delete log files older than the retention period
+"""
+import argparse
+import datetime as dt
+import json
+import os
+import shlex
+import subprocess
+import sys
+import time
+import uuid
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+S1 = ROOT / "S1_Road_Network_Database"
+S3 = ROOT / "S3_Countermeasure_Agent" / "Agent3"
+S4 = ROOT / "S4_Web_App"
+LOGS = ROOT / "integration" / "logs"
+ARTIFACTS = ROOT / "integration" / "artifacts"
+LOG = LOGS / "atsc.jsonl"
+BIT_LOG = LOGS / "bit_log.jsonl"
+PY = str(ROOT / ".venv" / "bin" / "python")
+COMPOSE = ["sudo", "docker", "compose"]
+NETWORK = "v1_2022"
+RETENTION_DAYS = 90
+INGEST_SOURCES = ["crashes", "crash-details", "roads", "road-names", "road-attrs", "osm-roads", "osm",
+                  "corridors", "boundary", "hin", "street-keys", "countermeasures"]
+
+
+def log(event, **fields):
+    rec = {"ts": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"), "event": event, **fields}
+    LOGS.mkdir(parents=True, exist_ok=True)
+    with LOG.open("a") as f:
+        f.write(json.dumps(rec, default=str) + "\n")
+    print(json.dumps(rec, default=str), flush=True)
+    return rec
+
+
+def run(cmd, cwd=ROOT, stdin=None, env=None, step=None):
+    t0 = time.monotonic()
+    shown = cmd if isinstance(cmd, str) else " ".join(shlex.quote(c) for c in cmd)
+    with (open(stdin) if stdin else open(os.devnull)) as fin:
+        p = subprocess.run(cmd, cwd=cwd, stdin=fin, env={**os.environ, **(env or {})}, shell=isinstance(cmd, str))
+    log("step", step=step or shown[:120], exit=p.returncode, seconds=round(time.monotonic() - t0, 1))
+    if p.returncode:
+        raise SystemExit(p.returncode)
+
+
+def psql(sql_file, **variables):
+    args = COMPOSE + ["exec", "-T", "db", "psql", "-q", "-v", "ON_ERROR_STOP=1", "-U", "tasc", "-d", "tasc"]
+    for k, v in variables.items():
+        args += ["-v", f"{k}={v}"]
+    run(args, cwd=S1, stdin=S1 / "sql" / sql_file, step=f"psql {sql_file}")
+
+
+def make(target, **variables):
+    run(["make", target] + [f"{k}={v}" for k, v in variables.items()], step=f"make {target}")
+
+
+def published():
+    f = ARTIFACTS / "LATEST"
+    return f.read_text().strip() if f.exists() else None
+
+
+def need_run(run_id):
+    if not (ARTIFACTS / run_id / "manifest.json").exists():
+        log("error", message=f"no stored run {run_id} in integration/artifacts")
+        raise SystemExit(2)
+
+
+# ---- commands ----
+def cmd_ingest(a, extra):
+    if a.source == "countermeasures":
+        sys.path.insert(0, str(S3))
+        import countermeasure_matcher as cm
+        rows = cm.load_library(Path(a.path).resolve())
+        log("ingest", source=a.source, path=a.path, entries=len(rows), cmf_ids=len({r.get("cmf_id") for r in rows if r.get("cmf_id")}))
+        return
+    run([PY, "ingest.py", a.source, a.path] + extra, cwd=S1, step=f"ingest {a.source}")
+
+
+def cmd_network(a, extra):
+    psql("02_build_network.sql", network_version=a.network, as_of="2022-12-31", routes="ALL", city_code="ALL",
+         road_source="roadway_inventory_2019", osm_source="osm_roads_2022-12-31", boundary="College Station",
+         stub_m=15, merge_m=15)
+    psql("10_short_links.sql", network_version=a.network)
+
+
+def cmd_match(a, extra):
+    psql("07_map_match_city.sql", network_version=a.network, tol_m=45.72, boundary="College Station")
+    out = subprocess.run(COMPOSE + ["exec", "-T", "db", "psql", "-At", "-U", "tasc", "-d", "tasc", "-c",
+                                    f"SELECT fsi_match_pct FROM tasc.match_rate WHERE network_version = '{a.network}'"],
+                         cwd=S1, capture_output=True, text=True)
+    pct = float(out.stdout.strip() or 0)
+    log("match", network=a.network, fsi_match_pct=pct, threshold_pct=95.0, result="PASS" if pct >= 95 else "FAIL")
+    if pct < 95:
+        raise SystemExit(1)
+
+
+def cmd_features(a, extra):
+    as_of = dt.date.fromisoformat(a.as_of)
+    backtest = as_of <= dt.date(2022, 12, 31)
+    fs, osm = ("backtest_2022", "osm_city_2022-12-31") if backtest else ("current", "osm_city_latest")
+    psql("04_features.sql", network_version=a.network, feature_set=fs)
+    psql("06_osm_features.sql", network_version=a.network, feature_set=fs, osm_source=osm)
+    psql("11_lighting.sql", network_version=a.network, feature_set=fs, osm_source=osm)
+    log("features", as_of=a.as_of, feature_set=fs, osm_source=osm)
+
+
+def cmd_train(a, extra):
+    make("model", RUN_ID=a.run_id)
+    need_run(a.run_id)
+    m = json.loads((ARTIFACTS / a.run_id / "manifest.json").read_text())
+    log("train", run_id=a.run_id, ranking_sha256=m.get("ranking_sha256") or m.get("ranking_hash"))
+
+
+def cmd_backtest(a, extra):
+    need_run(a.run_id)
+    b = json.loads((ARTIFACTS / a.run_id / "backtest.json").read_text())
+    p = b["primary"]
+    log("backtest", run_id=a.run_id, test_years=b.get("test_years"), n_test_fsi=p["methods"]["C"]["n_test_fsi"],
+        capture={k: round(v["capture"], 3) for k, v in p["methods"].items() if k in ("A", "B", "C")},
+        c_minus_a=p["differences"]["C-A"])
+
+
+def cmd_memos(a, extra):
+    variables = {"RUN_ID": a.run_id}
+    if a.top:
+        variables["TOP"] = a.top
+    make("memos", **variables)
+    s = json.loads((ARTIFACTS / a.run_id / "memos" / "summary.json").read_text())
+    log("memos", run_id=a.run_id, counts=s["counts"], median_seconds=s["median_seconds"], total_cost_usd=s["total_cost_usd"])
+
+
+def bit_record(test_run_id, test, ok, details):
+    rec = {"test_run_id": test_run_id, "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+           "test": test, "result": "pass" if ok else "fail", "details": details}
+    with BIT_LOG.open("a") as f:
+        f.write(json.dumps(rec, default=str) + "\n")
+    log("bit", **rec)
+    return ok
+
+
+def cmd_bit(a, extra):
+    if a.show:
+        for line in BIT_LOG.read_text().splitlines() if BIT_LOG.exists() else []:
+            print(line)
+        return
+    rid = "bit-" + dt.datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:6]
+    run_id = a.run_id or published()
+    results = []
+    suites = [
+        ("data validation (S1 ingest checks)", [PY, "-m", "unittest", "-q", "tests.test_validate"], S1),
+        ("model outputs (S2 checks: rates, EB weights, ranking, leakage)", [PY, "-m", "pytest", "-q",
+            "S2_Risk_Model_Backtest/tests/test_artifacts.py", "S2_Risk_Model_Backtest/tests/test_models.py",
+            "S2_Risk_Model_Backtest/tests/test_ranking.py", "S2_Risk_Model_Backtest/tests/test_leakage.py"], ROOT),
+        ("memo grounding (S3 seeded memos)", [PY, "-m", "pytest", "-q", "test_site_agent.py"], S3),
+        ("API health (S4)", [PY, "-m", "pytest", "-q", "tests/test_artifact_api.py"], S4 / "backend"),
+    ]
+    for name, cmd, cwd in suites:
+        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+        tail = (p.stdout + p.stderr).strip().splitlines()[-1:] or [""]
+        results.append(bit_record(rid, name, p.returncode == 0, tail[0][:300]))
+    if run_id and (ARTIFACTS / run_id / "bit_campaign.json").exists():
+        c = json.loads((ARTIFACTS / run_id / "bit_campaign.json").read_text())
+        ok = c["detected"] >= 19 and c["false_alarms"] <= 1
+        results.append(bit_record(rid, f"seeded-fault campaign ({run_id})", ok,
+                                  f"{c['detected']}/{c['faults']} faults detected, {c['false_alarms']} false alarms in {len(c['good_runs'])} clean runs"))
+    if run_id and (ARTIFACTS / run_id).exists():
+        # Keep this run's suite results next to the run so the web app (operator view) can show them.
+        mine = [json.loads(x) for x in BIT_LOG.read_text().splitlines() if x.strip()]
+        (ARTIFACTS / run_id / "bit_log.jsonl").write_text("".join(json.dumps(r) + "\n" for r in mine if r["test_run_id"] == rid))
+    if not all(results):
+        raise SystemExit(1)
+
+
+def bundle(run_id, step):
+    need_run(run_id)
+    (ARTIFACTS / "LATEST").write_text(run_id + "\n")
+    make("web", RUN_ID=run_id)
+    log(step, run_id=run_id)
+
+
+def cmd_publish(a, extra):
+    bundle(a.run_id, "publish")
+
+
+def cmd_rollback(a, extra):
+    prev = published()
+    bundle(a.run_id, "rollback")
+    log("rollback_from", previous=prev, now=a.run_id)
+
+
+def cmd_runs(a, extra):
+    pub = published()
+    for d in sorted(p for p in ARTIFACTS.iterdir() if (p / "manifest.json").exists()):
+        print(json.dumps({"run_id": d.name, "published": d.name == pub}))
+
+
+def cmd_logs(a, extra):
+    cutoff = time.time() - a.days * 86400
+    removed = []
+    for f in LOGS.rglob("*"):
+        if f.is_file() and f.stat().st_mtime < cutoff:
+            f.unlink()
+            removed.append(str(f.relative_to(ROOT)))
+    log("logs_prune", retention_days=a.days, removed=len(removed), files=removed[:50])
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(prog="atsc", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = p.add_subparsers(dest="cmd", required=True)
+    s = sub.add_parser("ingest"); s.add_argument("--source", required=True, choices=INGEST_SOURCES); s.add_argument("--path", required=True)
+    s = sub.add_parser("network"); s.add_argument("action", choices=["build"]); s.add_argument("--network", default=NETWORK)
+    s = sub.add_parser("match"); s.add_argument("--network", default=NETWORK)
+    s = sub.add_parser("features"); s.add_argument("--as-of", required=True); s.add_argument("--network", default=NETWORK)
+    for name in ("train", "backtest", "publish", "rollback"):
+        s = sub.add_parser(name); s.add_argument("--run-id", required=True)
+    s = sub.add_parser("memos"); s.add_argument("--run-id", required=True); s.add_argument("--flagged", action="store_true",
+                                                                                         help="flagged City-actionable sites (the default set)")
+    s.add_argument("--top", type=int)
+    s = sub.add_parser("bit"); s.add_argument("--run-id"); s.add_argument("--show", action="store_true")
+    sub.add_parser("runs")
+    s = sub.add_parser("logs"); s.add_argument("action", choices=["prune"]); s.add_argument("--days", type=int, default=RETENTION_DAYS)
+    a, extra = p.parse_known_args(argv)
+    if extra and a.cmd != "ingest":
+        p.error(f"unrecognized arguments: {' '.join(extra)}")
+    log("command", cmd=a.cmd, args={k: v for k, v in vars(a).items() if k != "cmd"})
+    try:
+        globals()["cmd_" + a.cmd.replace("-", "_")](a, extra)
+    except SystemExit as e:
+        if e.code:
+            log("failed", cmd=a.cmd, exit=e.code)
+        raise
+    log("done", cmd=a.cmd)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
