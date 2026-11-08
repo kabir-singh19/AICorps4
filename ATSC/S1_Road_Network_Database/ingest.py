@@ -796,6 +796,44 @@ def cmd_street_keys(args):
     return 0
 
 
+def cmd_hin(args):
+    """Load an MPO HIN line layer (GeoJSON, EPSG:4326) into tasc.hin_line, replacing that version's rows."""
+    with open(args.file, encoding="utf-8") as f:
+        features = json.load(f)["features"]
+    lines = []
+    for feat in features:
+        g = feat.get("geometry") or {}
+        if g.get("type") == "LineString" and len(g.get("coordinates", [])) >= 2:
+            lines.append((json.dumps(g), json.dumps(feat.get("properties") or {})))
+        elif g.get("type") == "MultiLineString":
+            for part in g["coordinates"]:
+                if len(part) >= 2:
+                    lines.append((json.dumps({"type": "LineString", "coordinates": part}),
+                                  json.dumps(feat.get("properties") or {})))
+    bad = sum(
+        1 for feat in features if (feat.get("geometry") or {}).get("type") not in ("LineString", "MultiLineString"))
+    if not lines or exceeds_limit(bad, len(features)):
+        print(f"STOPPED: {os.path.basename(args.file)}: {bad} of {len(features)} features are not lines. Nothing changed.")
+        return 2
+    with connect() as conn, conn.cursor() as cur:
+        cur.execute("""CREATE TABLE IF NOT EXISTS tasc.hin_line (
+                           hin_line_id bigserial PRIMARY KEY, hin_version text NOT NULL, source text NOT NULL,
+                           geom geometry(LineString, 32614) NOT NULL, attributes jsonb,
+                           run_id bigint REFERENCES tasc.ingest_run)""")
+        cur.execute("CREATE INDEX IF NOT EXISTS hin_line_geom_gix ON tasc.hin_line USING gist (geom)")
+        run_id = log_run(cur, "hin", args.file, len(features), bad, "loaded", note=f"version {args.version}")
+        cur.execute("DELETE FROM tasc.hin_line WHERE hin_version = %s", (args.version,))
+        cur.executemany(
+            """INSERT INTO tasc.hin_line (hin_version, source, geom, attributes, run_id)
+               VALUES (%s, %s, ST_Transform(ST_SetSRID(ST_GeomFromGeoJSON(%s), 4326), 32614), %s::jsonb, %s)""",
+            [(args.version, args.source, g, a, run_id) for g, a in lines])
+        cur.execute("SELECT count(*), sum(ST_Length(geom)) / 1609.344 FROM tasc.hin_line WHERE hin_version = %s",
+                    (args.version,))
+        n, miles = cur.fetchone()
+    print(f"Loaded HIN {args.version!r}: {n} lines, {miles:.1f} mi. run_id {run_id}")
+    return 0
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="TASC S1 ingest")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -846,6 +884,12 @@ def main(argv=None):
     b.add_argument("file")
     b.add_argument("--name", default="College Station")
     b.set_defaults(func=cmd_boundary)
+
+    h = sub.add_parser("hin", help="load the MPO High-Injury Network line layer (GeoJSON)")
+    h.add_argument("file")
+    h.add_argument("--version", required=True, help="HIN version label, e.g. csap_fig3.9_digitized")
+    h.add_argument("--source", default="mpo_hin")
+    h.set_defaults(func=cmd_hin)
 
     s = sub.add_parser("street-keys", help="key every crash and road street name (street_names.py)")
     s.set_defaults(func=cmd_street_keys)

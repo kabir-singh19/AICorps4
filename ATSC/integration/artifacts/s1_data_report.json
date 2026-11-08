@@ -1,0 +1,588 @@
+{
+  "network_version": "v1_2022",
+  "map_matching_fsr_3_2_1_4": {
+    "fsi_geocoded_in_city": 434,
+    "fsi_matched": 427,
+    "fsi_match_pct": 98.39,
+    "threshold_pct": 95.0,
+    "result": "PASS",
+    "unmatched_geocoded_fsi": [
+      {
+        "crash_id": "16044105",
+        "crash_date": "2017-10-26",
+        "severity": "A",
+        "street_name": "N WELLBORN RD",
+        "reason": "outside_tolerance",
+        "distance_m": 213.3
+      },
+      {
+        "crash_id": "16190032",
+        "crash_date": "2017-12-31",
+        "severity": "A",
+        "street_name": "DOMINIK DR",
+        "reason": "name_not_found",
+        "distance_m": null
+      },
+      {
+        "crash_id": "17287815",
+        "crash_date": "2019-09-13",
+        "severity": "K",
+        "street_name": "N WELLBORN RD",
+        "reason": "outside_tolerance",
+        "distance_m": 402.2
+      },
+      {
+        "crash_id": "19206549",
+        "crash_date": "2022-11-02",
+        "severity": "A",
+        "street_name": "DOMINIK DR",
+        "reason": "name_not_found",
+        "distance_m": null
+      },
+      {
+        "crash_id": "19653475",
+        "crash_date": "2023-07-14",
+        "severity": "A",
+        "street_name": "SH0006",
+        "reason": "outside_tolerance",
+        "distance_m": 71.4
+      },
+      {
+        "crash_id": "19789404",
+        "crash_date": "2023-09-29",
+        "severity": "A",
+        "street_name": "SH0006",
+        "reason": "outside_tolerance",
+        "distance_m": 86.4
+      },
+      {
+        "crash_id": "20349400",
+        "crash_date": "2024-08-20",
+        "severity": "A",
+        "street_name": "CORRINGTON DR",
+        "reason": "name_not_found",
+        "distance_m": null
+      }
+    ],
+    "all_crash_match_status": [
+      {
+        "status": "matched",
+        "reason": "",
+        "crashes": 14433,
+        "fsi": 427
+      },
+      {
+        "status": "unmatched",
+        "reason": "no_coordinates",
+        "crashes": 1826,
+        "fsi": 33
+      },
+      {
+        "status": "unmatched",
+        "reason": "outside_tolerance",
+        "crashes": 165,
+        "fsi": 4
+      },
+      {
+        "status": "unmatched",
+        "reason": "name_not_found",
+        "crashes": 62,
+        "fsi": 3
+      },
+      {
+        "status": "unmatched",
+        "reason": "outside_city",
+        "crashes": 53,
+        "fsi": 6
+      }
+    ],
+    "note": "Every crash has a crash_match row with status and reason (tasc.crash_match)."
+  },
+  "input_validation_fsr_3_2_3_1_2": {
+    "rule": "ingest.py rejects a whole file when more than 2% of records fail count, required-field, coordinate-bounds, date-range or severity checks",
+    "files_loaded": 21,
+    "max_bad_pct": 0.0,
+    "ingest_runs": [
+      {
+        "run_id": 1,
+        "source": "cris",
+        "file_name": "data_2016.csv",
+        "rows_total": 1933,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 2,
+        "source": "cris",
+        "file_name": "data_2017.csv",
+        "rows_total": 1676,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 3,
+        "source": "cris",
+        "file_name": "data_2018.csv",
+        "rows_total": 1672,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 4,
+        "source": "cris",
+        "file_name": "data_2019.csv",
+        "rows_total": 1666,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 5,
+        "source": "cris",
+        "file_name": "data_2020.csv",
+        "rows_total": 1252,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 6,
+        "source": "cris",
+        "file_name": "data_2021.csv",
+        "rows_total": 1748,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 7,
+        "source": "cris",
+        "file_name": "data_2022.csv",
+        "rows_total": 1723,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 8,
+        "source": "cris",
+        "file_name": "data_2023.csv",
+        "rows_total": 1593,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 9,
+        "source": "cris",
+        "file_name": "data_2024.csv",
+        "rows_total": 1635,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 10,
+        "source": "cris",
+        "file_name": "data_2025.csv",
+        "rows_total": 1641,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 11,
+        "source": "roadway_inventory_2019",
+        "file_name": "roadway_brazos_2019.geojson",
+        "rows_total": 5547,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 12,
+        "source": "cris_details",
+        "file_name": "new_features_2016.csv",
+        "rows_total": 1933,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 13,
+        "source": "cris_details",
+        "file_name": "new_features_2017.csv",
+        "rows_total": 1676,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 14,
+        "source": "cris_details",
+        "file_name": "new_features_2018.csv",
+        "rows_total": 1672,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 15,
+        "source": "cris_details",
+        "file_name": "new_features_2019.csv",
+        "rows_total": 1666,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 16,
+        "source": "cris_details",
+        "file_name": "new_features_2020.csv",
+        "rows_total": 1252,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 17,
+        "source": "cris_details",
+        "file_name": "new_features_2021.csv",
+        "rows_total": 1748,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 18,
+        "source": "cris_details",
+        "file_name": "new_features_2022.csv",
+        "rows_total": 1723,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 19,
+        "source": "cris_details",
+        "file_name": "new_features_2023.csv",
+        "rows_total": 1593,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 20,
+        "source": "cris_details",
+        "file_name": "new_features_2024.csv",
+        "rows_total": 1635,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 21,
+        "source": "cris_details",
+        "file_name": "new_features_2025.csv",
+        "rows_total": 1641,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 22,
+        "source": "osm_2022-12-31",
+        "file_name": "osm_v0_2019_600m_2022-12-31.json",
+        "rows_total": 1606,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 23,
+        "source": "osm_latest",
+        "file_name": "osm_v0_2019_600m_latest.json",
+        "rows_total": 2804,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 27,
+        "source": "cris",
+        "file_name": "data_2016.csv",
+        "rows_total": 1933,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 31,
+        "source": "roadway_inventory_2019",
+        "file_name": "roadway_brazos_2019.geojson",
+        "rows_total": 5547,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 42,
+        "source": "boundary",
+        "file_name": "college_station_2022.geojson",
+        "rows_total": 1,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 80,
+        "source": "osm_roads_2022-12-31",
+        "file_name": "osm_college_station_100m_2022-12-31_road.json",
+        "rows_total": 2869,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 136,
+        "source": "osm_city_2022-12-31",
+        "file_name": "osm_college_station_400m_2022-12-31_bus_stop_school_bar_restaurant_crossing_traffic_signals_street_lamp_sidewalk_major_road.json",
+        "rows_total": 2545,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 137,
+        "source": "osm_city_latest",
+        "file_name": "osm_college_station_400m_latest_bus_stop_school_bar_restaurant_crossing_traffic_signals_street_lamp_sidewalk_major_road.json",
+        "rows_total": 4653,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 171,
+        "source": "roadway_inventory_2019",
+        "file_name": "roadway_brazos_2019.geojson",
+        "rows_total": 5547,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      },
+      {
+        "run_id": 184,
+        "source": "hin",
+        "file_name": "hin_mpo_digitized.geojson",
+        "rows_total": 522,
+        "rows_bad": 0,
+        "bad_pct": 0.0,
+        "status": "loaded"
+      }
+    ],
+    "stop_test": "tests/test_validate.py: test_over_two_percent_bad_stops (3% bad file stops) and test_exactly_two_percent_loads"
+  },
+  "crashes_by_severity": [
+    {
+      "severity": "A",
+      "count": 429
+    },
+    {
+      "severity": "B",
+      "count": 3979
+    },
+    {
+      "severity": "C",
+      "count": 2504
+    },
+    {
+      "severity": "K",
+      "count": 44
+    },
+    {
+      "severity": "O",
+      "count": 9136
+    },
+    {
+      "severity": "U",
+      "count": 447
+    }
+  ],
+  "crashes_by_year": [
+    {
+      "crash_year": 2016,
+      "crashes": 1933,
+      "fsi": 51
+    },
+    {
+      "crash_year": 2017,
+      "crashes": 1676,
+      "fsi": 51
+    },
+    {
+      "crash_year": 2018,
+      "crashes": 1672,
+      "fsi": 37
+    },
+    {
+      "crash_year": 2019,
+      "crashes": 1666,
+      "fsi": 35
+    },
+    {
+      "crash_year": 2020,
+      "crashes": 1252,
+      "fsi": 30
+    },
+    {
+      "crash_year": 2021,
+      "crashes": 1748,
+      "fsi": 41
+    },
+    {
+      "crash_year": 2022,
+      "crashes": 1723,
+      "fsi": 56
+    },
+    {
+      "crash_year": 2023,
+      "crashes": 1593,
+      "fsi": 58
+    },
+    {
+      "crash_year": 2024,
+      "crashes": 1635,
+      "fsi": 63
+    },
+    {
+      "crash_year": 2025,
+      "crashes": 1641,
+      "fsi": 51
+    }
+  ],
+  "hin_method_a": {
+    "hin_version": "csap_fig3.9_digitized_2026-11-04",
+    "rule": "segment: >=50% of length within 30 m; intersection: center within 30 m",
+    "by_site_type": [
+      {
+        "site_type": "intersection",
+        "sites": 1634,
+        "in_hin": 448,
+        "network_mi": 0.0,
+        "hin_mi": 0.0
+      },
+      {
+        "site_type": "segment",
+        "sites": 5590,
+        "in_hin": 1260,
+        "network_mi": 402.13119173284184,
+        "hin_mi": 96.06986396609815
+      }
+    ],
+    "hin_share_of_network_length": 0.23890179608331083
+  },
+  "streetlights_if_04": {
+    "status": "not delivered",
+    "detail": "No City streetlight GIS layer was in the data folder. Per ICD Table 5 the fallback is OSM lighting; OSM street_lamp points are stored in tasc.osm_feature but too sparse to build a feature (counts below), so no lighting feature is used.",
+    "osm_street_lamp_points": [
+      {
+        "source": "osm_2022-12-31",
+        "street_lamps": 64
+      },
+      {
+        "source": "osm_city_2022-12-31",
+        "street_lamps": 68
+      },
+      {
+        "source": "osm_city_latest",
+        "street_lamps": 83
+      },
+      {
+        "source": "osm_latest",
+        "street_lamps": 79
+      }
+    ]
+  },
+  "sources": [
+    {
+      "source": "mpo_hin",
+      "version": "csap_fig3.9_digitized_2026-11-04",
+      "role": "baseline",
+      "as_of_date": "2022-12-31",
+      "available_as_of": "2026-11-04"
+    },
+    {
+      "source": "cris_test",
+      "version": "CRIS Query 2023-2025, College Station",
+      "role": "evaluation",
+      "as_of_date": "2025-12-31",
+      "available_as_of": "2026-10-07"
+    },
+    {
+      "source": "cris_history",
+      "version": "CRIS Query 2016-2022, College Station",
+      "role": "history",
+      "as_of_date": "2022-12-31",
+      "available_as_of": "2022-12-31"
+    },
+    {
+      "source": "network v0_2019",
+      "version": "v0_2019",
+      "role": "predictor",
+      "as_of_date": "2019-12-31",
+      "available_as_of": "2021-08-06"
+    },
+    {
+      "source": "network v1_2022",
+      "version": "v1_2022",
+      "role": "predictor",
+      "as_of_date": "2022-12-31",
+      "available_as_of": "2022-12-31"
+    },
+    {
+      "source": "osm_2022-12-31",
+      "version": "OpenStreetMap as of 2022-12-31T23:59:59Z",
+      "role": "predictor",
+      "as_of_date": "2022-12-31",
+      "available_as_of": "2022-12-31"
+    },
+    {
+      "source": "osm_city_2022-12-31",
+      "version": "OpenStreetMap as of 2022-12-31T23:59:59Z, whole city",
+      "role": "predictor",
+      "as_of_date": "2022-12-31",
+      "available_as_of": "2022-12-31"
+    },
+    {
+      "source": "osm_city_latest",
+      "version": "OpenStreetMap as of 2026-07-27T09:00Z (newest ohsome data), whole city",
+      "role": "predictor",
+      "as_of_date": "2026-07-27",
+      "available_as_of": "2026-07-27"
+    },
+    {
+      "source": "osm_latest",
+      "version": "OpenStreetMap as of 2026-07-27T09:00Z (newest ohsome data)",
+      "role": "predictor",
+      "as_of_date": "2026-07-27",
+      "available_as_of": "2026-07-27"
+    },
+    {
+      "source": "osm_roads_2022-12-31",
+      "version": "OpenStreetMap streets as of 2022-12-31T23:59:59Z, missing from TxDOT 2019",
+      "role": "predictor",
+      "as_of_date": "2022-12-31",
+      "available_as_of": "2022-12-31"
+    },
+    {
+      "source": "roadway_inventory_2019",
+      "version": "TxDOT Roadway Inventory 2019 snapshot",
+      "role": "predictor",
+      "as_of_date": "2019-12-31",
+      "available_as_of": "2021-08-06"
+    }
+  ]
+}

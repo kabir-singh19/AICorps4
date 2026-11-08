@@ -32,6 +32,8 @@ use this one) and `v0_2019`, the three corridors of the M2 diagnostic, kept unch
 | `tests/test_validate.py` | 15 tests for the crash validator (incl. guardrails), no database needed | Ingest tests (due 11/17) |
 | `make_figures.py` | Draws the progress figures in `figures/` straight from the database | Progress evidence |
 | `make_map.py`, `map/` | Writes `map/index.html`, an interactive road map of College Station (roads by type with street names, water, parks, buildings, campus, drawn from the database, no map tiles) with a Crashes view: every v1_2022 site coloured by crash totals per year, plus its features. Open the file in a browser, no database needed. Totals per site only, no crash locations | Progress evidence |
+| `ingest.py hin`, `sql/08_hin.sql` | Loads the digitized MPO HIN (`inputs/hin_mpo_digitized.geojson`) into `hin_line` and builds `s2_hin_site`: segment in the HIN when at least 50% of its length is within 30 m, intersection when its center is within 30 m | Method A baseline (IF-05) |
+| `s1_report.py` | Writes `../integration/artifacts/s1_data_report.json`: F&SI match rate, input validation, HIN share, streetlight status, source dates | FSR 3.2.1.4, 3.2.3.1.2 |
 | `sql/05_s2_interface.sql` | S2 views (`s2_site_scope`, `s2_crash_scope`, `s2_crash_scope_corridor`, `s2_source_registry`), source provenance, read-only role `s2_reader` | IF-09 to S2 |
 | `dumps/tasc_v1_2022_2026-11-04.sql.gz` | **Current** database copy: both networks, city-wide matching and features; see "For S2" | IF-09 to S2 |
 | `dumps/tasc_v0_2019_2026-10-28.sql.gz` | 28 Oct copy (corridor network with crash details and OSM features) | IF-09 to S2 |
@@ -220,8 +222,21 @@ records, 818 history rows (102 F&SI in 2016–2022) and 4,869 test crashes, and
 commands above; every table count, the 98.11% match rate and the 18.07 flagging miles matched,
 and the leakage trigger still refused a 2024 feature.
 
-**Not provided yet:** `s2_hin_site`. No HIN layer has been loaded into S1, so until it is, S2 runs
-methods B and C only.
+**`s2_hin_site` (8 Nov 2026):** the digitized MPO HIN (CSAP Fig. 3.9, 522 lines) is loaded as
+`hin_version = csap_fig3.9_digitized_2026-11-04`:
+
+```bash
+.venv/bin/python ingest.py hin inputs/hin_mpo_digitized.geojson --version csap_fig3.9_digitized_2026-11-04
+docker compose exec -T db psql -U tasc -d tasc -v network_version=v1_2022 \
+    -v hin_version=csap_fig3.9_digitized_2026-11-04 -v hin_buffer_m=30 -v hin_available_as_of=2026-11-04 \
+    -v hin_evidence='MPO CSAP Fig. 3.9 digitized 2026-11-04' < sql/08_hin.sql
+.venv/bin/python s1_report.py --hin-version csap_fig3.9_digitized_2026-11-04 --out ../integration/artifacts/s1_data_report.json
+```
+
+Result on `v1_2022`: 1,260 of 5,590 segments (96.1 of 402.1 mi, 23.9% of network length) and 448 of
+1,634 intersections are in the HIN. F&SI match rate 427/434 = 98.39% (FSR 3.2.1.4, PASS); the 7
+unmatched geocoded F&SI crashes and their reasons are listed in the report. The HIN is method A only,
+never a model feature.
 
 ## What has and has not been run
 
