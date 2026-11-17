@@ -1,0 +1,90 @@
+{
+ "analysis_scope": "college_station_public_roads",
+ "as_of_date": "2022-12-31",
+ "data_versions": {
+  "boundary": "Census places 2022 vintage",
+  "cris": "CRIS Query exports, College Station, 2016-2025, downloaded 2026-10-07",
+  "hin": "MPO CSAP Fig. 3.9 high-injury network, digitized 2026-11-04",
+  "inventory": "TxDOT Roadway Inventory 2019 snapshot (available 2021-08-06)",
+  "network": "S1 v1_2022: 0.1 mi segments and 3+ leg intersections, College Station city limits",
+  "osm": "OpenStreetMap as of 2022-12-31 (ohsome)"
+ },
+ "feature_set": "backtest_2022",
+ "hin_as_of_date": "2022-12-31",
+ "hin_source": "mpo_hin",
+ "hin_version": "csap_fig3.9_digitized_2026-11-04",
+ "history_years_loaded": [
+  2016,
+  2017,
+  2018,
+  2019,
+  2020,
+  2021,
+  2022
+ ],
+ "length_policy": "ICD Table 9: segments use their own length; intersections use the 250 ft influence zone (0.0473 mi) for exposure, rate and flagging. Sensitivity: the 18 Oct 2026 S1 policy (intersections 0 flagging length).",
+ "network_version": "v1_2022",
+ "sources": [
+  {
+   "as_of_date": "2019-12-31",
+   "available_as_of": "2021-08-06",
+   "role": "predictor",
+   "source": "roadway_inventory_2019",
+   "version": "TxDOT Roadway Inventory 2019 snapshot"
+  },
+  {
+   "as_of_date": "2022-12-31",
+   "available_as_of": "2022-12-31",
+   "role": "history",
+   "source": "cris_history",
+   "version": "CRIS Query 2016-2022, College Station"
+  },
+  {
+   "as_of_date": "2022-12-31",
+   "available_as_of": "2022-12-31",
+   "role": "predictor",
+   "source": "network v1_2022",
+   "version": "v1_2022"
+  },
+  {
+   "as_of_date": "2022-12-31",
+   "available_as_of": "2022-12-31",
+   "role": "predictor",
+   "source": "osm_city_2022-12-31",
+   "version": "OpenStreetMap as of 2022-12-31T23:59:59Z, whole city"
+  },
+  {
+   "as_of_date": "2022-12-31",
+   "available_as_of": "2022-12-31",
+   "role": "predictor",
+   "source": "osm_roads_2022-12-31",
+   "version": "OpenStreetMap streets as of 2022-12-31T23:59:59Z, missing from TxDOT 2019"
+  },
+  {
+   "as_of_date": "2022-12-31",
+   "available_as_of": "2022-12-31",
+   "role": "predictor",
+   "source": "s1_not_recorded",
+   "version": "v1_2022"
+  },
+  {
+   "as_of_date": "2022-12-31",
+   "available_as_of": "2026-11-04",
+   "role": "baseline",
+   "source": "mpo_hin",
+   "version": "csap_fig3.9_digitized_2026-11-04"
+  },
+  {
+   "as_of_date": "2025-12-31",
+   "available_as_of": "2026-10-07",
+   "role": "evaluation",
+   "source": "cris_test",
+   "version": "CRIS Query 2023-2025, College Station"
+  }
+ ],
+ "test_years_loaded": [
+  2023,
+  2024,
+  2025
+ ]
+}

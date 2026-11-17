@@ -1,0 +1,117 @@
+{
+  "levels": {
+    "forecast": {
+      "median_type": [
+        "0",
+        "2",
+        "3",
+        "7"
+      ],
+      "access_control": [
+        "1",
+        "2",
+        "3"
+      ],
+      "curb_left": [
+        "0",
+        "1",
+        "2"
+      ],
+      "curb_right": [
+        "0",
+        "1",
+        "2"
+      ]
+    },
+    "backtest": {
+      "median_type": [
+        "0",
+        "2",
+        "3",
+        "7"
+      ],
+      "access_control": [
+        "1",
+        "2",
+        "3"
+      ],
+      "curb_left": [
+        "0",
+        "1",
+        "2"
+      ],
+      "curb_right": [
+        "0",
+        "1",
+        "2"
+      ]
+    }
+  },
+  "gate": {
+    "sites": 6656,
+    "features": 166400,
+    "history_rows": 3848,
+    "test_crashes": 4869,
+    "hin_available": true,
+    "analysis_scope": "college_station_public_roads",
+    "full_network": true
+  },
+  "seeded_leakage_checks": [
+    {
+      "case": "feature dated 2023-06-30",
+      "detected": true,
+      "error": "leakage: 16288.interchange=2023-06-30 exceeds 2022-12-31"
+    },
+    {
+      "case": "history row for 2023",
+      "detected": true,
+      "error": "duplicate, out-of-network or post-cutoff history row"
+    },
+    {
+      "case": "predictor source available 2024-01-15",
+      "detected": true,
+      "error": "leakage: network v1_2022.available_as_of=2024-01-15 exceeds 2022-12-31"
+    },
+    {
+      "case": "site built 2023-01-01",
+      "detected": true,
+      "error": "leakage: site 16288=2023-01-01 exceeds 2022-12-31"
+    },
+    {
+      "case": "HIN membership offered as a feature",
+      "detected": true,
+      "error": "outcome, HIN, identity or future features cannot enter the model"
+    }
+  ],
+  "cache_hashes": {
+    "snapshot_meta.json": "10e9271359adf58f8db7c1aa29dca693e019f1bdef406242769493717e49b957",
+    "snapshot_sites.parquet": "3d501168154b7f1faac7fcab0ca3fffc9ce78c7533bf49a69106fff2a56f904d",
+    "test_crashes.parquet": "b6af005097d91b28b860a4b60948221efe2593d57781ca680066815e44ff9625",
+    "forecast.parquet": "dbe82c4ff03e7d601cff1c1fca6e1c201bf1976b334728139a425cae11ae26bd",
+    "history.parquet": "d42977675f53203e739cb8eb7520135e6e8106f90a6108459b87632f342797bc",
+    "features.parquet": "49cb17faf435aa505d17af94b5d590554b305c8b641ca3115ce16b518f34a2e0",
+    "sites.parquet": "8b7468a7d35655ce59580f151d1184f483854d2d6166f0643412cea869ea19af",
+    "sources.parquet": "ddc81a48f1fe3bbc47490b30a0a133c35a1e5f387e2e2ebf30154c7fdd395422",
+    "backtest.parquet": "7531eb00dd8da096ad0125ca9398ff3e249389c0d9f9904a76e1a21dd252bb8e",
+    "backtest_models/lightgbm_lg_intersection_seed0.txt": "4d01aaa938cc740ade70cda9a12fdc239bec1179a0fde3dfa67679054186b6a4",
+    "backtest_models/lightgbm_me_intersection_seed1.txt": "1e2aa0a32ab04fabb22a2981d4d4659438545a37a0a5354a6512409f2da3b90f",
+    "backtest_models/lightgbm_lg_segment_seed0.txt": "c653a064150cc32cc31a99561c208b146cc9ed4071dfc697536280abb85566f8",
+    "backtest_models/lightgbm_lg_segment_seed2.txt": "53491f0a3f749fe59eb385e6dacfaad6f7372aeb6bca51bf99b1526fc4cfa0a7",
+    "backtest_models/lightgbm_me_intersection_seed2.txt": "082be685c75a6ac06e1774afd32fb16c8e0411c679f7d304f57fbd130425e662",
+    "backtest_models/lightgbm_lg_intersection_seed2.txt": "236825863bf9e424623eb0986eea39dda604b5b31ed16728d395713f2865415a",
+    "backtest_models/model_state_intersection.json": "3aba7dfd27d087432c8e5b621d808b1c5be6846cf07e22a711039a8f4d7dd599",
+    "backtest_models/lightgbm_lg_intersection_seed1.txt": "ffe5c1ef4b3aa35e0e35050338bd753936891187e6577680746f137252c7a42a",
+    "backtest_models/lightgbm_me_segment_seed2.txt": "78e39d64353d810797c43f7500a696f5593958b1d1dc1d29f023c80d680776b3",
+    "backtest_models/lightgbm_lt_segment_seed0.txt": "c9467f242fd1525ff3c67e3c8b8ce58b758215e9258638e5454e9ac196a5c61d",
+    "backtest_models/lightgbm_lt_intersection_seed1.txt": "dcaa60eb22f402784c634ff7f6bf5e83254454819836e8ef0120b4fd7dc850ad",
+    "backtest_models/lightgbm_lt_intersection_seed2.txt": "e2ad8db0e753cc00109899aae3a60f9299bfd60da8cd1ec7eaa86ab65d7e94e3",
+    "backtest_models/lightgbm_lt_segment_seed2.txt": "5d31baebf793710748b40c8bcf2c2a69d12d3075705e9c9c25d6e806147c7c83",
+    "backtest_models/lightgbm_me_segment_seed0.txt": "8b08beacd52dba13bf6b0738fd0d277b569034c59b388ee28897e1ccbc463004",
+    "backtest_models/lightgbm_me_segment_seed1.txt": "20eeeebc5bc197885a6a6004bd401d2f30bc25489e4c61b2107ed3928efe274f",
+    "backtest_models/lightgbm_me_intersection_seed0.txt": "7f0f8f8a045a1e5478de3178f283d88ebeb0c7fe1558b5a1d5940f1fea8e08fe",
+    "backtest_models/lightgbm_lg_segment_seed1.txt": "a95f8f50978f5c9f63ca50b7769f9731e5e14fd8d3753bab904154d7fb179eb9",
+    "backtest_models/lightgbm_lt_segment_seed1.txt": "456d50ec84768dbc1ab54587c93c795c1a8ed5ade04ba45b7584b046a3606d76",
+    "backtest_models/lightgbm_lt_intersection_seed0.txt": "468a18dcf74b2a3d6d4dd72bc28d907d7d5237defb1c24011a781a6fcb3fec8b",
+    "backtest_models/model_state_segment.json": "7d9a8d0bf8bd21570f8a45ec072c366ad6d203361211814a28d5d30195d7fd2d"
+  }
+}
