@@ -21,33 +21,40 @@ BUNDLE = ROOT.parents[1] / 'integration/artifacts/s2-citywide-v1.1-2026-11-08'
 COLORS = {'A': '#607495', 'B': '#888888', 'C': '#500000'}
 def read_json(path):
     return json.loads(Path(path).read_text())
-def load_live(mode='forecast'):
+def load_live(mode='forecast', on_step=None):
+    step = on_step or (lambda msg: None)
     cfg = read_json(BUNDLE/'config.json')
     meta = read_json(CACHE/'metadata.json')
     sites = pd.read_parquet(CACHE/'sites.parquet')
     fut = pd.read_parquet(CACHE/f'{mode}.parquet')
     enc = Encoder(meta['levels'][mode])
+    step(f'{len(sites):,} sites and their inputs read from the cache')
     directory = BUNDLE/'models' if mode == 'forecast' else CACHE/'backtest_models'
     models, rows, outs = {}, {}, {}
     for kind in ('segment','intersection'):
         F, w = load_models(read_json(directory/f'model_state_{kind}.json'), directory)
         models[kind] = F
+        step(f'{kind}: {sum(len(F[f]["boosters"]) for f in ("me", "lg", "lt"))} boosters loaded, {len(F["me"]["feats"])} inputs')
         rows[kind] = fut[fut.site_type == kind].reset_index(drop=True)
         outs[kind] = predict_all(F, rows[kind], cfg, enc, w)
+        step(f'{kind}: {len(rows[kind]):,} sites scored (LightGBM, EB, severity)')
     preds, fut = combine(sites, outs, rows)
     table = ranking_table(sites, fut, preds, prediction_frame(sites,preds['ML-EB'],cfg),
                           prediction_frame(sites,preds['SPF+EB'],cfg),read_json(BUNDLE/'explanations.json'),cfg)
+    step(f'ranked {len(table):,} sites, {int(table.flagged.sum())} flagged')
     return dict(cfg=cfg,sites=sites,fut=fut,enc=enc,models=models,preds=preds,table=table,meta=meta)
-def integrity(live):
+def integrity(live, on_file=None):
     manifest = read_json(BUNDLE/'manifest.json')
     errors = []
     for name, expected in manifest['files'].items():
         p = BUNDLE/name
         if not p.exists() or file_hash(p) != expected:
             errors.append(f'Bundle file differs: {name}')
+        if on_file: on_file(name)
     for name, expected in live['meta']['cache_hashes'].items():
         if file_hash(CACHE/name) != expected:
             errors.append(f'Cache file differs: {name}')
+        if on_file: on_file(name)
     actual = ranking_hash(live['table'])
     if actual != manifest['ranking_hash']:
         errors.append(f'Ranking hash differs: {actual} != {manifest["ranking_hash"]}')

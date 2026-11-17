@@ -106,8 +106,10 @@ On a Mac, if it says LightGBM could not load, run `brew install libomp` and star
 
 ### Use
 
-At start-up it reloads the 18 saved models, recomputes all 6,656 sites and checks the ranking hash
-against the frozen run (OK in green, MISMATCH in red).
+At start-up it shows a boot sequence where every line does real work: library versions against the
+frozen run, the 18 saved models reloaded and all 6,656 sites recomputed, SHA-256 checks on every file,
+the ranking hash, the leakage gate with 5 seeded post-cutoff records, the frozen-2022 backtest models,
+and the built-in tests. It ends with ALL SYSTEMS GO (or a red warning if a check fails).
 
 At the `C:\ATSC>` prompt:
 
@@ -115,7 +117,13 @@ At the `C:\ATSC>` prompt:
 |---|---|
 | a road name or site ID (`holleman`, `texas ave`, `17683`) | lists matching sites, highest risk first |
 | `top` | the 15 highest-risk sites |
+| `map` | ASCII map of every site (flagged, HIN, top 9) |
+| `stats` | network overview and risk histogram |
+| `memos` | sites with an S3 safety memo |
 | `hin` | ATSC vs HIN scoreboard |
+| `calib` | predicted vs observed crashes by decile |
+| `test` | full self-test, including 8 injected faults the BIT must catch |
+| `lucky` | a random flagged site |
 | `exit` | quit |
 
 In a results list, type a number to open a site, `b` to go back, or a new search. A site screen shows
@@ -131,6 +139,9 @@ lowers it) and how the model frozen at 2022 did on 2023-2025. Keys on a site scr
 | `5` | the full math for the site |
 | `6` | compare with another road |
 | `7` | ATSC vs HIN scoreboard |
+| `8` | sweep a feature across its range |
+| `9` | the safety memo, if the site has one |
+| `m` | city map with this site marked |
 | `r` | reset your changes |
 | `b` | back to the list (or type any road name to search again) |
 | `q` | quit |

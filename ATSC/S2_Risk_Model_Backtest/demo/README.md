@@ -26,17 +26,33 @@ When installing Python on Windows, tick "Add python.exe to PATH". Windows Termin
 
 ## What it does
 
-Start-up: ATSC banner, then real boot steps with OK marks (load libraries, open the run bundle, reload 18
-LightGBM boosters and recompute every site, verify the ranking hash, load the frozen-2022 backtest models).
-If the hash does not match on a machine, it says MISMATCH in red and keeps running.
+Start-up (about 14 s): ATSC banner, then six sections where every line does real work:
+
+- **SYSTEM**: host, and the python, numpy, pandas, scipy and lightgbm versions against the frozen run.
+- **MODELS**: reloads the 18 LightGBM boosters and recomputes all 6,656 sites.
+- **INTEGRITY**: SHA-256 of every bundle and cache file (progress bar), then the ranking hash.
+- **LEAKAGE GATE**: the frozen snapshot passes the 2022-12-31 cutoff check, and 5 seeded post-cutoff
+  records are each refused.
+- **BACKTEST**: loads the frozen-2022 models and the 2023-2025 held-out crashes.
+- **BUILT-IN TESTS**: BIT coverage and units, the 11% length budget, top-5 SHAP coverage, the EB hand
+  formula on every site, and TreeSHAP additivity.
+
+It ends with an ALL SYSTEMS GO panel (or RUNNING WITH WARNINGS in red if a check fails). Set
+`ATSC_FAST=1` to skip the animation delays.
 
 Home prompt `C:\ATSC>`:
 
 | Type | Does |
 |---|---|
-| a road name or site ID (`holleman`, `texas ave`, `17683`) | lists matching sites, best rank first |
+| a road name or site ID (`holleman`, `texas ave`, `17683`) | lists matching sites, highest risk first |
 | `top` | the 15 highest-risk sites |
-| `hin` | ATSC vs the consultant HIN scoreboard |
+| `map` | ASCII map of every site: flagged, HIN, top 9 ranks |
+| `stats` | network overview: sites and miles by type, risk histogram, flagged by owner and road |
+| `memos` | the 25 sites with an S3 safety memo |
+| `hin` | ATSC vs HIN vs HSM scoreboard (1,000 paired bootstrap resamples, recomputed live) |
+| `calib` | calibration: predicted vs observed 2023-2025 crashes by decile, checked against calibration.json |
+| `test` | full self-test: hashes, leakage gate, BIT on the clean run, 8 injected faults, EB, SHAP, a second full reload |
+| `lucky` | opens a random flagged site |
 | `exit` | quit |
 
 Results list: rank, road, type, ATSC flag, HIN membership, K+A per mile per year. Type a number to open a
@@ -55,7 +71,10 @@ frozen-2022 model's rank and its predicted vs observed K+A for 2023-2025. Keys:
 | `4` | crash history 2016-2025 as colored bars |
 | `5` | the full math for the site, step by step |
 | `6` | compare with another road side by side |
-| `7` | ATSC vs HIN scoreboard (1,000 paired bootstrap resamples, recomputed live) |
+| `7` | ATSC vs HIN scoreboard |
+| `8` | sweep a feature across its range and watch the rate and rank change |
+| `9` | the S3 safety memo (only on sites that have one) |
+| `m` | the city map with this site marked |
 | `r` | reset your changes |
 | `b` | back to the list; or type any road name to search again |
 | `q` | quit |
