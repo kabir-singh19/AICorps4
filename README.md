@@ -86,6 +86,57 @@ docker run -d --name atsc-demo --restart unless-stopped -p 10000:10000 `
 - Stop and remove the site: `docker rm -f atsc-demo` (add `sudo` on Ubuntu).
 - The full pipeline (database, model, memos) is in [ATSC/README.md](ATSC/README.md#build-and-run).
 
+## Run the road evaluator (terminal tool)
+
+A command-prompt style tool that runs the S2 crash-risk model on any College Station road. It needs no
+Docker and no database, only Python 3.11 or newer (https://www.python.org/downloads/; on Windows tick
+"Add python.exe to PATH"). The first run sets up its own environment in `demo/.venv` (about a minute,
+needs internet once); later runs start in a few seconds and work offline.
+
+### Install
+
+Get the repo with `git clone https://github.com/kabir-singh19/AICorps4.git`, or on GitHub click
+Code > Download ZIP and unzip it. Then start the tool:
+
+- **macOS / Linux:** `bash AICorps4/ATSC/S2_Risk_Model_Backtest/demo/atsc.sh`
+- **Windows:** double-click `AICorps4\ATSC\S2_Risk_Model_Backtest\demo\atsc.bat`, or run that path in
+  Command Prompt. Windows Terminal shows the colors best.
+
+On a Mac, if it says LightGBM could not load, run `brew install libomp` and start it again.
+
+### Use
+
+At start-up it reloads the 18 saved models, recomputes all 6,656 sites and checks the ranking hash
+against the frozen run (OK in green, MISMATCH in red).
+
+At the `C:\ATSC>` prompt:
+
+| Type | Does |
+|---|---|
+| a road name or site ID (`holleman`, `texas ave`, `17683`) | lists matching sites, highest risk first |
+| `top` | the 15 highest-risk sites |
+| `hin` | ATSC vs HIN scoreboard |
+| `exit` | quit |
+
+In a results list, type a number to open a site, `b` to go back, or a new search. A site screen shows
+its rank, ATSC flag, HIN membership, the model pipeline numbers, the top factors (red raises risk, green
+lowers it) and how the model frozen at 2022 did on 2023-2025. Keys on a site screen:
+
+| Key | Does |
+|---|---|
+| `1` | change a feature (traffic, speed, lanes, signals, crossings...) and re-run the models |
+| `2` | traffic +50% |
+| `3` | remove or add the signal (intersections) or speed -10 mph (segments) |
+| `4` | crash history 2016-2025 |
+| `5` | the full math for the site |
+| `6` | compare with another road |
+| `7` | ATSC vs HIN scoreboard |
+| `r` | reset your changes |
+| `b` | back to the list (or type any road name to search again) |
+| `q` | quit |
+
+More detail is in [ATSC/S2_Risk_Model_Backtest/demo/README.md](ATSC/S2_Risk_Model_Backtest/demo/README.md).
+
 ## Project: AI Consulting Tool (Teams 1 & 4)
 
 Goal: reduce the city's reliance on paid outside consultants (currently about 40) with an LLM-based consulting tool.
