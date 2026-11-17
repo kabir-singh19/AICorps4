@@ -156,7 +156,7 @@ class State:
 def boot():
     cls()
     banner(animate=True)
-    typewriter("  > ATSC risk engine v1.1 booting. Every step below does real work.")
+    typewriter("  > ATSC risk engine v1.1 booting...")
     S = State()
     t_boot = time.monotonic()
 
