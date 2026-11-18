@@ -1,108 +1,153 @@
-# S3 - Countermeasure Recommendations and Memos
+S3 — Countermeasure Recommendations and Memos
 
-Owner: Jose | AI Corps Team 4 | AI Traffic-Safety Consultant
+Owner Jose · AI Corps Team 4 · AI Traffic-Safety Consultant
+Status Standalone prototype for College Station site screening and draft memo generation. Updated November 18, 2026.
 
-**Status: prototype v0.2 using synthetic site data.** The current work includes a countermeasure library, an initial CMF evidence pass, and a Python matcher that returns candidate treatments with reasons and remaining applicability checks. Database integration, numerical benefit estimates, candidate scoring, and memo generation remain future work.
+S3 takes a saved road-site snapshot, screens treatments against a reviewed countermeasure library, and produces a cited Markdown and HTML memo for engineering review. The team reported that all 15 final API drafts passed software validation. A separate offline replay of the same 15 site inputs also produced 15 passing reports and both memo formats.
 
-## Purpose
+Run one site
 
-S3 identifies possible safety improvements for a site's crash pattern and location type. Each candidate should explain why it matches, identify its supporting evidence, and flag information that still needs review.
+Use Python 3.9 or later. Run the commands from the S3 folder. The examples assume these filenames. If your downloads have numbered suffixes, rename them to the names below or supply the actual paths with --sites and --library.
 
-The prototype can be developed independently while S1 and S2 finalize their data interfaces. Its synthetic examples do not establish effectiveness at real College Station sites.
+File
 
-## Current implementation
+Role
 
-| Component | Current status |
-| --- | --- |
-| Countermeasure library | 24 treatment and process entries in `countermeasure_library.csv`. |
-| CMF evidence | Initial pass recorded 22 CMFs, record IDs, source links, and study conditions. There are 21 star ratings and one officially unrated record. |
-| Process entries | Road Safety Audits and Local Road Safety Plans have no standalone CMF assigned in this library. Their benefits require treatment-specific evidence. |
-| Python matcher | Returns possible countermeasures, match reasons, and outstanding applicability checks using CMF-specific crash types. |
-| Synthetic examples | Six example sites and saved results were included in the v0.2 package. |
-| Tests | The v0.2 package was reported to pass 12 tests, including crash-type and lighting-condition checks. |
+countermeasure_library.csv
 
-These implementation and test details describe the previously prepared v0.2 package. They have not been independently rerun for this README update and do not confirm which files have been committed to GitHub.
+Reviewed treatment records, CMFs, sources, study conditions and limitations
 
-## Working files
+countermeasure_matcher.py
 
-| File | Responsibility |
-| --- | --- |
-| `countermeasure_library.csv` | Countermeasure descriptions, CMF evidence, study conditions, and limitations. |
-| `countermeasure_matcher.py` | Match site crash patterns and location types to candidate treatments with reasons. |
-| `test_matcher.py` | Check matching behavior and safeguards using synthetic inputs. |
-| `README.md` | Explain the prototype, how to run it, its limitations, and next steps. |
+Screens the library and explains each match or exclusion
 
-The v0.2 package also contains synthetic examples and saved results. Keep those alongside the matcher according to the package's existing layout.
+example_sites_s2_demo.json
 
-## Run the prototype
+Saved site inputs for the 15-site demonstration
 
-From the extracted v0.2 folder containing the matcher, library, and tests:
+memo_pipeline.py
 
-```bash
-python countermeasure_matcher.py
-python -m unittest -v test_matcher.py
-```
+Builds the evidence, prepares or requests a draft, validates it and renders the memo
 
-The first command runs the prototype's included examples. The second runs its tests. Upload the corresponding package files together before using these commands from a repository checkout.
+test_matcher.py, test_memo_pipeline.py
 
-## Current workflow
+Matcher and memo tests in the project test layout
 
-1. Read a synthetic site's crash pattern, location type, and available conditions.
-2. Compare those inputs with the countermeasure library and CMF-specific applicability rules.
-3. Return candidate treatments with reasons they match.
-4. Identify evidence limitations and site conditions that still need checking.
+Offline demo. Run the full workflow with locally generated summaries. This mode requires no API key.
 
-The output is a list of candidates for review. It is not a final design recommendation or a numerical prediction of crash reduction.
+python memo_pipeline.py --sites example_sites_s2_demo.json --site-id 17120 --mode offline
 
-## CMF evidence status
+TAMU Chat API demo. In the shell or PyCharm run configuration, set MEMO_API_URL to the full HTTPS chat-completions endpoint supplied by the provider, MEMO_API_KEY to your local key, and MEMO_MODEL to an authorized model ID. The reported demo runs used protected.gpt-4.1. Keep credentials out of project files.
 
-**CMF verification remains open.** The initial evidence pass used indexed FHWA CMF Clearinghouse records because live detail pages returned errors. Direct record review and site-specific applicability checks are still needed before quantitative use.
+python memo_pipeline.py --sites example_sites_s2_demo.json --site-id 17120 --mode api
 
-Evidence sources:
+Each invocation creates a separate folder under runs/ and prints its path. Open memo.html to present the site or use the browser’s Print → Save as PDF. To investigate a blocked draft, open validation.json and compare its errors with the corresponding saved attempt.
 
-- [FHWA CMF Clearinghouse](https://cmfclearinghouse.fhwa.dot.gov/)
-- [FHWA Proven Safety Countermeasures](https://highways.dot.gov/safety/proven-safety-countermeasures)
+How a site becomes a memo
 
-The matcher must respect the specific treatment, crash type, severity, roadway context, and conditions covered by each record. A pedestrian-only CMF cannot support an angle-crash benefit claim. A nighttime CMF cannot support a daytime benefit claim. Evidence for a package of improvements cannot automatically be credited to one component.
+Read the snapshot. Use the supplied site ID, site type, crash patterns, and available road, severity and lighting information. Preserve the crash observation window, S2 model/run details, risk estimates and contributing factors when supplied. Missing values remain unknown.
 
-**Numerical crash-reduction estimates are disabled in this prototype.** A recorded CMF does not mean it has been approved for a particular site or for fatal and serious-injury outcomes.
+Screen the treatments. The matcher checks the location and study conditions it supports. It separates direct crash-type candidates from options with broader or partial evidence and records outstanding checks. An existing road attribute in the memo does not by itself establish that the matcher evaluated it.
 
-## Validation and limitations
+Draft and validate. In API mode the model writes short treatment explanations. Python supplies the site summary and renders recorded numbers, CMFs and references from the evidence. The validator checks the structured response, expected treatment IDs and groups, and restrictions on free text. Failed API drafts can trigger correction calls.
 
-The reported 12-test run includes checks that pedestrian-only CMFs do not match angle crashes and daytime examples do not receive a nighttime lighting CMF. These checks demonstrate selected matching safeguards; they do not validate real-world safety benefits.
+Render the accepted draft. The memo presents the crash profile, available S2 assessment, treatment evidence, and engineering review items. Staff review the narrative, confirm site geometry and equipment, and decide whether any option warrants further study.
 
-Remaining checks include missing or unknown site features, unsupported crash types, incompatible location types, and cases where no suitable candidate exists. Missing information should remain visible rather than being treated as proof of eligibility.
+Example — F&B Road at FM 2818, site 17120. The saved snapshot records 26 crashes during 2023–2025, including 13 rear-end and 7 angle crashes. S3 returned zero direct crash-type candidates and six options for engineering review. One option, CM016, concerns conversion to a Type B median U-turn. Its cited CMF covers injury severities A, B and C combined. Applying that value to the site’s predicted fatal and serious-injury crashes would exceed the study’s scope.
 
-No real-site validation, S1/S2 database connection, benefit/cost analysis, candidate ranking method, or memo-generation workflow is claimed by this version.
+Evidence and run files
 
-## Next steps
+The current CSV contains 30 entries. Of those, 28 have distinct CMF Clearinghouse IDs and are marked clearinghouse_record_verified and reviewed for original-study review. The other two are process entries without a selected numerical CMF. Site applicability remains a separate engineering decision. FHWA CMF Clearinghouse · FHWA Proven Safety Countermeasures
 
-1. **Document the current input and output format.** Use one synthetic example to define required fields, allowed crash and location types, missing-value handling, and returned candidate fields.
-2. **Review matching behavior.** Check accepted, rejected, missing-data, and no-match cases. Keep match reasons and unresolved conditions visible.
-3. **Complete evidence review.** Revisit the original Clearinghouse records and confirm treatment definitions, crash types, severity, quality ratings, and study conditions.
-4. **Agree on integration fields.** Coordinate stable site IDs, network versions, crash-pattern summaries, S2 run IDs, and risk units with the subsystem owners.
-5. **Connect a representative real site.** Review its candidates and evidence with the team before expanding the workflow.
-6. **Add later capabilities when their inputs are ready.** Candidate comparison, supported benefit calculations, database persistence, and draft memos follow the matching and interface work.
+Run file
 
-## Integration plan
+What to inspect
 
-The project baseline is **Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf**, ConOps Revision C dated 1 October 2026, with its accompanying FSR, ICD, and Execution and Validation Plan. Confirm interface details against that baseline before implementation.
+evidence.json
 
-| Direction | Information to agree with the owning subsystem |
-| --- | --- |
-| S1 → S3 | Stable site ID, network version, location type, road features, crash-pattern summaries, and provenance. |
-| S2 → S3 | Model/run ID, site-linked risk results, severity definitions, units, flags, and available explanations. |
-| S3 → S4 | Candidate treatments, match reasons, evidence references, unresolved conditions, and review status; memo fields later. |
-| S3 ↔ IF-09 | Approved upstream read access and an agreed write path for S3 results. |
+Site inputs, matched library records, study scopes and review conditions
 
-These are integration needs, not confirmed database columns or implemented connections. Coordinate schema changes and write permissions with S1, and output fields with S4.
+structured_prompt.txt
 
-## Rules for future numerical recommendations
+Instructions and evidence supplied for the draft
 
-- Use a CMF only when its treatment, outcome, severity, road context, and study conditions support the analysis.
-- Align baseline units and time periods. A per-mile risk rate is not an annual site crash count.
-- Treat SHAP factors as explanations of model predictions, not causal evidence for a treatment.
-- Do not automatically multiply CMFs for combined treatments.
-- Leave unavailable costs and effect estimates unknown. Add benefit/cost calculations only with sourced costs and agreed assumptions.
-- Keep rules, evidence versions, and calculations reproducible. Draft memos must trace their claims to reviewed inputs and sources.
+response_attempt_1.txt, etc.
 
+Individual API responses, including attempts blocked before correction
+
+response.json
+
+Accepted structured draft used for rendering
+
+memo.md, memo.html
+
+Human-readable outputs after the contract checks pass
+
+validation.json
+
+Final status, errors by attempt, evidence/output hashes and available API usage and timing
+
+Validation results and limits
+
+Check
+
+Evidence
+
+Real-site API demonstration
+
+Team-reported result of 15/15 final drafts passing. Seven sites needed automatic correction.
+
+Offline reproducibility
+
+All 15 saved site inputs passed the software checks and produced Markdown and HTML in the November 18 replay.
+
+Correction example
+
+For site 17120, two saved API attempts included digits in the CM034 narrative. The validator flagged both. The third attempt passed.
+
+Seeded response checks
+
+The supplied memo unit test defines 20 mixed contract violations, including wrong IDs, unexpected fields and prohibited numeric text. A dedicated 20-case invented-number result requires its own test evidence.
+
+Citation handling
+
+Python renders citations from matched library records. The memo tests check that source URLs, study references and limitations survive rendering. A seeded missing-citation blocking result requires a test of that failure.
+
+Engineering quality and cost
+
+Blind review against professional reference memos is planned. The API logs expose timing and token usage when supplied. The team reported a zero TAMU charge for the demo. The saved run’s dollar-cost field can be null.
+
+Run the existing tests from the project layout with its fixtures available. The supplied memo suite reads example_sites.json and fixtures/countermeasure_library_2026-11-03.csv.
+
+python -m unittest -v test_matcher
+python -m unittest -v test_memo_pipeline
+
+A passing report marks the draft ready for human review. The checks do not establish the truth of every narrative claim, a site-specific crash reduction, or approval to install a treatment.
+
+Integration and next steps
+
+The standalone demonstration uses saved snapshots. The project interface baseline is Team4_AI_Traffic_Safety_Consultant_ConOps_FSR_ICD_EVP 2-1.pdf, ConOps Revision C, October 1, 2026.
+
+Interface
+
+Next integration work
+
+S1 → S3
+
+Confirm stable site IDs, network version, road features, crash definitions and provenance.
+
+S2 → S3
+
+Confirm run IDs, risk units, severity definitions and explanatory factors against the live interface.
+
+S3 → S4
+
+Agree on the machine-readable handoff for draft status, treatment IDs, citations and unresolved checks.
+
+S3 ↔ IF-09
+
+Confirm approved database read/write paths with the owning subsystem.
+
+For benefit/cost analysis, verify the treatment layout, baseline crash units, applicable CMF, installation cost, service life and analysis period. Keep treatment installation cost separate from the API cost of writing a memo. The current standalone workflow does not calculate numerical benefits or rank treatments by benefit. S2 factors explain model predictions and do not establish the cause of crashes.
+
+The planned 15-site blind review will compare draft quality against professional references. Recording reviewer editing time alongside API usage would also help evaluate the project’s goal of producing comparable memos at lower preparation cost.
